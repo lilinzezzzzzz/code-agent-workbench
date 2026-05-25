@@ -15,7 +15,6 @@ agent-workbench/
 ├── .github/
 │   └── rulesets/             # GitHub repository ruleset exports
 ├── sync-agents.sh            # 统一同步入口：AGENTS.md / rules / skills
-├── apply_agengts.sh          # 兼容旧入口，转发到 sync-agents.sh
 ├── configs/
 │   └── codex-config.toml     # 同步到 Codex 根目录 config.toml 的源配置
 ├── rules/                    # 规则源文件；Codex 同步时生成 AGENTS.md
@@ -76,8 +75,6 @@ AGENTS.md 维护、测试验证等高频技术场景。
   `skill`；同步 rules 到 Codex 时写入 `AGENTS.md` 和顶层
   `references/`，同步 rules 到 Qoder 时写入指定项目 rules 目录；同步
   Codex config 时写入 Codex 根目录 `config.toml`
-- **apply_agengts.sh**: 兼容旧脚本名的转发入口，后续使用优先选择
-  `sync-agents.sh`
 - **api-endpoint-analyzer**: 系统化分析 API endpoint 的请求、响应、业务流程与错误处理
 - **git-code-reviewer**: 基于 diff 输出高信号代码审查结论，优先发现 bug、回归和风险
 - **git-commit-helper**: 基于 staged diff 生成或执行规范的 Conventional Commit
