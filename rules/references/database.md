@@ -16,6 +16,13 @@ behavior.
   readers, and deployment order before changing storage behavior.
 - Prefer explicit, bounded queries. Avoid unbounded `SELECT` in user-facing
   or large-data paths; use cursor pagination and explicit `LIMIT`.
+- Do not add `ORDER BY`, ORM `.order_by()`, default model ordering, or
+  relationship ordering unless sorting is required for correctness, stable
+  public/API behavior, pagination, top-N/latest/oldest semantics, or
+  user-visible ordering.
+- When deterministic order is required, make it explicit and index-friendly.
+  Do not rely on database natural order; for pagination or `LIMIT`, include a
+  stable tie-breaker where needed.
 - Batch or bulk by default for reads, writes, updates, and deletes. Avoid
   N+1 query patterns; preload required data before iterating.
 - Never introduce, approve, or leave ORM, query, or session calls inside

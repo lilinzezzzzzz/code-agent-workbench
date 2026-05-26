@@ -69,8 +69,8 @@ alwaysApply: true
   or dependency upgrades with large lockfile churn.
 - **Performance & Database**: Batch or bulk by default. Never introduce or
   approve database operations inside loops. Flag N+1 queries, unbounded
-  reads, missing pagination, blocking I/O in async hot paths, and large
-  in-memory payloads.
+  reads, missing pagination, unnecessary query ordering, blocking I/O in
+  async hot paths, and large in-memory payloads.
 - **Verification**: Do not infer test results from code reading, and do not
   claim coverage unless it was measured.
 
