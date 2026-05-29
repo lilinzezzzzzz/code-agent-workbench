@@ -57,6 +57,13 @@ service work.
   generics (`list`, `dict`, `set`) only when the function mutates the
   argument or the concrete type is part of the contract. Returns may
   stay concrete when ownership is handed to the caller.
+- Prefer `Enum`/`StrEnum` over `Literal` for shared domain concepts,
+  runtime validation, persisted values, wire/API values, or values reused
+  across modules. Use `StrEnum` for string wire values on Python 3.11+.
+  Use `IntEnum` only for compatibility with existing integer protocols or
+  external constants. Keep `Literal` for narrow type-only constraints,
+  overloads, discriminated-union tags, and local one-off options that do
+  not need runtime identity or behavior.
 
 ## Data And Interfaces
 
