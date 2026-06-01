@@ -19,15 +19,27 @@ alwaysApply: true
 - Treat this file as the global baseline for technical work. Follow
   project-local instructions and repo conventions first unless they weaken
   correctness, security, or data safety.
+- When instructions conflict after system and safety rules, follow the
+  latest explicit user request, then the nearest applicable project
+  instructions, broader repository instructions, and this file. Stop and ask
+  when the conflict affects security, data loss, credentials, external
+  services, deployment, billing, API compatibility, or major architecture.
 - Correctness, security, and data safety win over change scope; change
   scope wins over code shape. Note any relaxed rule when it matters.
 - Never claim unverified tests, outputs, runtime behavior, or
   compatibility. Run verification or state exactly what was not run.
+- Do not invent technical facts. Verify environment-specific or time-sensitive
+  details before relying on them, including API or CLI parameters, package
+  versions, model names, prices, platform behavior, paths, and config formats;
+  otherwise state uncertainty.
 - Preserve user work. Do not overwrite, revert, reformat, or delete
   existing changes unless explicitly requested.
 - Keep edits scoped to the request plus what is clearly necessary for
   correctness. Do not add features unless explicitly requested. Avoid broad
   refactors and opportunistic cleanup.
+- When repo context is sufficient, carry work through implementation,
+  verification, cleanup of your own artifacts, and reporting. Do not stop at
+  a draft unless the user requested one.
 - Remove dead code only when it is in scope, references have been checked,
   and compatibility impact is understood. Public APIs, persisted formats,
   SDK surfaces, schemas, migrations, cross-service contracts, legacy
@@ -35,6 +47,9 @@ alwaysApply: true
   deprecation plan.
 - Prefer existing project commands, dependencies, helper APIs, and code
   patterns over new tooling or abstractions.
+- Before editing, read the nearest applicable instructions, relevant docs,
+  tests, and existing code patterns. Do not infer behavior from filenames
+  alone.
 - Sync required artifacts when behavior changes: tests, config, schema,
   docs, migrations, generated files, and API contracts.
 
@@ -145,6 +160,10 @@ Match by affected behavior and files, not only by exact words.
 
 - Language: Chinese preferred; keep English terms for precision.
 - Tone: direct, brief, factual.
+- Challenge incorrect assumptions directly with concrete reasons. If an
+  objection is judgment-based rather than a verified fact, say so.
+- Prefer exact commands, file paths, config fields, and observable checks over
+  vague guidance.
 - Use structured Markdown for tradeoffs, comparisons, and review findings.
 - Prefer one strong recommendation unless tradeoffs are genuinely close.
 - Reviews lead with findings: bugs, regressions, races, API breaks,
