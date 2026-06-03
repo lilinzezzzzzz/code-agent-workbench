@@ -3,16 +3,16 @@
 # 日常后端开发默认模型。
 model = "gpt-5.5"
 
-# 后端编码、排障和重构默认需要较强推理，但不默认拉到最慢的 xhigh。
+# 质量优先：后端编码、排障和重构默认保留高推理；简单任务可在 prompt 中显式要求快速处理。
 model_reasoning_effort = "high"
 
-# Plan 模式通常先收敛方案，不需要默认使用最慢的 xhigh。
+# Plan 模式影响后续执行路径，默认保留高推理，避免方案阶段省 token 造成返工。
 plan_mode_reasoning_effort = "high"
 
 # 支持 reasoning summary 的模型输出简短推理摘要，便于回看关键判断。
 model_reasoning_summary = "concise"
 
-# 输出详细度保持中等，兼顾解释、diff 总结和响应速度。
+# 输出详细度保持中等，兼顾回答完整性和 output token 成本。
 model_verbosity = "medium"
 
 # 默认沟通风格：保持直接、务实、少废话。
@@ -27,8 +27,8 @@ sandbox_mode = "workspace-write"
 # 默认使用缓存搜索；需要最新资料时在会话里显式要求联网查询。
 web_search = "cached"
 
-# 单次工具输出保留的 token 上限；后端测试日志较长，保留 12000 便于定位失败。
-tool_output_token_limit = 12000
+# 单次工具输出保留的 token 上限；控制长日志进入上下文的成本，必要时再针对性重跑/截取。
+tool_output_token_limit = 8000
 
 # 后台终端空轮询最长等待 10 分钟，适合较慢的测试、构建和服务启动。
 background_terminal_max_timeout = 600000
@@ -55,12 +55,12 @@ undo = true
 view_image = true
 
 [tools.web_search]
-# 保持 top-level web_search = "cached"，这里只控制搜索结果上下文大小。
+# 保持 top-level web_search = "cached"，搜索结果上下文保持中等，避免资料类问题信息不足。
 context_size = "medium"
 
 [agents]
-# 限制本地并发 agent 数量，避免后端仓库中并行任务过多。
-max_threads = 4
+# 限制本地并发 agent 数量，避免显式多 agent 任务放大 token、延迟和本地资源消耗。
+max_threads = 3
 max_depth = 1
 job_max_runtime_seconds = 1800
 
