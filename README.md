@@ -1,4 +1,4 @@
-# Agent Workbench
+# Code Agent Workbench
 
 > 个人 AI assistant rules、skills 与同步工具，支持 Codex、Qoder 和
 > AGENTS.md 工作流，聚焦渐进式披露与 harness engineering
@@ -13,7 +13,7 @@ assistant harness。
 ## 📋 目录结构
 
 ```text
-agent-workbench/
+code-agent-workbench/
 ├── .github/
 │   └── rulesets/             # GitHub repository ruleset exports
 ├── sync-agents.sh            # 统一同步入口：AGENTS.md / rules / skills
