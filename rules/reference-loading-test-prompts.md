@@ -119,14 +119,16 @@ verification.md
 
 ## 数据库验证
 
-用于验证数据库、ORM 和迁移规则触发。
+用于验证数据库、ORM、DDL 和迁移规则触发。
 
 ```text
 不要修改文件。
 请按当前 AGENTS.md 执行必要的上下文加载。
 
-任务场景：我要评审一个 SQLAlchemy 查询和 Alembic migration，
-重点关注 N+1 查询、分页、锁表风险和回滚策略。
+任务场景：我要评审一个 SQLAlchemy 查询、Alembic migration、新增字段设计
+和索引设计，重点关注 N+1 查询、OFFSET > 1000 深分页、低区分度字段索引、
+组合索引、软删除条件、锁表风险、VARCHAR 长度、字符集/排序规则、
+金额精度和回滚策略。
 
 请回复：
 1. 实际读取了哪些 references 文件
