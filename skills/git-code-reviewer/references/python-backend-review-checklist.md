@@ -26,7 +26,13 @@ Use only the sections relevant to the change. This is a thinking aid for Python 
 - Is the session lifecycle clear, including commit, rollback, flush, and close boundaries?
 - Could the change introduce read-modify-write races, duplicate inserts, missing uniqueness checks, or non-idempotent writes under retry?
 - Does lazy loading, eager loading, relationship traversal, or serialization create N+1 queries or `DetachedInstanceError`-style failures?
+- Does a `for`/`while` loop, comprehension, serializer, or per-item callback
+  execute one SQL query per row instead of using a join, `selectinload`,
+  `joinedload`, bulk query, or bounded batch?
 - Are tenant predicates, soft-delete predicates, and pagination or ordering semantics preserved?
+- Does the implementation call `.all()`, `list(...)`, unbounded
+  `scalars().all()`, or ORM relationship traversal in a way that loads the
+  full result set or object graph into memory?
 
 ## 5. Redis, Cache, and KV Persistence
 
@@ -51,6 +57,12 @@ Use only the sections relevant to the change. This is a thinking aid for Python 
 
 - Does async code accidentally call blocking I/O such as sync DB access, filesystem work, or network clients on the event loop?
 - Are timeout, retry, cancellation, and deadline semantics explicit for `httpx`, message queues, LLM calls, storage SDKs, or other external dependencies?
+- Does synchronous external API or LLM I/O run on a request or worker hot path
+  without explicit timeout, concurrency isolation, circuit-breaker/bulkhead, or
+  queue/offload configuration?
+- Does the code read a whole upload, export, object-store blob, archive, or
+  generated file into memory when streaming, chunked reads, or bounded spooling
+  would preserve behavior?
 - Could a background task or worker run after the request fails or times out and leave the system in an inconsistent state?
 - For Celery, RQ, Dramatiq, Arq, or framework-native background tasks, are retries, acknowledgements, duplicate delivery, and task ordering safe for the underlying writes and side effects?
 - Are queues, tasks, and scheduled jobs idempotent and deduplicated where retries or duplicate delivery are possible?

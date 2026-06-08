@@ -13,6 +13,12 @@ Use only the sections relevant to the change. This is a thinking aid for changes
 
 - When the main entity is created, updated, deleted, expired, retried, replayed, or rolled back, do all secondary states stay consistent?
 - Are failure and partial-success paths symmetric with the happy path, or can one side effect succeed while another is skipped?
+- For distributed writes that can run from multiple workers, requests, retries,
+  callbacks, or schedulers, is there an explicit lock, ownership claim,
+  unique constraint, compare-and-set, lease, or transaction boundary?
+- If the distributed write is retried or delivered twice, is there an
+  idempotency key, deduplication record, natural unique key, or replay-safe
+  state transition that prevents duplicate side effects?
 - Does lazy cleanup merely defer work, or can it hide a correctness problem until scale or concurrency makes it visible?
 
 ## 3. Counterexamples

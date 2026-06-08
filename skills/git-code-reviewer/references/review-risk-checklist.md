@@ -41,8 +41,13 @@ Use only the sections relevant to the change. This is a thinking aid, not a temp
 
 - Is shared state protected with a clear ownership or synchronization model?
 - Are retries, cancellation, deadlines, and timeouts propagated correctly?
+- Does a synchronous external API/LLM call run on a request or worker hot path
+  without explicit timeout, cancellation behavior, and isolation/bulkhead
+  controls?
 - Could work be duplicated, reordered, or applied after the caller times out?
 - Does the change rely on eventual consistency without documenting or testing the gap?
+- Does a distributed write path mutate shared state without lock/ownership
+  protection and without idempotency or deduplication?
 - Does the code check key or row existence and then read, delete, or clean it up in a later operation, creating a TOCTOU window on mutable shared storage such as Redis?
 - Can cleanup or eviction race with concurrent refresh or recreation of the same index entry?
 
@@ -56,6 +61,11 @@ Use only the sections relevant to the change. This is a thinking aid, not a temp
 ## 6. Performance and Resource Lifecycle
 
 - Does the change introduce obvious `O(n^2)` work, N+1 queries, unbounded loops, or large unnecessary copies?
+- Does a loop execute one SQL query per item instead of using a join,
+  eager-load, bulk query, or bounded batch?
+- Does the changed path materialize a full database result set, object graph,
+  Redis collection, remote response, or large file in memory when streaming,
+  pagination, projection, or bounded batching would preserve behavior?
 - Does the changed path fetch an entire Redis, cache, or key-value collection when only one member, one page, or a count is needed?
 - Does it materialize all IDs and then issue per-ID probes such as `EXISTS`, `GET`, or `LRANGE`, creating linear command fan-out and memory growth on the request path?
 - Is membership or authz implemented by fetching all members and using `in` locally instead of an exact server-side lookup such as `SISMEMBER`, `ZSCORE`, or `HEXISTS`?

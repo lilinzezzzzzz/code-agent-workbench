@@ -88,6 +88,9 @@ Severity reflects user impact, not stylistic preference.
 - Migrations/infra: rollout safety, backward compat, lock duration, rollback path.
 - Stateful: lifecycle symmetry (create/update/delete/expire/retry/replay/rollback), mixed-version rollout.
 - Async/concurrent: idempotency, cancellation, retries, locking, ordering, shared-state ownership.
+- External I/O: synchronous API/LLM calls need explicit timeout and isolation/bulkhead controls on request or worker hot paths.
+- Distributed writes: concurrent multi-worker writes need lock/ownership protection and idempotency/deduplication.
+- Performance: flag per-item SQL in loops, N+1 query shapes, and full result set or large-file materialization on hot paths.
 - Redis/cache: cardinality, query shape, point vs full fetch, atomicity assumptions.
 - Security: trust boundaries, authn/authz, input validation, secrets, injection, SSRF.
 - LLM/RAG: prompt/tool compat, retrieval quality, vector index lifecycle, streaming, cost, data leakage.

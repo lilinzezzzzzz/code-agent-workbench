@@ -36,6 +36,9 @@ Use only the sections relevant to the change. This is a thinking aid for Python 
 ## 5. External Model Calls and Runtime Controls
 
 - Are timeout, retry, rate-limit, circuit-breaker, and cancellation semantics explicit for model, embedding, reranking, or moderation calls?
+- Does a synchronous model, embedding, reranking, or moderation call run on a
+  request or worker hot path without explicit timeout, concurrency limit,
+  bulkhead/isolation, queue/offload, or provider-failure fallback behavior?
 - Could retry behavior duplicate tool side effects, chargeable calls, messages, or stored outputs?
 - Did model name, provider, endpoint, API version, region, or runtime default change, and are settings and deployment defaults updated together?
 - Are cost, token budget, max output, context length, batching, and concurrency limits bounded on request or worker hot paths?
