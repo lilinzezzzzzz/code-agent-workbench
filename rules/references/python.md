@@ -70,9 +70,16 @@ service work.
 - Prefer explicit data models over loose dicts: `TypedDict` for typed
   mappings, `dataclass` for plain data carriers, Pydantic v2 for
   validated I/O models.
-- Prefer `Protocol` for interface dependencies and test seams. Use `ABC`
-  only when shared implementation, enforced inheritance, or runtime
-  nominal checks are required.
+- Do not introduce interface abstractions by default. Use concrete classes
+  or module-level functions when there is one implementation, the contract
+  is local, or tests can exercise behavior without a fake interface.
+- Use `Protocol` only for small, consumer-owned structural contracts at
+  module/package boundaries, especially when multiple implementations,
+  adapters, plugin points, or cross-boundary test doubles need the same
+  behavior without inheritance. Avoid mirror protocols such as
+  `FooProtocol` for every concrete `Foo`.
+- Use `ABC` only when shared implementation, enforced inheritance,
+  framework/plugin registration, or runtime nominal checks are required.
 - Prefer module-level functions. Use instance methods only when behavior
   depends on `self`; `@classmethod` for alternate constructors;
   `@staticmethod` only when type ownership is clear.
@@ -102,6 +109,9 @@ service work.
 - Docstrings are required for public API. Use Google style, imperative
   mood, and one-line summary. Add `Args`/`Returns`/`Raises` only when
   non-obvious. Inline comments explain why.
+- Python docstrings should use Chinese prose by default. Keep Google-style
+  section headers, identifiers, exception names, API field names, and
+  established technical terms in English when needed for precision.
 - Tests: use `pytest`; unit tests for logic and edges, integration tests
   for cross-boundary flows. Mock only external I/O. Critical paths need
   explicit happy, error, and edge cases.

@@ -50,6 +50,10 @@ alwaysApply: true
 - Before editing, read the nearest applicable instructions, relevant docs,
   tests, and existing code patterns. Do not infer behavior from filenames
   alone.
+- New or modified code comments should use Chinese by default. Keep
+  identifiers, API fields, config keys, error codes, protocol names, and
+  established technical terms in English when translation would reduce
+  precision.
 - Sync required artifacts when behavior changes: tests, config, schema,
   docs, migrations, generated files, and API contracts.
 
