@@ -117,6 +117,37 @@ python.md
 verification.md
 ```
 
+## Go 与并发验证
+
+用于验证 Go 语言、module、context、并发和标准工具链任务的触发。
+
+```text
+不要修改文件。
+请按当前 AGENTS.md 执行必要的上下文加载。
+
+任务场景：我要重构一个 Go package，调整 context 传递、goroutine 生命周期
+和 error wrapping，并补充标准 testing package 的 regression tests。
+
+请回复：
+1. 实际读取了哪些 references 文件
+2. 每个文件的实际读取路径
+3. 每个文件的一级标题
+```
+
+预期至少读取：
+
+```text
+golang.md
+verification.md
+```
+
+预期一级标题：
+
+```text
+# Go Rules
+# Verification Rules
+```
+
 ## 数据库验证
 
 用于验证数据库、ORM、DDL 和迁移规则触发。

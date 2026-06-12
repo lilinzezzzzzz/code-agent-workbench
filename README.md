@@ -28,6 +28,7 @@ code-agent-workbench/
 │       ├── database.md             # 数据库、持久化、迁移规则
 │       ├── execution-workflow.md   # 非平凡任务执行流程规则
 │       ├── git-workflow.md         # Git 安全工作流规则
+│       ├── golang.md               # Go 语言与标准工具链规则
 │       ├── project-agents-maintenance.md  # 项目级 AGENTS.md 维护规则
 │       ├── python.md               # Python 规则
 │       └── verification.md         # 测试与验证规则
@@ -51,7 +52,7 @@ code-agent-workbench/
 规则源文件。同步 Codex 时，`rules/agents.md` 只会写入 Codex 根目录的
 `AGENTS.md`，`rules/references/` 下的规则文件会同步到 Codex 根目录的
 `references/`，供渐进式披露读取。当前 references 覆盖执行流程、
-代码库发现、Git 工作流、Python、后端可靠性、数据库/迁移、项目级
+代码库发现、Git 工作流、Python、Go、后端可靠性、数据库/迁移、项目级
 AGENTS.md 维护、测试验证等高频技术场景。
 同步 Qoder 时，脚本会
 要求输入项目 `.qoder` 目录，并把 `agents.md` 和 `rules/references/`
@@ -62,7 +63,7 @@ AGENTS.md 维护、测试验证等高频技术场景。
 - **技术栈**: 根据个人项目需求定制
 - **编码标准**: 符合个人编码风格的最佳实践
 - **Git 规范**: 个性化的提交信息规范
-- **渐进式披露**: 执行流程、代码库发现、Git、语言、后端可靠性、
+- **渐进式披露**: 执行流程、代码库发现、Git、Python、Go、后端可靠性、
   数据库、项目级 AGENTS.md 维护和验证细则下沉到
   `rules/references/`，同步到 Codex 后位于 `~/.codex/references/`。
   `AGENTS.md` 会集中定义 reference search paths：Codex 优先解析

@@ -139,6 +139,8 @@ Match by affected behavior and files, not only by exact words.
 
 - Python implementation -> `python.md`: Python code, packaging, typing,
   linting, framework code, workers, or RAG/LLM app code.
+- Go implementation -> `golang.md`: Go source, modules, dependencies, package
+  APIs, error handling, context, concurrency, tests, or standard tooling.
 - Backend reliability -> `backend-reliability.md`: request/service logic,
   auth, validation, config, errors, retries, logging, external clients, or
   security-sensitive behavior.
