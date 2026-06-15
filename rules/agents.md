@@ -82,6 +82,10 @@ alwaysApply: true
 - **Reliability**: Handle errors explicitly. Do not swallow exceptions. Use
   stable API error codes and account for timeout, retry, cancellation,
   partial failure, and idempotency where practical.
+- **API Route Design**: Use noun-based, resource-oriented paths for GET reads
+  and explicit action-based, command-oriented paths for POST writes. Follow
+  `api-route-design.md` for route naming, action semantics, and command
+  contracts.
 - **Security & Ops**: Log useful failure context without secrets. Prefer
   least privilege, stdlib, and existing dependencies. Ask before destructive
   commands, force push, broad remove operations, data-mutating migrations,
@@ -147,6 +151,9 @@ Match by affected behavior and files, not only by exact words.
 - Backend reliability -> `backend-reliability.md`: request/service logic,
   auth, validation, config, errors, retries, logging, external clients, or
   security-sensitive behavior.
+- API route design -> `api-route-design.md`: endpoint paths, Router
+  definitions, HTTP methods, resource naming, command actions, API contracts,
+  or route reviews.
 - Codebase discovery -> `codebase-discovery.md`: non-trivial changes,
   reviews, bug investigations, unfamiliar modules, instruction discovery,
   or blast-radius analysis.

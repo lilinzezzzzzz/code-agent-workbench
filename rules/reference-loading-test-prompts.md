@@ -31,8 +31,8 @@
 请根据 AGENTS.md 的 Task-Specific References 规则判断需要加载哪些
 references，并用文件读取工具读取它们。
 
-任务场景：我要修改一个 Python FastAPI 接口，涉及 SQLAlchemy 查询、
-Alembic migration，并需要补 regression tests。
+任务场景：我要新增并设计一个 Python FastAPI endpoint 的路径，涉及
+SQLAlchemy 查询、Alembic migration，并需要补 regression tests。
 
 请回复：
 1. 你实际读取了哪些 references 文件
@@ -45,6 +45,7 @@ Alembic migration，并需要补 regression tests。
 
 ```text
 python.md
+api-route-design.md
 backend-reliability.md
 codebase-discovery.md
 database.md
@@ -56,6 +57,7 @@ verification.md
 
 ```text
 # Python Rules
+# API Route Design Rules
 # Backend Reliability And Security Rules
 # Codebase Discovery Rules
 # Database And Persistence Rules
@@ -196,6 +198,37 @@ database.md
 
 ```text
 backend-reliability.md
+```
+
+## API 路由设计验证
+
+用于验证 endpoint 路径、HTTP method、资源命名和 command action 规则触发。
+
+```text
+不要修改文件。
+请按当前 AGENTS.md 执行必要的上下文加载。
+
+任务场景：我要为订单设计 GET 查询端点，以及主要使用 POST 的 create、
+update、upsert、cancel 和 remove 写端点，并评审路径命名与幂等性契约。
+
+请回复：
+1. 实际读取了哪些 references 文件
+2. 每个文件的实际读取路径
+3. 每个文件的一级标题
+```
+
+预期至少读取：
+
+```text
+api-route-design.md
+backend-reliability.md
+```
+
+预期一级标题：
+
+```text
+# API Route Design Rules
+# Backend Reliability And Security Rules
 ```
 
 ## 验证策略验证
