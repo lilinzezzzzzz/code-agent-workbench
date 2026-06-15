@@ -122,12 +122,15 @@ Reference search paths are assistant-specific:
   tools in the current task. If required references are unreadable, report
   attempted paths and continue unless data safety, security, or API
   compatibility is blocked.
-- For non-trivial technical tasks, include:
+- For non-trivial technical tasks, include a compact `References` block.
+  Separate general reference files from local instruction files when both
+  were loaded. Omit `Loaded local rules` when no local instructions were read.
 
   ```md
   References:
-  - Loaded: `<actual-path>/python.md`, `<actual-path>/verification.md`
-  - Not loaded: `database.md`
+  - Loaded references: `<actual-path>/python.md`, `<actual-path>/verification.md`
+  - Loaded local rules: `app/dao/AGENTS.md`, `tests/AGENTS.md`
+  - Not loaded: `database.md`, `golang.md`
   - Missing: none
   ```
 
