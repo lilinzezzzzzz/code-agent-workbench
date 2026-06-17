@@ -15,6 +15,9 @@ model_reasoning_summary = "concise"
 # 输出详细度保持中等，兼顾回答完整性和 output token 成本。
 model_verbosity = "medium"
 
+# 使用文件方式保存 Codex 登录凭据，便于 VS Code 插件和 CLI 共享 ~/.codex/auth.json。
+cli_auth_credentials_store = "file"
+
 # 默认沟通风格：保持直接、务实、少废话。
 personality = "pragmatic"
 
