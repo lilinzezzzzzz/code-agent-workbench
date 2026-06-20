@@ -134,7 +134,7 @@ Reference search paths are assistant-specific:
   References:
   - Loaded references: `<actual-path>/python.md`, `<actual-path>/verification.md`
   - Loaded local rules: `app/dao/AGENTS.md`, `tests/AGENTS.md`
-  - Not loaded: `database.md`, `golang.md`
+  - Not loaded: `database.md`, `database-schema.md`, `golang.md`
   - Missing: none
   ```
 
@@ -162,9 +162,10 @@ Match by affected behavior and files, not only by exact words.
   verification-heavy work.
 - Git workflow -> `git-workflow.md`: branch, commit, merge, rebase, reset,
   revert, stash, tag, push, pull, PR/MR, or other history-sensitive work.
-- Persistence -> `database.md`: database, ORM, migrations,
-  repositories/DAOs, models, queries, transactions, pagination, vector
-  store, or cache-backed persistence.
+- Database access -> `database.md`: SQL or ORM queries, repositories/DAOs,
+  transactions, pagination, locking, or query performance.
+- Database schema -> `database-schema.md`: DDL, persisted models, columns,
+  indexes, logical foreign keys, constraints, migrations, or backfills.
 - Verification -> `verification.md`: tests, bug fixes, behavior changes,
   CI/lint/type-check, regression coverage, or reporting verification
   results.

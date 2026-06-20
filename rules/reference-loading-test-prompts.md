@@ -49,6 +49,7 @@ api-route-design.md
 backend-reliability.md
 codebase-discovery.md
 database.md
+database-schema.md
 execution-workflow.md
 verification.md
 ```
@@ -60,7 +61,8 @@ verification.md
 # API Route Design Rules
 # Backend Reliability And Security Rules
 # Codebase Discovery Rules
-# Database And Persistence Rules
+# Database Access And Transaction Rules
+# Database Schema And Migration Rules
 # Execution Workflow Rules
 # Verification Rules
 ```
@@ -150,18 +152,17 @@ verification.md
 # Verification Rules
 ```
 
-## 数据库验证
+## 数据库访问验证
 
-用于验证数据库、ORM、DDL 和迁移规则触发。
+用于验证 SQL、ORM、分页、事务和查询性能规则触发。
 
 ```text
 不要修改文件。
 请按当前 AGENTS.md 执行必要的上下文加载。
 
-任务场景：我要评审一个 SQLAlchemy 查询、Alembic migration、新增字段设计
-和索引设计，重点关注 N+1 查询、OFFSET > 1000 深分页、低区分度字段索引、
-组合索引、软删除条件、锁表风险、VARCHAR 长度、字符集/排序规则、
-金额精度和回滚策略。
+任务场景：我要评审一个 SQLAlchemy 查询和事务实现，重点关注 N+1 查询、
+OFFSET > 1000 深分页、稳定排序、锁竞争、并发 read-modify-write、事务超时
+和 query plan。
 
 请回复：
 1. 实际读取了哪些 references 文件
@@ -173,6 +174,42 @@ verification.md
 
 ```text
 database.md
+```
+
+预期一级标题：
+
+```text
+# Database Access And Transaction Rules
+```
+
+## 数据库 Schema 与迁移验证
+
+用于验证 DDL、字段、索引、逻辑外键和 migration 规则触发。
+
+```text
+不要修改文件。
+请按当前 AGENTS.md 执行必要的上下文加载。
+
+任务场景：我要评审一个 Alembic migration、新增字段和索引设计，重点
+关注低区分度字段索引、组合索引、软删除条件、逻辑外键、VARCHAR 长度、
+字符集、collation、金额精度、锁表风险、backfill 和回滚策略。
+
+请回复：
+1. 实际读取了哪些 references 文件
+2. 每个文件的实际读取路径
+3. 每个文件的一级标题
+```
+
+预期至少读取：
+
+```text
+database-schema.md
+```
+
+预期一级标题：
+
+```text
+# Database Schema And Migration Rules
 ```
 
 如果 AI 同时读取 `python.md` 或 `verification.md`，只要理由与任务场景
