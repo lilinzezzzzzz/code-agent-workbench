@@ -1,6 +1,6 @@
 ---
 trigger: model_decision
-description: Load for database, ORM, SQL, DDL, schema, index design, migrations, backfills, pagination, N+1, persistence, transactions, locking, or data-retention tasks.
+description: Load for database, ORM, SQL, DDL, SQLAlchemy, Alembic, schema, relationships, logical foreign keys, index design, migrations, backfills, pagination, N+1, bulk read/write, persistence, transactions, locking, or data-retention tasks.
 ---
 # Database And Persistence Rules
 
@@ -89,9 +89,10 @@ transactions, pagination, or data-retention behavior.
   index is MySQL/Oracle `(creator_id, deleted_at, created_at, id)` or
   PostgreSQL `(creator_id, created_at, id) WHERE deleted_at IS NULL`. Adjust
   the order to the actual filters and sort direction.
-- Index child-side foreign keys used in joins, parent deletes, cascades, or
-  existence checks. Do not assume every database automatically creates or can
-  efficiently use the needed foreign-key index.
+- Index child-side logical foreign-key columns used in joins, parent deletion
+  checks, application-managed cascades, existence checks, or cleanup when
+  actual query shapes require it. No physical foreign-key constraint will
+  create the needed index; verify the query plan and index explicitly.
 - Model uniqueness as a database constraint or unique index, not only as an
   application check. For soft-delete uniqueness, prefer partial unique
   indexes where supported; otherwise verify nullable `deleted_at` semantics
@@ -114,6 +115,35 @@ transactions, pagination, or data-retention behavior.
 - For large tables, treat index creation as a migration risk. Call out lock
   duration, online/concurrent index options, rollback path, deployment order,
   index length limits, and write amplification before implementation.
+
+## Relationships And Referential Integrity
+
+- For all new schemas and migrations, use logical foreign keys exclusively:
+  store the referenced identifier without creating database-enforced
+  `FOREIGN KEY` constraints, ORM-generated foreign-key constraints, or
+  database cascades. Do not introduce physical foreign keys.
+- The application layer owns referential-integrity validation, concurrency
+  control, cascade semantics, and orphan-data governance for every logical
+  relationship; do not assume the database will enforce them implicitly.
+- Do not remove or alter existing physical foreign keys merely to conform to
+  this rule. First assess data quality, dependent queries and services,
+  migration order, rollback, and compatibility impact.
+- Keep each logical foreign-key column compatible with the referenced key's
+  type, size, encoding, and identifier semantics. Document the referenced
+  table or entity, column, ownership boundary, cardinality, and expected
+  delete/update behavior in the schema, model, or migration.
+- Enforce referential validity in every write path, including APIs, jobs,
+  imports, bulk operations, and repair scripts. Where concurrency can race a
+  validation check, use an explicit transaction and locking or a documented
+  idempotent consistency workflow instead of assuming an application-side
+  pre-check is sufficient.
+- Define deletion and referenced-key update semantics explicitly. Implement
+  restrict, soft-delete, cascade, or orphan-retention behavior in the owning
+  application workflow, and account for retries, partial failure, and
+  idempotency; never rely on implicit database cascades.
+- Add tests for missing references and delete/update races on critical write
+  paths. For important or cross-service relationships, provide bounded,
+  observable orphan detection and a safe reconciliation or repair path.
 
 ## Migrations And Backfills
 
