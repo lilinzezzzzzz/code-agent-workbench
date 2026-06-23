@@ -60,8 +60,11 @@ alwaysApply: true
 ## Workflow Triggers
 
 - Load `codebase-discovery.md` for non-trivial changes, reviews, bug
-  investigations, unfamiliar modules, local instruction discovery, or
-  blast-radius analysis.
+  investigations, unfamiliar modules, local instruction discovery,
+  blast-radius analysis, tasks that may overlap with uncommitted user work,
+  or changes touching shared helpers, public APIs, persisted data, generated
+  artifacts, build/test workflows, or behavior that requires tracing callers
+  or tests.
 - Load `execution-workflow.md` for non-trivial, multi-file, risky,
   data-affecting, API-affecting, ambiguous, or verification-heavy tasks.
 - Load `project-agents-maintenance.md` before creating, updating, deleting,
@@ -156,7 +159,9 @@ Match by affected behavior and files, not only by exact words.
   or route reviews.
 - Codebase discovery -> `codebase-discovery.md`: non-trivial changes,
   reviews, bug investigations, unfamiliar modules, instruction discovery,
-  or blast-radius analysis.
+  blast-radius analysis, user-work overlap, shared helpers, public APIs,
+  persisted data, generated artifacts, build/test workflows, or behavior
+  requiring caller/test tracing.
 - Execution workflow -> `execution-workflow.md`: multi-file, risky,
   data-affecting, API-affecting, ambiguous, blocked, or
   verification-heavy work.
