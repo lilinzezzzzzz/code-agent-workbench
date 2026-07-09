@@ -53,10 +53,7 @@ writable_roots = ["/tmp"]
 # 开启 undo 支持，方便在 IDE 中回滚 Codex 生成的改动。
 undo = true
 
-[tools]
-# 允许 Codex 读取本地图片，便于分析截图、设计稿和错误界面。
-view_image = true
-
+# 当前 Codex strict config schema 不接受 [tools].view_image；图片输入使用 CLI 的 -i/--image 或会话内置工具。
 [tools.web_search]
 # 保持 top-level web_search = "cached"，搜索结果上下文保持中等，避免资料类问题信息不足。
 context_size = "medium"
