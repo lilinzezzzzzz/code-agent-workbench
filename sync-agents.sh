@@ -6,6 +6,7 @@ SOURCE_RULES_DIR="$SCRIPT_DIR/rules"
 SOURCE_AGENTS_FILE="$SOURCE_RULES_DIR/agents.md"
 SOURCE_REFERENCES_DIR="$SOURCE_RULES_DIR/references"
 SOURCE_CODEX_CONFIG_FILE="$SCRIPT_DIR/configs/codex-config.toml"
+CODEX_CONFIG_MERGE_SCRIPT="$SCRIPT_DIR/scripts/merge_codex_config.py"
 SOURCE_SKILLS_DIR="$SCRIPT_DIR/skills"
 SOURCE_SHARED_SKILLS_DIR="$SOURCE_SKILLS_DIR/_shared"
 CODEX_ROOT="${CODEX_ROOT:-$HOME/.codex}"
@@ -360,7 +361,10 @@ sync_agents_file() {
 sync_codex_config_file() {
     local target_root="$1"
 
-    sync_path "$SOURCE_CODEX_CONFIG_FILE" "$target_root/config.toml"
+    uv run --frozen --project "$SCRIPT_DIR" \
+        python "$CODEX_CONFIG_MERGE_SCRIPT" \
+        "$SOURCE_CODEX_CONFIG_FILE" \
+        "$target_root/config.toml"
 }
 
 sync_directory_entries() {
@@ -493,6 +497,9 @@ main() {
     fi
 
     if [[ "$content" == "config" ]]; then
+        require_file "$CODEX_CONFIG_MERGE_SCRIPT" "Codex config merge script"
+        require_command uv
+
         CODEX_ROOT="$(trim_spaces "$CODEX_ROOT")"
         if [[ -z "$CODEX_ROOT" ]]; then
             echo "CODEX_ROOT cannot be empty." >&2

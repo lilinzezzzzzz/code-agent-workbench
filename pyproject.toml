@@ -1,0 +1,9 @@
+[project]
+name = "code-agent-workbench"
+version = "0.1.0"
+description = "个人 AI coding agent 配置、规则与同步工具"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.uv]
+package = false
