@@ -31,9 +31,17 @@ compatibility or replace this stack unless the task explicitly requires it.
   is allowed; use it deliberately for dynamic values or when a more precise
   type adds little value. Validate or narrow it when runtime correctness,
   security, persistence, or a public contract depends on the value.
-- Use built-in generics, PEP 604 unions such as `X | None`, and
-  `collections.abc` interfaces for read-only inputs. Use concrete mutable
-  containers when mutation or concrete ownership is part of the contract.
+- Use built-in generics and PEP 604 unions such as `X | None`. For container
+  annotations, choose the weakest `collections.abc` contract that supports
+  every operation the code requires: use `Iterable[T]` for single-pass
+  iteration only, `Sequence[T]` when order, `len()`, or index access is
+  required, `Mapping[K, V]` for key-based reads, and `Set[T]` for membership
+  checks or set operations without ordering. Use concrete `list[T]`,
+  `dict[K, V]`, or `set[T]` when mutation, concrete ownership, or
+  concrete-container behavior is part of the contract.
+- Do not annotate a value as `Iterable[T]` when the implementation requires
+  repeated traversal, `len()`, indexing, or materialized storage; choose the
+  corresponding stronger interface or explicitly materialize it.
 - Use `TypedDict` for a mapping-shaped contract, `dataclass` for a plain data
   carrier, and Pydantic v2 models for validated I/O. Do not use a runtime model
   for a local internal record without validation needs.
