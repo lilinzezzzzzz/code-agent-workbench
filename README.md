@@ -211,7 +211,8 @@ skills/<skill-name>/
 
 **Python 开发**:
 
-- 使用 Python 3.11+、`uv`、`pyproject.toml` 和 Ruff/Pylance-compatible typing
+- 使用 Python 3.11+、`uv`、`pyproject.toml` 和 Ruff/Pylance-compatible typing；
+  对关联 Optional 状态显式窄化
 - 后端使用 FastAPI、Pydantic v2、SQLAlchemy 2.x 和 Alembic
 - 异步并发与 HTTP 使用 AnyIO 和 HTTPX，保留 cancellation 与 bounded concurrency
 - 测试使用 pytest，并通过 `uv run` 执行项目工具

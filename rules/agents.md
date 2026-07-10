@@ -122,5 +122,19 @@ assistant:
 - For changes, report what changed and why, files affected, verification run
   and results, anything not run and why, and remaining compatibility,
   migration, operational, or policy risk.
-- Mention loaded references only when the user requests them, a rule was
-  missing or decisive, or the task is specifically auditing instructions.
+- For non-trivial technical tasks, conclude with a compact `References` block
+  so reference selection is auditable. Omit it for trivial read-only answers
+  and narrow, no-behavior documentation edits.
+- List actual paths under `Loaded references`; list `Loaded local rules` only
+  when such files were read. List `Not loaded` only for materially relevant
+  references deliberately skipped, and always state `Missing: none` when no
+  required reference was unavailable.
+
+  ```md
+  References:
+
+  - Loaded references: `~/.codex/references/python.md`, `~/.codex/references/verification.md`
+  - Loaded local rules: `app/dao/AGENTS.md`, `tests/AGENTS.md`
+  - Not loaded: `database.md`, `database-schema.md`
+  - Missing: none
+  ```

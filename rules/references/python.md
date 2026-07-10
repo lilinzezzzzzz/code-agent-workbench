@@ -42,6 +42,17 @@ compatibility or replace this stack unless the task explicitly requires it.
   type-only choices, overloads, and discriminated tags.
 - Make optionality, ownership, mutability, units, time zones, and serialization
   behavior explicit at boundaries.
+- Narrow every optional value before passing it to a non-optional boundary. If
+  several optional variables describe one valid state, guard all values used by
+  that state together; do not rely on an earlier assignment or another
+  variable's non-null check to narrow them implicitly.
+- Prefer an early `return`/`continue` guard such as
+  `if path is None or section is None: continue`. When the values must always
+  co-exist, model them as one object or a discriminated state instead of
+  parallel optional variables.
+- Use `assert value is not None` only after an established invariant. Do not
+  use `cast`, `# type: ignore`, or a redundant annotation merely to suppress a
+  Pylance/type-checker error; correct the control flow or data model instead.
 
 ## Design And Imports
 

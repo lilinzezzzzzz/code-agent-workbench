@@ -209,7 +209,8 @@ verification.md
 提供，不修改文件，不涉及兼容性、安全、测试或项目行为。
 ```
 
-预期：通常不加载任何 reference。加载全部 reference 判定为失败。
+预期：通常不加载任何 reference。加载全部 reference 判定为失败；最终回复不应
+输出 `References` 区块。
 
 ### 10. 单一 Python 纯函数
 
@@ -240,7 +241,25 @@ git-workflow.md
 `codebase-discovery.md` 和 `execution-workflow.md` 是否加载取决于实际复杂度，
 但不能仅因出现“修改”二字而机械全量加载。
 
-### 11. 仅诊断、不修复
+### 11. Python Optional 类型收窄
+
+```text
+任务场景：修复 Pylance 报告的 Optional 类型错误：一个分支只检查了
+`path is not None`，随后却同时使用 `path` 和 `section.content_start`；
+`section` 的类型仍是 `Section | None`。
+```
+
+预期至少加载：
+
+```text
+python.md
+verification.md
+```
+
+行为断言：修复应同时窄化所有关联的可选值，或将它们建模为单一有效状态；
+不得用 `cast`、`# type: ignore` 或无依据的 `assert` 压制诊断。
+
+### 12. 仅诊断、不修复
 
 ```text
 任务场景：诊断 CI 中一个 Python test failure，说明 root cause 和建议；不要
@@ -258,7 +277,7 @@ python.md
 行为断言：允许本地只读检查和安全验证，但不能把“诊断”扩张成实现、commit、
 push 或远端 mutation。
 
-### 12. Reference 缺失
+### 13. Reference 缺失
 
 测试前临时让 active assistant 唯一解析路径中的某个无风险 reference 不可读。
 
@@ -267,6 +286,27 @@ push 或远端 mutation。
 - 只检查 active assistant 对应路径，不尝试另一种 assistant 的目录。
 - 报告缺失文件的预期路径，不得声称已经读取。
 - 仅在 correctness 和 safety 不依赖该规则时继续，不得声称已加载。
+
+### 14. 非平凡任务的 References 报告
+
+```text
+任务场景：修改 Python 服务的重试逻辑，涉及外部 HTTP client、超时、错误处理，
+并新增回归测试。
+```
+
+预期至少加载：
+
+```text
+codebase-discovery.md
+execution-workflow.md
+python.md
+backend-reliability.md
+verification.md
+```
+
+行为断言：最终回复必须输出紧凑的 `References` 区块，包含实际读取的 reference
+路径和 `Missing: none`。若未读取本地 AGENTS.md，不应虚构 `Loaded local rules`；
+未加载的 `database.md` 等仅在它们对任务明显相关且被刻意跳过时列出。
 
 ## 标题映射
 
