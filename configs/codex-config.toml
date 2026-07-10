@@ -1,13 +1,7 @@
 #:schema https://developers.openai.com/codex/config-schema.json
 
-# 日常后端开发默认模型。
-model = "gpt-5.5"
-
-# 质量优先：后端编码、排障和重构默认保留高推理；简单任务可在 prompt 中显式要求快速处理。
-model_reasoning_effort = "high"
-
-# Plan 模式影响后续执行路径，默认保留高推理，避免方案阶段省 token 造成返工。
-plan_mode_reasoning_effort = "high"
+# 日常后端开发固定使用 GPT-5.6 Terra；reasoning effort 由客户端按任务选择。
+model = "gpt-5.6-terra"
 
 # 支持 reasoning summary 的模型输出简短推理摘要，便于回看关键判断。
 model_reasoning_summary = "concise"
@@ -50,10 +44,13 @@ network_access = false
 writable_roots = ["/tmp"]
 
 [features]
-# 开启 undo 支持，方便在 IDE 中回滚 Codex 生成的改动。
-undo = true
+memories = false
+chronicle = false
 
-# 当前 Codex strict config schema 不接受 [tools].view_image；图片输入使用 CLI 的 -i/--image 或会话内置工具。
+[tools]
+# 启用本地图片查看工具；GPT-5.6 支持 original/auto detail 保留原始尺寸。
+view_image = true
+
 [tools.web_search]
 # 保持 top-level web_search = "cached"，搜索结果上下文保持中等，避免资料类问题信息不足。
 context_size = "medium"
