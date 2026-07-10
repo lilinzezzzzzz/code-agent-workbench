@@ -1,117 +1,96 @@
 ---
 trigger: model_decision
-description: Must be loaded before any Python-related implementation, review, refactor, dependency, test, packaging, FastAPI, Pydantic, SQLAlchemy, Alembic, worker, RAG, or LLM service task.
+description: Load for Python implementation, review, refactor, packaging, dependencies, typing, frameworks, workers, or tests.
 ---
 # Python Rules
 
-Use these rules for Python implementation, review, refactor, dependency,
-test, packaging, FastAPI, Pydantic, SQLAlchemy, Alembic, worker, or LLM/RAG
-service work.
+Use these rules as the default Python engineering stack: Python 3.11+, `uv`,
+`pyproject.toml`, Ruff/Pylance-compatible typing, FastAPI, Pydantic v2,
+SQLAlchemy 2.x, Alembic, AnyIO, HTTPX, and pytest. Do not add legacy-version
+compatibility or replace this stack unless the task explicitly requires it.
 
-## Baseline
+## Environment And Dependencies
 
-- When the project has no conflicting convention:
-  Python 3.11+, `uv`, `pyproject.toml` (PEP 621). For service work,
-  prefer FastAPI, Pydantic v2, SQLAlchemy 2.x, and Alembic unless the
-  project already standardizes otherwise.
-- Ruff/Pylance-compatible; no implicit `Any`.
-- New code should add type annotations wherever practical,
-  especially for function parameters, return values, module-level
-  constants, data models, and variables whose inferred type is unclear.
+- Use Python 3.11 or newer and pin the selected version through the project
+  configuration. Do not downgrade syntax or dependencies for unsupported older
+  Python versions.
+- Use `uv` for interpreter management, virtual environments, dependencies,
+  locking, packaging, and command execution. Prefer `uv run ...` over bare
+  `python`, `pip`, `pytest`, `ruff`, or type-checker commands.
+- Use `uv sync` to materialize the environment, `uv add`/`uv remove` for
+  dependency changes, and `uv lock` when only dependency metadata requires a
+  lockfile refresh. Use `uv python install`/`uv python pin` when interpreter
+  installation or project pinning is part of the task.
+- Change dependencies through `uv`, inspect `pyproject.toml` and `uv.lock`, and
+  avoid unrelated upgrades. Verify package/API/version details from installed
+  metadata or current primary documentation when they matter.
 
-## Environment And Commands
+## Types And Data Models
 
-- Prefer `uv` for Python environment creation, dependency management,
-  locking, packaging, and command execution. Avoid invoking bare
-  `python`, `pip`, `pytest`, `ruff`, or type checkers when the command
-  should run inside the project environment; use `uv run ...` instead.
-- New environments should use the project-declared Python version when
-  present. Common commands:
-  - `uv python install <version>` to install a missing interpreter.
-  - `uv python pin <version>` to pin the project interpreter when the
-    repository intentionally owns `.python-version`.
-  - `uv sync` to create or update the environment from `pyproject.toml`
-    and `uv.lock`.
-  - `uv add <package>` / `uv remove <package>` for dependency changes.
-  - `uv lock` when dependency metadata changed but installation is not
-    otherwise required.
-  - `uv run pytest ...`, `uv run ruff check ...`, and
-    `uv run <type-checker> ...` for verification.
-- For legacy requirements-only projects, use `uv venv` plus
-  `uv pip install -r requirements.txt`. Do not introduce
-  `pyproject.toml` or `uv.lock` solely to run a small task unless the
-  user asked to migrate dependency management.
+- Add precise annotations at public and important internal boundaries. `Any`
+  is allowed; use it deliberately for dynamic values or when a more precise
+  type adds little value. Validate or narrow it when runtime correctness,
+  security, persistence, or a public contract depends on the value.
+- Use built-in generics, PEP 604 unions such as `X | None`, and
+  `collections.abc` interfaces for read-only inputs. Use concrete mutable
+  containers when mutation or concrete ownership is part of the contract.
+- Use `TypedDict` for a mapping-shaped contract, `dataclass` for a plain data
+  carrier, and Pydantic v2 models for validated I/O. Do not use a runtime model
+  for a local internal record without validation needs.
+- Use `Enum`/`StrEnum` when values need runtime identity, shared behavior,
+  validation, or stable wire/persistence semantics. Use `Literal` for narrow
+  type-only choices, overloads, and discriminated tags.
+- Make optionality, ownership, mutability, units, time zones, and serialization
+  behavior explicit at boundaries.
 
-## Imports And Typing
+## Design And Imports
 
-- Imports: isort order, one import per line for top-level packages, all
-  imports at module top level. Local imports are allowed only to break a
-  circular dependency; document the reason inline.
-- New code uses lowercase built-in generics and `collections.abc`
-  generics. Do not introduce deprecated `typing` aliases such as `Dict`,
-  `List`, `Optional`, `Union`, or `AsyncGenerator`.
-- Use PEP 604 syntax: `A | B` and `T | None`.
-- Container parameter types follow variance: read-only inputs use
-  covariant `collections.abc` types (`Sequence`, `Mapping`, `Set`,
-  `Iterable`) so subtypes pass without friction; use concrete mutable
-  generics (`list`, `dict`, `set`) only when the function mutates the
-  argument or the concrete type is part of the contract. Returns may
-  stay concrete when ownership is handed to the caller.
-- Prefer `Enum`/`StrEnum` over `Literal` for shared domain concepts,
-  runtime validation, persisted values, wire/API values, or values reused
-  across modules. Use `StrEnum` for string wire values on Python 3.11+.
-  Use `IntEnum` only for compatibility with existing integer protocols or
-  external constants. Keep `Literal` for narrow type-only constraints,
-  overloads, discriminated-union tags, and local one-off options that do
-  not need runtime identity or behavior.
+- Prefer simple module functions and concrete classes. Introduce a small,
+  consumer-owned `Protocol` when multiple implementations or a useful boundary
+  test seam exists; use `ABC` only when nominal inheritance or shared
+  implementation is required.
+- Keep imports at module level by default. A local import is acceptable for a
+  proven circular dependency, optional dependency, startup-cost boundary, or
+  framework registration constraint; keep the reason apparent.
+- Use Ruff for formatting, linting, and import-order enforcement. Keep code
+  compatible with Pylance and do not silence diagnostics without a narrow,
+  documented reason.
+- Prefer keyword arguments when they clarify call sites, but preserve public
+  call compatibility and conventional positional parameters.
 
-## Data And Interfaces
+## Errors, Resources, And Async
 
-- Prefer explicit data models over loose dicts: `TypedDict` for typed
-  mappings, `dataclass` for plain data carriers, Pydantic v2 for
-  validated I/O models.
-- Do not introduce interface abstractions by default. Use concrete classes
-  or module-level functions when there is one implementation, the contract
-  is local, or tests can exercise behavior without a fake interface.
-- Use `Protocol` only for small, consumer-owned structural contracts at
-  module/package boundaries, especially when multiple implementations,
-  adapters, plugin points, or cross-boundary test doubles need the same
-  behavior without inheritance. Avoid mirror protocols such as
-  `FooProtocol` for every concrete `Foo`.
-- Use `ABC` only when shared implementation, enforced inheritance,
-  framework/plugin registration, or runtime nominal checks are required.
-- Prefer module-level functions. Use instance methods only when behavior
-  depends on `self`; `@classmethod` for alternate constructors;
-  `@staticmethod` only when type ownership is clear.
-- Prefer keyword-only parameters unless positional calls clearly improve
-  readability. Use `def` over lambda assignment and f-strings over
-  `.format()`.
-
-## Errors And Runtime
-
-- Prefer built-in exceptions that match the failure semantics for
-  programming errors, such as `ValueError`, `TypeError`, `KeyError`,
-  `IndexError`, `AttributeError`, `RuntimeError`, or
-  `NotImplementedError`. Do not use programming-error exceptions for
-  business logic. Keep custom business exception hierarchy flat.
-- Use `anyio` + `TaskGroup` for concurrency, `httpx` for HTTP, and
-  `anyio.to_thread` for blocking I/O.
+- Raise built-in exceptions for programming and value-contract errors. Use a
+  small domain exception hierarchy only when callers need stable business
+  handling; do not use exception strings as programmatic error codes.
+- Preserve the cause when translating errors and add context at ownership
+  boundaries. Do not catch `Exception` merely to log and continue or return a
+  false success.
+- Manage files, streams, clients, sessions, transactions, tasks, and temporary
+  resources with context managers or explicit lifecycle ownership.
+- Use AnyIO structured concurrency and task groups for concurrent async work,
+  HTTPX for HTTP clients, and `anyio.to_thread.run_sync` for unavoidable
+  blocking I/O. Propagate cancellation and bound concurrency and resource use.
 
 ## Frameworks And Persistence
 
-- FastAPI: explicit request/response models, `Depends` for DI, and
-  consistent error envelopes.
-- Pydantic: v2 patterns only; avoid v1 compatibility shims.
-- SQLAlchemy: 2.x typed patterns; Alembic for migrations.
+- FastAPI endpoints use explicit request/response models, `Depends` for
+  dependency injection, and the service's stable error envelope.
+- Use Pydantic v2 APIs and validators; do not add Pydantic v1 compatibility
+  shims.
+- Use SQLAlchemy 2.x typed models, queries, and session patterns. Use Alembic as
+  the source of truth for database migrations.
+- Keep transport validation, dependency injection, ORM/session ownership, and
+  domain logic separated enough that core behavior can be tested without a
+  live framework stack.
 
-## Documentation And Tests
+## Documentation And Verification
 
-- Docstrings are required for public API. Use Google style, imperative
-  mood, and one-line summary. Add `Args`/`Returns`/`Raises` only when
-  non-obvious. Inline comments explain why.
-- Python docstrings should use Chinese prose by default. Keep Google-style
-  section headers, identifiers, exception names, API field names, and
-  established technical terms in English when needed for precision.
-- Tests: use `pytest`; unit tests for logic and edges, integration tests
-  for cross-boundary flows. Mock only external I/O. Critical paths need
-  explicit happy, error, and edge cases.
+- Document public contracts and non-obvious invariants. Comments explain why,
+  ownership, and edge behavior rather than narrating syntax; Chinese prose is
+  the default for new or changed comments.
+- Use pytest. Prefer real domain logic with fakes or mocks only at external I/O
+  and ownership boundaries; cover meaningful success, failure, and edge cases.
+- Run targeted tests first, then `uv run ruff check`, the configured type
+  checker, and the broader pytest suite according to blast radius. Report exact
+  commands and do not infer type-check or test success from inspection.

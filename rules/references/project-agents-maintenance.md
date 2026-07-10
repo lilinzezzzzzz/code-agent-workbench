@@ -1,68 +1,80 @@
 ---
 trigger: model_decision
-description: Load for creating, updating, deleting, reviewing, or syncing project-level AGENTS.md files, subdirectory instructions, or durable repository-specific agent guidance.
+description: Load for creating, updating, reviewing, deleting, or syncing global agent rules, project AGENTS.md files, nested instructions, reference routing, or durable repository guidance.
 ---
-# Project AGENTS.md Maintenance Rules
+# Agent Instruction Maintenance Rules
 
-Use these rules when work touches project-level `AGENTS.md` files, nested
-instruction files, or durable repository-specific guidance for future agents.
+Use these rules for global instruction sources, project `AGENTS.md` files,
+nested agent guidance, and their on-demand references. Instruction files are an
+execution interface: optimize for correct agent decisions, not exhaustive
+documentation.
 
-## When To Maintain
+## Decide What Belongs
 
-- Maintain project-level `AGENTS.md` files when the current technical task
-  reveals a durable project convention, workflow, command, invariant, or
-  local constraint that future agents need in order to work safely.
-- Update instructions when code changes alter local build, test, migration,
-  generation, deployment, API compatibility, security, data-safety, or
-  ownership expectations.
-- Do not update project instructions solely for personal preference, generic
-  engineering advice, transient task notes, or observations that are already
-  enforced by code, tests, tooling, or global instructions.
-- If the needed update is uncertain or would change team policy, report the
-  proposed wording instead of editing silently.
+Add or retain a rule only when it is durable, actionable, and likely to change
+future behavior. Prefer concrete invariants, commands, ownership boundaries,
+compatibility constraints, and confirmation gates.
+
+Exclude or move elsewhere:
+
+- Generic advice already supplied by the platform or enforced by formatter,
+  linter, type checker, tests, schema, or CI.
+- Personal preference presented as universal correctness without an explicit
+  fallback or project-override rule.
+- Transient task notes, long tutorials, exhaustive examples, rationales that
+  do not affect a decision, and repeated reporting instructions.
+- Rules the agent cannot observe, verify, or execute.
 
 ## Scope And Placement
 
-- Before editing a project-level `AGENTS.md`, read the applicable instruction
-  chain from the project root down to the target path.
-- Also read child `AGENTS.md` files that would be affected by the proposed
-  parent-level rule.
-- Place new guidance in the narrowest `AGENTS.md` that covers the affected
-  code. Use a parent file only for repository-wide or cross-directory rules.
-- Do not duplicate parent or global rules. Child files should only
-  specialize, override, or add local constraints.
-- Keep cross-service contracts, public API guidance, persisted formats,
-  migrations, generated artifacts, and deployment constraints at the lowest
-  common ancestor that covers all affected paths.
+- Read the applicable instruction chain and affected child instruction files
+  before editing a parent rule.
+- Put cross-project safety, precedence, authorization, and reference-routing
+  rules in the global always-on file. Keep it small because every technical
+  turn pays its context cost.
+- Put language, framework, database, API, Git, verification, and specialized
+  workflows in narrowly triggered references or skills.
+- Put repository-specific commands, architecture, ownership, generated-file
+  rules, and local exceptions in the narrowest project `AGENTS.md` that covers
+  the affected paths. Child rules specialize or override; they do not repeat
+  parent rules.
+- Use project documentation for explanations and onboarding. Agent
+  instructions should point to the source of truth rather than duplicate it.
 
-## Content Quality
+## Wording And Conflict Design
 
-- Keep instructions factual, actionable, and specific to the repository or
-  subdirectory.
-- Prefer concise bullets with concrete commands, file paths, ownership
-  boundaries, compatibility constraints, or verification expectations.
-- Avoid vague process language that an agent cannot verify or execute.
-- Mention when a rule is compatibility-sensitive, data-affecting,
-  security-sensitive, or requires human confirmation.
-- Keep examples minimal and project-specific. Do not add long tutorials to
-  `AGENTS.md`; use project docs for detailed explanations.
+- Write imperatives with an observable trigger and outcome. State the scope of
+  strong terms such as `must`, `never`, and `always`; use them only for genuine
+  invariants or safety boundaries.
+- Pair preferences with their override condition, for example “follow the
+  repository; for greenfield work prefer X when Y holds.”
+- Give each rule one canonical owner. The always-on file routes to domain
+  references; references should not repeat global safety and reporting rules.
+- Resolve contradictions explicitly. Use the standard hierarchy of platform
+  and safety rules, current user intent, nearest local instructions, broader
+  project instructions, then global defaults.
+- Preserve compatibility notes when deleting or relaxing rules. A policy
+  change affecting data, security, public APIs, deployment, billing, or team
+  ownership requires explicit user or team direction.
 
-## Editing Safety
+## Reference Maintenance
 
-- Preserve user work. Do not overwrite unrelated changes in `AGENTS.md`.
-- When deleting or relaxing a project-level instruction, first verify
-  references and current behavior. Preserve compatibility notes unless the
-  removal is clearly in scope and the compatibility impact is understood.
-- If multiple nested files conflict, prefer the more specific file for the
-  affected path unless correctness, security, or data safety would be
-  weakened.
-- If a rule needs broad migration, deprecation, or team approval, leave a
-  proposed change in the response instead of making an unsupported edit.
+- Keep each reference focused on one decision domain and independently
+  understandable after the always-on file routes to it.
+- Keep filename, frontmatter description, always-on trigger matrix, test
+  prompts, and user-facing documentation aligned.
+- Avoid reference chains unless the second file is required only for a narrow
+  branch. The always-on router should select the normal combination directly.
+- When trigger overlap is intentional, divide responsibility clearly—for
+  example discovery determines affected surfaces, execution coordinates work,
+  and verification evaluates claims.
 
-## Reporting
+## Validation And Reporting
 
-- Report project-level `AGENTS.md` changes with the same rigor as code
-  changes: file changed, reason, verification performed, and remaining policy
-  or compatibility risk.
-- If no instruction update was made despite discovering a durable convention,
-  state why it was skipped.
+- Inspect the final diff for duplicate directives, conflicting absolutes,
+  broken paths, stale filenames, over-broad triggers, and rules that cannot be
+  tested.
+- Verify frontmatter, headings, reference resolution, trigger cases, and at
+  least one negative case that should not over-load references.
+- Report material policy changes separately from editorial compression,
+  including any preference that was relaxed or made project-dependent.

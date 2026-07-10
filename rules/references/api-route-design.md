@@ -1,88 +1,74 @@
 ---
 trigger: model_decision
-description: Load for creating, changing, or reviewing HTTP endpoint paths, Router definitions, HTTP methods, resource naming, command actions, or API route contracts.
+description: Load for creating, changing, or reviewing GET/POST HTTP paths, resource naming, command actions, endpoint contracts, OpenAPI, or SDK compatibility.
 ---
 # API Route Design Rules
 
-Use these rules when work creates, changes, or reviews HTTP routes. The default
-model is resource-oriented GET reads and command-oriented POST writes because
-the target repositories primarily use POST for write operations.
+Use these rules for HTTP endpoint design and review. Only `GET` and `POST` are
+supported: GET is resource-oriented and read-only; POST is command-oriented
+and handles every write or externally visible action.
 
-## Core Model
+## Core Method Model
 
-- Use noun-based, resource-oriented paths for GET reads.
-- Use an explicit action segment at the end of every POST write path, including
-  ordinary resource creation.
-- Prefer precise resource and command names over mechanically imitating REST.
-- Follow more specific project conventions when they exist. Do not rename an
-  existing public route solely for style without a compatibility or deprecation
-  plan.
+- First inspect neighboring routes, published specifications, client SDKs, and
+  gateway constraints. New routes must follow the GET/POST model; incompatible
+  existing routes require an explicit versioned migration rather than another
+  style variation.
+- Do not introduce `PUT`, `PATCH`, `DELETE`, or another HTTP method. Use GET for
+  reads and POST with a precise final action segment for all writes and
+  commands.
+- Model safe reads as noun-based resources. `GET` must not perform business
+  writes or externally visible commands; avoid redundant `get`, `list`, and
+  `query` path verbs.
+- Put the command at the end of every POST write path, including ordinary
+  resource creation, replacement, update, and deletion. Prefer
+  `/resources/create`, `/resources/{id}/update`,
+  `/resources/{id}/delete`, `/resources/{id}/cancel`, and
+  `/resources/batch-archive`.
+- Idempotency is defined by the operation contract, not inferred from POST.
+- Prefer stable resource nouns and precise domain actions over implementation
+  names or generic verbs such as `handle`, `operate`, `process`, `save`, or
+  `execute` with the real action hidden in the body.
 
-## GET Reads
+## Resource And Command Semantics
 
-- Let GET express the read operation. Avoid redundant path actions such as
-  `get`, `list`, or `query`.
-- Name the resource or read model clearly; change the resource name only when
-  the query target would otherwise be ambiguous.
-- Use path parameters for resource identity and query parameters for filtering,
-  sorting, pagination, and optional projections.
-- Prefer paths such as `GET /orders`, `GET /orders/{order_id}`, and
-  `GET /orders/{order_id}/items`.
+- Use path parameters for stable identity and hierarchy; use query parameters
+  for filtering, sorting, pagination, optional projection, and non-sensitive
+  read controls. Do not place credentials or secrets in URLs.
+- Use `create` only for resource creation; a conflicting stable identity should
+  fail rather than silently update. Use `replace` for full replacement and
+  `update` for partial update. Use `upsert` only when a documented stable key
+  determines create versus update and both paths share a clear response
+  contract.
+- Use `add`/`remove` for membership or relationship changes and
+  `create`/`delete` for resource lifecycle. Prefer domain actions such as
+  `approve`, `publish`, `revoke`, or `cancel` for explicit state transitions.
+- Batch endpoints need per-item versus atomic semantics, limits, partial
+  failure behavior, ordering expectations, and retry behavior.
+- Asynchronous commands should return or identify an operation/job resource
+  whose state and failure can be queried. Do not imply synchronous completion
+  when work merely entered a queue.
 
-## POST Writes
+## Contract Checklist
 
-- Put the command at the end of the path. Prefer these shapes:
-  `POST /resources/<action>`, `POST /resources/{resource_id}/<action>`, and
-  `POST /resources/<batch-action>`.
-- Use `create` to create a new resource. A conflicting stable identity should
-  normally fail rather than silently update an existing resource.
-- Use `replace` for PUT-style full replacement and `update` for PATCH-style
-  partial updates.
-- Use `upsert` only when a stable unique key determines whether the command
-  creates or updates the resource. Do not use it as a generic synonym for
-  `create` or `update`.
-- Use `delete` for actual resource deletion. Use `add` and `remove` only for
-  relationship or membership changes, not resource creation or deletion.
-- Prefer a precise domain action such as `cancel`, `archive`, `approve`,
-  `publish`, `activate`, or `revoke` when it describes the state transition
-  better than a CRUD action.
-- Avoid ambiguous actions such as `save`, `modify`, `change`, `handle`,
-  `operate`, or a generic `execute` action with the real command hidden in the
-  request body or query string.
+Define and keep aligned:
 
-Recommended examples:
-
-```text
-POST /orders/create
-POST /orders/{order_id}/update
-POST /orders/{order_id}/cancel
-POST /orders/batch-archive
-POST /groups/{group_id}/members/add
-POST /groups/{group_id}/members/{member_id}/remove
-```
-
-Avoid inconsistent shapes such as `POST /create-order`,
-`POST /orders/update/{order_id}`, or `POST /execute?action=cancel`.
-
-## Command Contracts
-
-- Define each command's request and response schema, authorization, validation,
-  preconditions, state transition, side effects, and stable error behavior.
-- Document whether the command is idempotent, whether clients may retry it, and
-  how duplicate requests are detected. POST does not make an otherwise
-  idempotent command non-idempotent.
-- Protect non-idempotent or externally visible side effects with an
-  idempotency key, stable business key, uniqueness constraint, or another
-  project-standard duplicate guard when retries are possible.
-- State whether completion is synchronous or asynchronous. For asynchronous
-  commands, define the job or operation resource returned to the caller.
-- Keep OpenAPI, SDKs, tests, permissions, metrics, and audit events aligned when
-  a route or command contract changes.
+- Request and response schemas, content types, status codes, validation, and
+  stable error codes or envelopes.
+- Authentication, authorization on the target resource, tenant context,
+  preconditions, state transitions, side effects, and audit behavior.
+- Idempotency and retry semantics. Use an idempotency key, stable business key,
+  uniqueness constraint, or another duplicate guard where retries can repeat a
+  visible write.
+- Pagination bounds and stable ordering for collections; caching and
+  conditional-request semantics where relevant.
+- OpenAPI, gateway/router registration, generated clients, SDKs, examples,
+  permissions, metrics, events, and regression tests.
 
 ## Compatibility
 
-- Treat path, method, request/response schema, error behavior, and idempotency
-  as API contract surfaces.
-- For an existing route, preserve compatibility or provide an explicit
-  migration and deprecation plan. Adding an action segment is not automatically
-  a backward-compatible change.
+Treat method, path, parameter location, schema, status and error behavior,
+auth, idempotency, and side effects as public contract surfaces. Existing
+routes using methods other than GET/POST are non-compliant but still require an
+explicit versioning, deprecation, client rollout, and removal plan; do not
+break clients through an unannounced method or path replacement.

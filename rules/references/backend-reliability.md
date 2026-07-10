@@ -1,48 +1,69 @@
 ---
 trigger: model_decision
-description: Load for backend service, API, handler, worker, auth, permission, validation, error handling, timeout, retry, idempotency, logging, observability, or security-sensitive tasks.
+description: Load for services, APIs, workers, auth, validation, configuration, external clients, errors, retries, timeouts, idempotency, observability, or security-sensitive behavior.
 ---
 # Backend Reliability And Security Rules
 
-Use these rules when work touches backend services, APIs, workers, message
-handlers, validation boundaries, authorization, error handling, retries,
-timeouts, idempotency, logging, or security-sensitive behavior.
+Use these rules at service, worker, message, and external-integration
+boundaries. Derive reliability behavior from the operation's contract and
+failure modes.
 
 ## Boundaries And Validation
 
-- Use clear types at public and important internal boundaries. Avoid loose
-  `Any` and ad hoc dicts when a structured model or typed mapping is
-  practical.
-- Validate at transport, message, and persistence boundaries. Keep domain
-  logic out of handlers, routers, controllers, and framework glue.
-- Preserve public API contracts, message schemas, persisted formats, SDK
-  surfaces, and cross-service compatibility unless the task explicitly
-  includes a migration or deprecation plan.
-- Prefer existing project helpers for request parsing, dependency
-  injection, error responses, logging, metrics, and configuration.
+- Use explicit request, response, message, config, and persistence models at
+  important boundaries. Validate shape, size, range, encoding, identity, and
+  state preconditions before executing side effects.
+- Treat client input, headers, uploaded content, queue messages, database data,
+  and upstream responses as untrusted at their ownership boundary. Prevent
+  injection, path traversal, SSRF, unsafe deserialization, and confused-deputy
+  behavior with project-standard controls.
+- Keep domain decisions outside routers, controllers, consumers, and framework
+  glue when practical. Reuse project helpers for parsing, dependency injection,
+  config, error envelopes, logging, metrics, and tracing.
+- Preserve API, event, persisted-data, and SDK contracts unless rollout,
+  compatibility, and rollback are explicitly part of the task.
 
-## Failure Handling
+## Failure And Distributed Operations
 
-- Handle errors explicitly. Do not swallow exceptions, hide partial
-  failures, or convert unknown failures into success.
-- Use stable error codes or envelopes for API failures when the project has
-  an existing contract.
-- Consider timeout, retry, cancellation, partial failure, and idempotency
-  for network calls, workers, queue consumers, and external services.
-- Retries should be bounded and safe for the operation. Non-idempotent
-  writes need an idempotency key, uniqueness guard, or explicit reason why
-  retry is safe.
-- Preserve cancellation behavior in async code. Avoid blocking I/O in async
-  hot paths unless offloaded through the project-standard mechanism.
+- Classify expected domain failures, invalid input, dependency failures,
+  cancellation, and unexpected defects. Do not swallow errors, turn unknown
+  failures into success, or hide partial completion.
+- Use stable programmatic error codes when clients branch on failure. Keep
+  internal details and sensitive values out of public error messages.
+- Set timeouts from an end-to-end budget and propagate deadlines and
+  cancellation. Avoid independent timeout layers whose combined behavior is
+  longer than the caller's budget.
+- Retry only transient failures, with bounded attempts, backoff and jitter when
+  appropriate. Respect server retry signals and do not multiply retries across
+  layers without a budget.
+- Make repeated writes safe with an idempotency key, uniqueness or version
+  guard, transactional outbox/inbox, deduplication record, or a documented
+  equivalent. Define behavior for a duplicate request still in progress.
+- For workflows spanning systems, design for partial failure and recovery.
+  Do not imply atomicity that the underlying transaction boundary cannot
+  provide.
+- Bound concurrency, queues, payload size, and memory use. Preserve graceful
+  shutdown: stop intake, propagate cancellation, finish or safely requeue
+  owned work, and release resources.
 
-## Security And Operations
+## Authorization And Data Protection
 
-- Prefer least privilege and existing dependencies. Do not add secrets,
-  credentials, tokens, cookies, or private keys to source files.
-- Log useful failure context without leaking secrets, credentials, PII, or
-  full request/response payloads unless the project has an approved redaction
-  path.
-- For auth and permission changes, identify who can call the path, what
-  resource is protected, and whether default behavior should deny access.
-- Ask before destructive commands, force push, broad removal operations,
-  data-mutating migrations, or dependency upgrades with large lockfile churn.
+- Authenticate the caller and authorize the action against the actual target
+  resource and tenant. Default-deny when policy is missing or ambiguous.
+- Use least-privilege credentials and secret stores. Never add tokens, private
+  keys, cookies, or live credentials to source, logs, fixtures, prompts, or
+  command output.
+- Minimize sensitive-data collection and exposure. Redact logs and traces;
+  avoid full payload logging unless an approved, bounded redaction path exists.
+- Validate redirect destinations, webhook targets, file paths, archive
+  contents, and outbound URLs before use.
+
+## Observability And Operations
+
+- Emit enough structured context to connect a failure to an operation,
+  dependency, tenant-safe identifier, attempt, and latency without exposing
+  sensitive content.
+- Use metrics and traces for retries, timeouts, queue lag, saturation, partial
+  failure, and dependency health when they are operationally material.
+- Preserve audit events for privileged or externally visible state changes.
+  Ensure observability failure does not silently change business semantics.

@@ -23,11 +23,12 @@ code-agent-workbench/
 │   ├── agents.md             # 同步到 Codex 根目录 AGENTS.md 的源模板
 │   ├── reference-loading-test-prompts.md  # references 加载验证提示词
 │   └── references/
+│       ├── ai-rag.md                # AI 应用、RAG、评估、安全与成本规则
 │       ├── api-route-design.md      # GET 资源路径与 POST 命令路径规则
 │       ├── backend-reliability.md  # 后端可靠性、安全、API/worker 规则
 │       ├── codebase-discovery.md   # 代码库上下文发现与影响面规则
 │       ├── database.md             # 数据库查询、事务与并发规则
-│       ├── database-schema.md      # Schema、索引、逻辑外键与迁移规则
+│       ├── database-schema.md      # Schema、冗余字段、索引、逻辑外键与迁移规则
 │       ├── execution-workflow.md   # 非平凡任务执行流程规则
 │       ├── git-workflow.md         # Git 安全工作流规则
 │       ├── golang.md               # Go 语言与标准工具链规则
@@ -54,24 +55,25 @@ code-agent-workbench/
 规则源文件。同步 Codex 时，`rules/agents.md` 只会写入 Codex 根目录的
 `AGENTS.md`，`rules/references/` 下的规则文件会同步到 Codex 根目录的
 `references/`，供渐进式披露读取。当前 references 覆盖执行流程、
-代码库发现、Git 工作流、Python、Go、API 路由设计、后端可靠性、
-数据库访问、Schema/迁移、项目级 AGENTS.md 维护、测试验证等高频技术场景。
+代码库发现、Git 工作流、Python、Go、AI/RAG、API 路由设计、后端可靠性、
+数据库访问、Schema/迁移、Agent 指令维护、测试验证等高频技术场景。
 同步 Qoder 时，脚本会
 要求输入项目 `.qoder` 目录，并把 `agents.md` 和 `rules/references/`
 下的规则文件增量同步到该目录下的 `rules/`：
 
 - **适用范围**: Codex 和其他支持 `AGENTS.md` 规则注入的工具
-- **角色定位**: 个人开发者的技术偏好和习惯
-- **技术栈**: 根据个人项目需求定制
-- **编码标准**: 符合个人编码风格的最佳实践
-- **Git 规范**: 个性化的提交信息规范
-- **渐进式披露**: 执行流程、代码库发现、Git、Python、Go、API 路由设计、
-  后端可靠性、数据库访问、Schema/迁移、项目级 AGENTS.md 维护和验证细则
+- **角色定位**: 跨项目安全基线、执行边界和渐进式规则路由
+- **项目优先**: 项目内约定优先于全局技术偏好，避免跨仓库机械套用
+- **规则质量**: 强规则必须有明确作用域、触发条件和可验证结果
+- **Git 规范**: 保护用户工作区和历史，仓库约定优先
+- **渐进式披露**: 执行流程、代码库发现、Git、Python、Go、AI/RAG、
+  API 路由设计、后端可靠性、数据库访问、Schema/迁移、Agent 指令维护和验证细则
   下沉到 `rules/references/`，同步到 Codex 后位于
   `~/.codex/references/`。
-  `AGENTS.md` 会集中定义 reference search paths：Codex 优先解析
-  `~/.codex/references/`，Qoder 优先解析项目 `.qoder/rules/references/`，
-  并把另一侧作为 fallback，不依赖 Markdown 链接自动展开
+  `AGENTS.md` 会集中定义 reference search paths：Codex 只解析
+  `~/.codex/references/`，Qoder 解析项目 `.qoder/rules/references/`；无法
+  识别 active assistant 时不加载 task-specific references，也不依赖
+  Markdown 链接自动展开
 - **Harness engineering**: 把 always-on 基线、按需 references、skills
   和同步脚本拆成可演进的 assistant runtime 配置，避免把长期规则散落在
   单次 prompt 中
@@ -196,21 +198,23 @@ skills/<skill-name>/
 
 **Python 开发**:
 
-- 遵循 PEP 8 和 Pydantic v2 规范
-- 使用 uv 进行依赖管理
-- 优先使用 SQLAlchemy ORM
-- 异步编程使用 anyio + httpx
+- 使用 Python 3.11+、`uv`、`pyproject.toml` 和 Ruff/Pylance-compatible typing
+- 后端使用 FastAPI、Pydantic v2、SQLAlchemy 2.x 和 Alembic
+- 异步并发与 HTTP 使用 AnyIO 和 HTTPX，保留 cancellation 与 bounded concurrency
+- 测试使用 pytest，并通过 `uv run` 执行项目工具
 
 **Golang 开发**:
 
-- 遵循 Effective Go 指南
-- 使用标准库，最小化第三方依赖
-- 显式错误处理和上下文传递
-- 惯用的并发模式
+- 遵循项目声明的 Go 版本、module、生成和验证命令
+- 优先标准库和现有依赖，避免无关 module churn
+- 显式处理 error、context、资源 ownership 和 cancellation
+- 每个 goroutine 都有 owner、边界和终止路径
 
 ### Git 工作流
 
 **分支命名**:
+
+优先遵循仓库约定；无约定时使用语义前缀：
 
 - `feature/<description>`
 - `bugfix/<description>`
