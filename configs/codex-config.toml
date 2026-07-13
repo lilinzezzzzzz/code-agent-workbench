@@ -38,7 +38,7 @@ history.max_bytes = 104857600
 
 [sandbox_workspace_write]
 # shell 命令默认不允许直接访问外网；依赖安装、curl 等需要按需审批。
-network_access = false
+network_access = true
 
 # 除当前 workspace 外，额外允许写入 /tmp，方便测试、构建和临时产物。
 writable_roots = ["/tmp"]
