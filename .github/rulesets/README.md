@@ -5,6 +5,9 @@ API-based sync.
 
 - `Git-Flow-Branch-Naming.json`: protects `main` and `dev` from deletion and
   non-fast-forward updates, and requires pull requests for changes.
+- `Protect-main-owner-control.json`: limits `main` updates to repository
+  administrators and requires an approved Code Owner review for other users'
+  pull requests.
 
 GitHub does not automatically apply files in this directory. Import the JSON in
 repository settings or sync it with the GitHub Rulesets API.
