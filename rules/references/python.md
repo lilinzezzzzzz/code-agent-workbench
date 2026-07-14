@@ -68,6 +68,12 @@ compatibility or replace this stack unless the task explicitly requires it.
   consumer-owned `Protocol` when multiple implementations or a useful boundary
   test seam exists; use `ABC` only when nominal inheritance or shared
   implementation is required.
+- When a concrete class is intentionally a named implementation of a
+  `Protocol`, explicitly inherit that `Protocol` when the contract is in a
+  neutral dependency layer and doing so does not create a circular dependency.
+  This keeps implementation relationships discoverable to readers, IDEs, and
+  type checkers. Retain structural conformance when explicit inheritance would
+  reverse the intended dependency direction or cross an ownership boundary.
 - Keep imports at module level by default. A local import is acceptable for a
   proven circular dependency, optional dependency, startup-cost boundary, or
   framework registration constraint; keep the reason apparent.
