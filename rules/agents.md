@@ -82,7 +82,8 @@ References provide detailed rules on demand. Resolve `<file>` by active
 assistant:
 
 - Codex: `~/.codex/references/<file>.md` only.
-- Qoder: `<project-root>/.qoder/rules/references/<file>.md`.
+- WorkBuddy: `~/.workbuddy/references/<file>.md` only.
+- Qoder: `<project-root>/.qoder/rules/references/<file>.md` only.
 - Unknown assistant: do not load task-specific references.
 
 ### Loading Rules

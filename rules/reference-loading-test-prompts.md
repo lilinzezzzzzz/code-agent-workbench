@@ -14,6 +14,7 @@
 
 ```text
 Codex: ~/.codex/references/<file>.md
+WorkBuddy: ~/.workbuddy/references/<file>.md
 Qoder: <project-root>/.qoder/rules/references/<file>.md
 Unknown assistant: 不加载 task-specific references
 ```

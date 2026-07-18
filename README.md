@@ -77,9 +77,9 @@ code-agent-workbench/
   下沉到 `rules/references/`，同步到 Codex 后位于
   `~/.codex/references/`。
   `AGENTS.md` 会集中定义 reference search paths：Codex 只解析
-  `~/.codex/references/`，Qoder 解析项目 `.qoder/rules/references/`；无法
-  识别 active assistant 时不加载 task-specific references，也不依赖
-  Markdown 链接自动展开
+  `~/.codex/references/`，WorkBuddy 只解析 `~/.workbuddy/references/`，
+  Qoder 解析项目 `.qoder/rules/references/`；无法识别 active assistant 时
+  不加载 task-specific references，也不依赖 Markdown 链接自动展开
 - **Harness engineering**: 把 always-on 基线、按需 references、skills
   和同步脚本拆成可演进的 assistant runtime 配置，避免把长期规则散落在
   单次 prompt 中
