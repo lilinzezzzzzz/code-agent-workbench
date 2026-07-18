@@ -1,13 +1,19 @@
 #:schema https://developers.openai.com/codex/config-schema.json
 
-# 日常后端开发固定使用 GPT-5.6 Terra；reasoning effort 由客户端按任务选择。
-model = "gpt-5.6-terra"
+# 日常后端开发固定使用 GPT-5.6 旗舰 Sol，避免 alias 路由策略变化。
+model = "gpt-5.6-sol"
+
+# 默认使用中等 reasoning effort，在推理质量、响应时间和 token 消耗之间取平衡。
+model_reasoning_effort = "medium"
+
+# 默认使用标准服务档位，不额外消耗 Fast mode credits；需要加速时可在会话中临时开启 /fast。
+service_tier = "default"
 
 # 支持 reasoning summary 的模型输出简短推理摘要，便于回看关键判断。
 model_reasoning_summary = "concise"
 
-# 输出详细度保持中等，兼顾回答完整性和 output token 成本。
-model_verbosity = "medium"
+# 默认使用较低输出详细度，减少冗余说明和 output token 消耗；复杂任务可在 prompt 中临时要求展开。
+model_verbosity = "low"
 
 # 使用文件方式保存 Codex 登录凭据，便于 VS Code 插件和 CLI 共享 ~/.codex/auth.json。
 cli_auth_credentials_store = "file"
@@ -36,6 +42,8 @@ history.persistence = "save-all"
 # 限制本地历史文件体积，避免长期使用后无限增长；当前为 100 MiB。
 history.max_bytes = 104857600
 
+notify = ["/Users/lilinze/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
+
 [sandbox_workspace_write]
 # shell 命令默认不允许直接访问外网；依赖安装、curl 等需要按需审批。
 network_access = true
@@ -44,8 +52,14 @@ network_access = true
 writable_roots = ["/tmp"]
 
 [features]
+# 禁用跨会话 Memories，避免 Codex 保存或复用本地记忆上下文。
 memories = false
+
+# 禁用 Chronicle，不从近期屏幕上下文自动整理和生成记忆。
 chronicle = false
+
+# 禁用 JavaScript REPL，保持使用常规工具调用路径，不启用 JavaScript 运行时编排。
+js_repl = false
 
 [tools]
 # 启用本地图片查看工具；GPT-5.6 支持 original/auto detail 保留原始尺寸。
@@ -56,9 +70,13 @@ view_image = true
 context_size = "medium"
 
 [agents]
-# 限制本地并发 agent 数量，避免显式多 agent 任务放大 token、延迟和本地资源消耗。
-max_threads = 3
+# 最多同时打开 4 个 agent thread：包含根 agent 时，通常可并行运行 3 个直接子 agent。
+max_threads = 4
+
+# 仅允许根 agent 创建一层直接子 agent，禁止子 agent 继续递归派生。
 max_depth = 1
+
+# spawn_agents_on_csv 任务中每个 worker 默认最多运行 30 分钟。
 job_max_runtime_seconds = 1800
 
 [mcp_servers.openaiDeveloperDocs]
