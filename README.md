@@ -167,7 +167,7 @@ skills/<skill-name>/
   `CODEX_ROOT` 和 `WORKBUDDY_ROOT` 覆盖
 - **skills 流程**: 先选择具体 skill 或全部 skills，再选择目标 assistant
 - **目标选择**: rules 支持 `codex`、`workbuddy` 或 `qoder`；`skills`
-  支持 `codex`、`qoder` 或 `both`
+  支持 `codex`、`workbuddy` 或 `qoder`
 - **覆盖策略**: Codex config 按受管键合并；`AGENTS.md` 直接覆盖；顶层
   `references/` 和 `skills/` 仅覆盖同名项
 - **完整性校验**: Codex config 使用 TOML 解析和合并结果校验；其他文件使用
@@ -188,7 +188,6 @@ skills/<skill-name>/
 - 选择 `codex-config`：把 `configs/codex-config.toml` 中的受管键合并到
   Codex 根目录的 `config.toml`，同时备份原文件并保留本机专属配置
 - 选择 `skills`：选择一个 skill 或全部 skills，并同步到目标 assistant 的 `skills/`
-- skills 选择 `both`：将选中的 skill 同步到当前配置的所有目标目录
 
 当前已维护的 skill 更适合以下场景：
 

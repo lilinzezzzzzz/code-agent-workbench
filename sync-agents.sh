@@ -269,9 +269,9 @@ choose_target() {
     echo "Select target assistant:" >&2
     local target=""
 
-    select target in "both" "codex" "qoder" "exit"; do
+    select target in "codex" "workbuddy" "qoder" "exit"; do
         case "$target" in
-            both|codex|qoder)
+            codex|workbuddy|qoder)
                 printf '%s\n' "$target"
                 return 0
                 ;;
@@ -293,11 +293,10 @@ resolve_target_roots() {
         codex)
             printf '%s\n' "$CODEX_ROOT"
             ;;
-        qoder)
-            printf '%s\n' "$QODER_ROOT"
+        workbuddy)
+            printf '%s\n' "$WORKBUDDY_ROOT"
             ;;
-        both)
-            printf '%s\n' "$CODEX_ROOT"
+        qoder)
             printf '%s\n' "$QODER_ROOT"
             ;;
         *)
