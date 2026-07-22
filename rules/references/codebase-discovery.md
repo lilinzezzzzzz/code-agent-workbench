@@ -48,9 +48,6 @@ consumer and source-of-truth generator before editing.
 
 ## Evidence And Conflict Handling
 
-- Treat uncommitted changes as user-owned unless created in the current task.
-  Patch around unrelated changes; stop only when overlap makes the requested
-  behavior ambiguous or unsafe.
 - When docs, tests, schemas, and implementation disagree, determine which is
   authoritative from runtime usage and repository conventions. Do not silently
   normalize the inconsistency; report compatibility implications.

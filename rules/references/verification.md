@@ -51,7 +51,8 @@ repository convention justifies it.
   completion is not a pass.
 - Do not claim coverage unless measured. Do not infer runtime compatibility or
   performance from code inspection alone.
-- Report commands with outcomes. If a check was skipped or blocked, state the
-  exact command when known, the reason, and the remaining risk.
+- Preserve the command, environment, and relevant outcome needed to support the
+  final claim. For a skipped or blocked check, retain the reason and remaining
+  risk.
 - Expected failures from a deliberate negative test are evidence only when the
   failure mode and assertion match the intended contract.

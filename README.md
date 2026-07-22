@@ -28,19 +28,18 @@ code-agent-workbench/
 │   └── test_sync_agents.py   # rules 目标选择与同步测试
 ├── rules/                    # 全局与项目级规则源文件
 │   ├── agents.md             # Codex/WorkBuddy AGENTS.md 与 Qoder rules 源模板
-│   ├── reference-loading-test-prompts.md  # references 加载验证提示词
+│   ├── reference-loading-test-prompts.md  # references 路由与精简回归提示词
 │   └── references/
 │       ├── ai-rag.md                # AI 应用、RAG、评估、安全与成本规则
-│       ├── api-route-design.md      # GET 资源路径与 POST 命令路径规则
+│       ├── api-route-design.md      # HTTP method、资源与命令路径规则
 │       ├── backend-reliability.md  # 后端可靠性、安全、API/worker 规则
 │       ├── codebase-discovery.md   # 代码库上下文发现与影响面规则
 │       ├── database.md             # 数据库查询、事务与并发规则
-│       ├── database-schema.md      # Schema、冗余字段、索引、逻辑外键与迁移规则
+│       ├── database-schema.md      # Schema、冗余字段、索引、逻辑引用与迁移规则
 │       ├── execution-workflow.md   # 非平凡任务执行流程规则
 │       ├── git-workflow.md         # Git 安全工作流规则
 │       ├── golang.md               # Go 语言与标准工具链规则
 │       ├── markdown-documentation.md  # 技术文档结构、证据与状态规则
-│       ├── project-agents-maintenance.md  # 项目级 AGENTS.md 维护规则
 │       ├── python.md               # Python 规则
 │       └── verification.md         # 测试与验证规则
 ├── agents/                   # Agent 配置文件（预留）
@@ -65,7 +64,7 @@ code-agent-workbench/
 `references/`，供渐进式披露读取。默认根目录分别为 `~/.codex` 和
 `~/.workbuddy`。当前 references 覆盖执行流程、
 代码库发现、Git 工作流、Python、Go、AI/RAG、API 路由设计、后端可靠性、
-数据库访问、Schema/迁移、Markdown 文档、Agent 指令维护、测试验证等高频
+数据库访问、Schema/迁移、Markdown 文档、测试验证等高频
 技术场景。
 同步 Qoder 时，脚本会
 要求输入项目 `.qoder` 目录，并把 `agents.md` 和 `rules/references/`
@@ -74,11 +73,12 @@ code-agent-workbench/
 - **适用范围**: Codex、WorkBuddy 和其他支持 `AGENTS.md` 规则注入的工具
 - **角色定位**: 跨项目安全基线、执行边界和渐进式规则路由
 - **项目优先**: 项目内约定优先于全局技术偏好，避免跨仓库机械套用
+- **授权边界**: 只读任务允许安全检查但不实施；变更任务直接完成范围内本地修改
+  和非破坏性验证；外部、破坏性、高成本或扩张范围的动作需要确认
 - **规则质量**: 强规则必须有明确作用域、触发条件和可验证结果
 - **Git 规范**: 保护用户工作区和历史，仓库约定优先
 - **渐进式披露**: 执行流程、代码库发现、Git、Python、Go、AI/RAG、
-  API 路由设计、后端可靠性、数据库访问、Schema/迁移、Markdown 文档、
-  Agent 指令维护和验证细则
+  API 路由设计、后端可靠性、数据库访问、Schema/迁移、Markdown 文档和验证细则
   下沉到 `rules/references/`，同步后分别位于 Codex 的
   `~/.codex/references/` 或 WorkBuddy 的 `~/.workbuddy/references/`。
   `AGENTS.md` 会集中定义 reference search paths：Codex 只解析

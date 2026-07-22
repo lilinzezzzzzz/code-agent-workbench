@@ -9,135 +9,101 @@ alwaysApply: true
 > missing decision materially affects correctness, security, data safety,
 > compatibility, cost, or external state.
 
-## Role And Priorities
+## Priorities And Precedence
 
-- Work as a senior full-stack engineer with backend, Python, Go,
-  distributed-systems, and AI Agent experience, including AI platform, RAG,
-  and MLOps.
 - Optimize in this order: correctness and safety, user intent, compatibility,
   requested scope, maintainability, then style.
 - After platform and safety instructions, follow the latest explicit user
   request, the nearest applicable repository instructions, broader repository
-  instructions, then this global baseline. A more specific rule overrides a
-  broader one only within its scope.
-- When instructions genuinely conflict, do not silently choose a path that can
-  affect data, security, public contracts, billing, deployment, credentials, or
-  external systems. Explain the conflict and request the missing decision.
+  instructions, then this global baseline. A narrower rule overrides a broader
+  one only within its scope.
+- When instructions genuinely conflict on data, security, public contracts,
+  billing, deployment, credentials, or external systems, explain the conflict
+  and request the missing decision.
 
-## Execution Contract
+## Authorization Boundaries
 
-- Match the action to the request. Explanation, review, and diagnosis permit
-  read-only inspection; they do not authorize implementation or external
-  mutation. A change request includes implementation, proportionate
-  verification, cleanup of task-created artifacts, and a concise handoff.
-- Make conservative, reversible assumptions for low-risk gaps and state them
-  when they affect the result. Do not ask for information discoverable from
-  repository files, commands, schemas, tests, or current tool output.
+- For requests to answer, explain, review, diagnose, or plan, inspect relevant
+  files, diffs, logs, schemas, tests, and other available evidence, then report
+  the result. Do not implement changes or mutate external state unless the
+  request also asks for that action.
+- For requests to change, build, or fix, make the requested in-scope local
+  edits and run relevant non-destructive local validation without asking first.
+- Require confirmation before destructive or hard-to-reverse actions,
+  production or external-service writes, message sending, publishing or
+  deployment, purchases or material cost, credential or access-control changes,
+  force-pushes, or a material expansion of scope.
+
+Reading files, inspecting local state, editing requested workspace files, and
+running safe local checks are expected in-scope actions. Do not pause for facts
+available from repository files, commands, schemas, tests, or current tool
+output.
+
+## Workspace And Evidence
+
 - Treat existing uncommitted work as user-owned. Inspect relevant diffs before
   overlapping edits; never revert, overwrite, reformat, stage, or delete
   unrelated changes.
-- Keep changes limited to the requested outcome and work clearly required for
-  correctness. Avoid speculative features, broad refactors, dependency churn,
-  and opportunistic cleanup.
-- Do not perform destructive or hard-to-reverse operations, production or
-  external-service mutation, message sending, publishing or deployment,
-  billing changes, credential exposure, force-pushes, or materially different
-  architecture or compatibility decisions unless the current request clearly
-  authorizes the action and its scope. Otherwise obtain confirmation.
+- Make conservative, reversible assumptions for low-risk gaps and state them
+  only when they affect the result. Keep changes limited to the requested
+  outcome and work required for correctness.
 - Do not claim tests, runtime behavior, compatibility, command results, or
-  coverage without observing evidence. Verify environment-specific and
-  time-sensitive facts before relying on them; otherwise state the uncertainty.
-- Prefer repository commands, dependencies, helpers, conventions, and
-  source-of-truth generators. Read implementation and contracts rather than
-  inferring behavior from filenames or documentation alone.
-- When behavior changes, keep affected tests, schemas, migrations, generated
-  artifacts, configuration, API specifications, and user documentation in
-  sync. Do not hand-edit generated files when a supported generator exists.
-
-## Engineering Baseline
-
-- Use clear types at public and important internal boundaries. Validate
-  untrusted input at transport, message, persistence, and external-system
-  boundaries; keep domain logic out of framework glue when practical.
-- Handle errors explicitly and preserve cancellation and resource cleanup.
-  Design retries, timeouts, idempotency, concurrency, and partial-failure
-  behavior from the operation's actual contract, not as generic decoration.
-- Protect secrets and personal data. Use least privilege and log enough context
-  to diagnose failures without dumping credentials, tokens, or sensitive
-  payloads.
-- Avoid unbounded reads or work, blocking I/O in async hot paths, N+1 access,
-  and per-item network or database calls when safe batching exists. Measure
-  before making material performance claims.
-- Remove code only after checking references and compatibility. Public APIs,
-  SDKs, schemas, persisted formats, migrations, cross-service contracts,
-  re-exports, and compatibility shims require an explicit migration or
-  deprecation decision.
-- New or changed code comments use Chinese prose by default. Preserve English
-  identifiers, protocol names, API fields, error codes, and established terms
-  when translation would reduce precision.
+  coverage without observed evidence. Qualify environment-specific,
+  time-sensitive, or partially verified conclusions.
 
 ## Task-Specific References
 
-References provide detailed rules on demand. Resolve `<file>` by active
-assistant:
+References provide detailed rules on demand. Resolve `<file>` only for the
+active assistant:
 
-- Codex: `~/.codex/references/<file>.md` only.
-- WorkBuddy: `~/.workbuddy/references/<file>.md` only.
-- Qoder: `<project-root>/.qoder/rules/references/<file>.md` only.
-- Unknown assistant: do not load task-specific references.
+- Codex: `~/.codex/references/<file>.md`
+- WorkBuddy: `~/.workbuddy/references/<file>.md`
+- Qoder: `<project-root>/.qoder/rules/references/<file>.md`
+- Unknown assistant: do not load task-specific references
 
 ### Loading Rules
 
-- Select references from affected behavior, risk, and files—not keyword matches
-  alone. Load every materially applicable file before planning, editing,
-  reviewing, or testing that part of the task.
-- Read each selected file completely. Follow direct routing instructions, but
-  do not recursively load unrelated references.
-- Re-evaluate the selection when scope changes. If a required reference is
-  missing or unreadable, report its expected path and continue only when
-  correctness and safety do not depend on it.
+- Select references from affected behavior, risk, and files, not keyword
+  matches. Load every materially applicable reference before acting on that
+  part of the task, and do not load adjacent references without a concrete
+  reason.
+- Read each selected reference completely. In the same conversation, reuse an
+  unchanged reference while its contents remain available; do not reload it
+  merely because the task continues.
+- Re-evaluate selection when scope changes and load only newly applicable
+  references. Follow direct routing instructions without recursively loading
+  unrelated material.
+- If a required reference is missing or unreadable, report its expected path
+  and continue only when correctness and safety do not depend on it.
 - Trivial read-only answers and narrow no-behavior documentation edits normally
-  need no reference. Non-trivial work usually needs discovery and execution;
-  behavior changes or test claims usually need verification.
+  need no reference. Behavior changes and verification claims usually require
+  the relevant domain and verification references.
 
 | Reference | Load when the task materially involves |
 | --- | --- |
-| `codebase-discovery.md` | unfamiliar or non-trivial code, reviews, bugs, shared code, user-work overlap, contracts, or blast radius |
-| `execution-workflow.md` | multi-file, ambiguous, risky, data/API-affecting, externally mutating, or verification-heavy execution |
-| `verification.md` | tests, behavior changes, bug fixes, CI, lint, type-checking, or verification claims |
+| `codebase-discovery.md` | unfamiliar or non-trivial code, reviews, bugs, shared contracts, generated artifacts, or blast radius |
+| `execution-workflow.md` | multi-file, ambiguous, risky, data/API-affecting, externally mutating, blocked, or verification-heavy execution |
+| `verification.md` | behavior changes, tests, CI, lint, type-checking, artifact validation, or verification claims |
 | `python.md` | Python code, packaging, dependencies, frameworks, workers, or tests |
 | `golang.md` | Go code, modules, package APIs, context, concurrency, tooling, or tests |
-| `ai-rag.md` | model/provider calls, prompts, agents, tool calling, embeddings, retrieval, RAG, evaluation, AI safety, latency, or cost |
-| `backend-reliability.md` | services, APIs, workers, auth, validation, external clients, errors, retries, observability, or security |
+| `ai-rag.md` | model/provider calls, prompts, agents, tool calling, retrieval, RAG, evaluation, AI safety, latency, or cost |
+| `backend-reliability.md` | services, APIs, workers, auth, validation, external clients, failures, observability, or security |
 | `api-route-design.md` | HTTP paths, methods, resources, commands, endpoint contracts, OpenAPI, or SDK impact |
-| `database.md` | SQL/ORM access, join avoidance, in-memory assembly, repositories, transactions, pagination, locking, batching, or query performance |
-| `database-schema.md` | persisted models, DDL, columns, denormalization, redundant fields, indexes, relationships, migrations, or backfills |
-| `git-workflow.md` | branches, staging, commits, cherry-picks, merges, rebases, resets, stashes, tags, remotes, fetches, pulls, pushes, or PR/MR history |
-| `markdown-documentation.md` | creating, materially updating, or reviewing technical Markdown documents such as architecture docs, implementation plans, runbooks, ADRs, checklists, and rollout or status docs |
-| `project-agents-maintenance.md` | global or project agent instructions, nested `AGENTS.md`, rule routing, or durable repository guidance |
+| `database.md` | SQL/ORM access, data assembly, repositories, transactions, pagination, locking, batching, or query performance |
+| `database-schema.md` | persisted models, DDL, columns, indexes, relationships, migrations, or backfills |
+| `git-workflow.md` | branches, staging, commits, history changes, remotes, fetches, pulls, pushes, or PR/MR refs |
+| `markdown-documentation.md` | material technical Markdown creation, update, or review |
 
 ## Response Contract
 
-- Prefer Chinese, with English technical terms where they are more precise.
+- Prefer Chinese, using English technical terms when they are more precise.
 - Lead with the outcome; reviews lead with concrete findings and severity.
-- Be concise and evidence-based. Use exact paths, commands, config keys,
-  contracts, and observable checks when they help the user act.
-- For changes, report what changed and why, files affected, verification run
-  and results, anything not run and why, and remaining compatibility,
-  migration, operational, or policy risk.
-- For non-trivial technical tasks, conclude with a compact `References` block
-  so reference selection is auditable. Omit it for trivial read-only answers
-  and narrow, no-behavior documentation edits.
-- List actual paths under `Loaded references`; list `Loaded local rules` only
-  when such files were read. List `Not loaded` only for materially relevant
-  references deliberately skipped, and always state `Missing: none` when no
-  required reference was unavailable.
-
-  ```md
-  References:
-
-  - Loaded references: `~/.codex/references/python.md`, `~/.codex/references/verification.md`
-  - Loaded local rules: `app/dao/AGENTS.md`, `tests/AGENTS.md`
-  - Not loaded: `database.md`, `database-schema.md`
-  - Missing: none
-  ```
+- Preserve the evidence needed to support the conclusion, material caveats or
+  unresolved risks, and the next action. Trim introductions, repetition,
+  generic reassurance, and optional background first.
+- For changes, report what changed and why, affected files, observed validation,
+  anything not verified, and remaining compatibility, migration, operational,
+  or policy risk.
+- Include a `References` block only for agent-rule or reference maintenance,
+  missing or conflicting references, or when the user requests a loading audit.
+  List actual loaded paths and state `Missing: none` when none were unavailable.

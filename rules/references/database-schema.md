@@ -69,33 +69,30 @@ deployment order, external readers, and rollback expectations first.
 
 ## Relationships And Referential Integrity
 
-- Use logical references exclusively for all new or changed schemas and
-  migrations. Physical `FOREIGN KEY` constraints, ORM-generated foreign-key
-  constraints, and database cascades are prohibited regardless of ownership or
-  datastore boundary.
-- Keep each logical-reference column compatible with the target identifier's
-  type, size, encoding, and semantics. Document the target entity and field,
-  ownership, cardinality, and update/delete lifecycle.
+- Use logical references for every newly introduced relationship, reference
+  column, schema, or migration, regardless of ownership or datastore boundary.
+  Do not add physical `FOREIGN KEY` constraints, ORM-generated foreign-key
+  constraints, or database cascades for new relationships.
+- Keep each logical reference aligned with the target identifier's type, size,
+  encoding, and semantics. Document the target entity and field, ownership,
+  cardinality, and update/delete lifecycle.
 - The application layer owns referential-integrity validation, concurrency
-  control, cascade or restrict behavior, and orphan-data governance for every
-  relationship.
-- Validate references in every write path, including APIs, jobs, imports, bulk
-  operations, migrations, and repair scripts. Protect race-prone checks with a
-  transaction, locking, atomic operation, or an observable idempotent workflow;
-  an application pre-check alone is insufficient.
-- Implement restrict, soft-delete, application cascade, or orphan retention
-  explicitly. Account for retries, partial failure, idempotency, and recovery;
-  never depend on implicit database cascades.
-- Add indexes for logical-reference columns when bulk lookups, existence checks,
-  parent lifecycle operations, cleanup, or reconciliation queries require
-  them. Do not index them mechanically without a real access path.
-- Treat existing physical foreign keys as non-compliant schema that requires a
-  planned migration. Do not remove them outside the requested scope or without
-  assessing data quality, dependent services, lock impact, deployment order,
-  rollback, and compatibility.
-- Test missing references and delete/update races on critical paths. Provide
-  bounded, observable orphan detection and a safe reconciliation or repair
-  path for important relationships.
+  control, restrict or cascade behavior, and orphan-data governance for new
+  logical relationships.
+- Validate logical references in every write path including APIs, jobs,
+  imports, bulk operations, migrations, and repair scripts. Protect race-prone
+  checks with an atomic operation, lock, transaction, or observable idempotent
+  workflow rather than an application pre-check alone.
+- Define restrict, soft-delete, cascade, or orphan-retention behavior at the
+  application ownership layer. Provide bounded orphan detection and a safe
+  reconciliation path on important relationships.
+- Add relationship indexes only for demonstrated lookup, lifecycle, cleanup,
+  integrity, or reconciliation paths. Test missing references and concurrent
+  delete/update behavior where the contract is critical.
+- Treat existing physical foreign keys as compatibility surfaces. Do not remove,
+  replace, or extend them outside an explicit migration; first assess existing
+  data, dependent readers and writers, lock impact, deployment order, rollback,
+  and compatibility.
 
 ## Migrations And Backfills
 

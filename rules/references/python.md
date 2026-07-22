@@ -4,26 +4,23 @@ description: Load for Python implementation, review, refactor, packaging, depend
 ---
 # Python Rules
 
-Use these rules as the default Python engineering stack: Python 3.11+, `uv`,
-`pyproject.toml`, Ruff/Pylance-compatible typing, FastAPI, Pydantic v2,
-SQLAlchemy 2.x, Alembic, AnyIO, HTTPX, and pytest. Do not add legacy-version
-compatibility or replace this stack unless the task explicitly requires it.
+Follow the repository's Python version, environment, dependency, framework,
+typing, and test conventions. For greenfield work with no established stack,
+prefer Python 3.11+, `uv`, `pyproject.toml`, Ruff-compatible typing, FastAPI,
+Pydantic v2, SQLAlchemy 2.x, Alembic, AnyIO, HTTPX, and pytest.
 
 ## Environment And Dependencies
 
-- Use Python 3.11 or newer and pin the selected version through the project
-  configuration. Do not downgrade syntax or dependencies for unsupported older
-  Python versions.
-- Use `uv` for interpreter management, virtual environments, dependencies,
-  locking, packaging, and command execution. Prefer `uv run ...` over bare
-  `python`, `pip`, `pytest`, `ruff`, or type-checker commands.
-- Use `uv sync` to materialize the environment, `uv add`/`uv remove` for
-  dependency changes, and `uv lock` when only dependency metadata requires a
-  lockfile refresh. Use `uv python install`/`uv python pin` when interpreter
-  installation or project pinning is part of the task.
-- Change dependencies through `uv`, inspect `pyproject.toml` and `uv.lock`, and
-  avoid unrelated upgrades. Verify package/API/version details from installed
-  metadata or current primary documentation when they matter.
+- Use the repository's supported Python versions and pinning mechanism. For
+  greenfield work, use Python 3.11 or newer and pin it in project configuration.
+- Use the repository's environment and dependency tool. When it uses `uv`,
+  prefer `uv run ...` over bare `python`, `pip`, `pytest`, `ruff`, or
+  type-checker commands.
+- In `uv` projects, use `uv sync` to materialize the environment,
+  `uv add`/`uv remove` for dependencies, and `uv lock` when only lock metadata
+  requires refresh. Inspect `pyproject.toml` and `uv.lock` for unrelated churn.
+- Avoid unrelated upgrades. Verify package, API, and version details from
+  installed metadata or current primary documentation when they matter.
 
 ## Types And Data Models
 
@@ -77,9 +74,9 @@ compatibility or replace this stack unless the task explicitly requires it.
 - Keep imports at module level by default. A local import is acceptable for a
   proven circular dependency, optional dependency, startup-cost boundary, or
   framework registration constraint; keep the reason apparent.
-- Use Ruff for formatting, linting, and import-order enforcement. Keep code
-  compatible with Pylance and do not silence diagnostics without a narrow,
-  documented reason.
+- Use the repository's configured formatter, linter, and type checker. For
+  greenfield work, prefer Ruff and Pylance-compatible typing; do not silence
+  diagnostics without a narrow, documented reason.
 - Prefer keyword arguments when they clarify call sites, but preserve public
   call compatibility and conventional positional parameters.
 
@@ -99,12 +96,12 @@ compatibility or replace this stack unless the task explicitly requires it.
 
 ## Frameworks And Persistence
 
-- FastAPI endpoints use explicit request/response models, `Depends` for
+- In FastAPI services, use explicit request/response models, `Depends` for
   dependency injection, and the service's stable error envelope.
-- Use Pydantic v2 APIs and validators; do not add Pydantic v1 compatibility
-  shims.
-- Use SQLAlchemy 2.x typed models, queries, and session patterns. Use Alembic as
-  the source of truth for database migrations.
+- In Pydantic v2 projects, use v2 APIs and validators. Preserve an established
+  v1 compatibility requirement unless migration is in scope.
+- In SQLAlchemy 2.x projects, use typed models, queries, and session patterns.
+  Use the repository's migration framework as the source of truth.
 - Keep transport validation, dependency injection, ORM/session ownership, and
   domain logic separated enough that core behavior can be tested without a
   live framework stack.
@@ -112,10 +109,12 @@ compatibility or replace this stack unless the task explicitly requires it.
 ## Documentation And Verification
 
 - Document public contracts and non-obvious invariants. Comments explain why,
-  ownership, and edge behavior rather than narrating syntax; Chinese prose is
-  the default for new or changed comments.
-- Use pytest. Prefer real domain logic with fakes or mocks only at external I/O
-  and ownership boundaries; cover meaningful success, failure, and edge cases.
-- Run targeted tests first, then `uv run ruff check`, the configured type
-  checker, and the broader pytest suite according to blast radius. Report exact
-  commands and do not infer type-check or test success from inspection.
+  ownership, and edge behavior rather than narrating syntax. Follow the
+  repository's prose language; when none is established, use Chinese for new or
+  changed comments.
+- Use the repository's test framework; for greenfield work, prefer pytest. Keep
+  real domain logic with fakes or mocks only at external I/O and ownership
+  boundaries.
+- Run targeted tests first, then the configured formatter or linter, type
+  checker, and broader test suite according to blast radius. In a standard `uv`
+  setup, use the corresponding `uv run ...` commands.

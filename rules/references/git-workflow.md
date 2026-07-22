@@ -14,9 +14,8 @@ the user's requested workflow.
   branch, and required refs before staging, committing, switching, fetching,
   pulling, cherry-picking, merging, rebasing, reverting, resetting, stashing,
   tagging, or pushing.
-- Treat pre-existing changes and stashes as user-owned. Do not stage, stash,
-  reformat, discard, or include unrelated work. If changes overlap, adapt or
-  explain the concrete conflict.
+- Do not stage, stash, reformat, discard, or include unrelated work. If changes
+  overlap, adapt around them or explain the concrete conflict.
 - Do not use destructive reset, clean, checkout/restore, broad removal,
   history rewrite, or force push without explicit authorization and a stated
   recovery path. Prefer `git revert` for reversing published commits.
@@ -82,10 +81,3 @@ the user's requested workflow.
 - Before push, report or verify the destination remote, branch, and upstream.
   Never force push by default; if approved, prefer `--force-with-lease` and
   confirm the expected remote ref.
-
-## Reporting
-
-Report actual refs and commits changed, commands observed, conflicts and their
-resolution, remote actions, and remaining divergence or recovery risk. Never
-claim commit, cherry-pick, merge, rebase, fetch, pull, or push success from
-intent alone.

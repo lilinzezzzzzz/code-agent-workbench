@@ -1,6 +1,6 @@
 ---
 trigger: model_decision
-description: Load for SQL or ORM access, join avoidance, in-memory data assembly, repositories, transactions, pagination, batching, locking, concurrency, or query-performance work.
+description: Load for SQL or ORM access, joins, application-side data assembly, repositories, transactions, pagination, batching, locking, concurrency, or query-performance work.
 ---
 # Database Access And Transaction Rules
 
@@ -29,11 +29,12 @@ before relying on dialect-specific behavior.
 - Account for connection-pool occupancy, query timeout, cancellation, result
   materialization, and memory—not only database execution time.
 
-## Join Avoidance And In-Memory Assembly
+## Joins And Application-Side Assembly
 
-- Avoid SQL/ORM joins by default. Prefer querying each table independently in
-  bounded batches, then assemble related data in application memory by stable
-  logical-reference keys.
+- Follow the repository's established data-access strategy. When no convention
+  exists, prefer bounded set-based queries and keyed application assembly when
+  it improves ownership or service boundaries without harming correctness or
+  resource use; do not prohibit a database join mechanically.
 - Fetch each dataset with set-based queries such as bounded `IN` batches or
   equivalent bulk lookups. Select only required columns and never replace one
   database join with per-row queries or another N+1 pattern.
@@ -43,9 +44,10 @@ before relying on dialect-specific behavior.
 - Estimate row count, payload size, and peak memory before materializing data.
   Chunk, page, or stream bounded groups when needed; do not load an unbounded
   dataset into memory for application-side joining.
-- If neither bounded in-memory assembly nor a denormalized read model can meet
-  correctness or resource limits, use a database join only with an explicit
-  reason, representative query plan, bounded result, and observed performance.
+- Choose a database join when it better preserves consistency, ordering,
+  filtering, aggregation, memory bounds, or observed performance. For material
+  paths, compare representative query plans and application-side resource use
+  rather than treating either strategy as universally preferred.
 
 ## Writes And Batching
 

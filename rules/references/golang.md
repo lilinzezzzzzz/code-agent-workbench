@@ -76,8 +76,9 @@ tags, code generation, tools, and conventions are authoritative.
 ## Documentation And Verification
 
 - Document exported contracts, ownership, invariants, concurrency, and
-  surprising behavior using repository convention; new prose uses Chinese by
-  default while identifiers and established terms remain English.
+  surprising behavior using repository convention. When no prose-language
+  convention exists, use Chinese while keeping identifiers and established
+  terms in English.
 - Use the standard `testing` package and existing helpers. Prefer table-driven
   tests only when they improve case clarity, and keep tests deterministic and
   parallel-safe.
@@ -85,5 +86,3 @@ tags, code generation, tools, and conventions are authoritative.
   when blast radius warrants it. Use `go test -race ./...` for concurrency or
   shared-state changes when supported, and the repository vulnerability scan
   for dependency or security-sensitive changes when available.
-- Do not report race, vulnerability, vet, or test success for commands that
-  were unavailable or not run.
