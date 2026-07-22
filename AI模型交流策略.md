@@ -46,3 +46,11 @@ xxxxxxx
 ```text
 不要改变核心目标，删除重复和低价值内容，补齐必要的逻辑缺口，新增或不确定的内容请单独标注。
 ```
+
+### 提示词优化
+
+```text
+根据下面连接OpenAI Developers的Prompting best practices，你觉得当前xxxx有哪些需要进行调整？
+
+https://developers.openai.com/api/docs/guides/latest-model?model=gpt-5.6#prompting-best-practices
+```
