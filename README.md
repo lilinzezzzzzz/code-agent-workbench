@@ -1,12 +1,12 @@
 # Code Agent Workbench
 
-> 个人 AI assistant rules、skills 与同步工具，支持 Codex、Qoder 和
+> 个人 AI assistant rules、skills 与同步工具，支持 Codex、WorkBuddy、Qoder 和
 > AGENTS.md 工作流，聚焦渐进式披露与 harness engineering
 
 一套可复用的个人级 AI assistant 配置工作台，包含编码规范、Git 工作流、
 AGENTS 指令、按需加载的 references 与 skills。同一份内容可以服务于
-Codex、Qoder 以及其他支持类似机制的开发工具，用 rules 驱动可维护的
-assistant harness。
+Codex、WorkBuddy、Qoder 以及其他支持类似机制的开发工具，用 rules 驱动
+可维护的 assistant harness。
 
 ---
 
@@ -24,9 +24,10 @@ code-agent-workbench/
 ├── scripts/
 │   └── merge_codex_config.py # 保留本机设置的 TOML 合并器
 ├── tests/
-│   └── test_merge_codex_config.py  # Codex config 合并与入口测试
-├── rules/                    # 规则源文件；Codex 同步时生成 AGENTS.md
-│   ├── agents.md             # 同步到 Codex 根目录 AGENTS.md 的源模板
+│   ├── test_merge_codex_config.py  # Codex config 合并与入口测试
+│   └── test_sync_agents.py   # rules 目标选择与同步测试
+├── rules/                    # 全局与项目级规则源文件
+│   ├── agents.md             # Codex/WorkBuddy AGENTS.md 与 Qoder rules 源模板
 │   ├── reference-loading-test-prompts.md  # references 加载验证提示词
 │   └── references/
 │       ├── ai-rag.md                # AI 应用、RAG、评估、安全与成本规则
@@ -59,16 +60,18 @@ code-agent-workbench/
 
 ### rules/
 
-规则源文件。同步 Codex 时，`rules/agents.md` 只会写入 Codex 根目录的
-`AGENTS.md`，`rules/references/` 下的规则文件会同步到 Codex 根目录的
-`references/`，供渐进式披露读取。当前 references 覆盖执行流程、
+规则源文件。同步 Codex 或 WorkBuddy 时，`rules/agents.md` 会写入对应根目录的
+`AGENTS.md`，`rules/references/` 下的规则文件会同步到对应根目录的
+`references/`，供渐进式披露读取。默认根目录分别为 `~/.codex` 和
+`~/.workbuddy`。当前 references 覆盖执行流程、
 代码库发现、Git 工作流、Python、Go、AI/RAG、API 路由设计、后端可靠性、
-数据库访问、Schema/迁移、Markdown 文档、Agent 指令维护、测试验证等高频技术场景。
+数据库访问、Schema/迁移、Markdown 文档、Agent 指令维护、测试验证等高频
+技术场景。
 同步 Qoder 时，脚本会
 要求输入项目 `.qoder` 目录，并把 `agents.md` 和 `rules/references/`
 下的规则文件增量同步到该目录下的 `rules/`：
 
-- **适用范围**: Codex 和其他支持 `AGENTS.md` 规则注入的工具
+- **适用范围**: Codex、WorkBuddy 和其他支持 `AGENTS.md` 规则注入的工具
 - **角色定位**: 跨项目安全基线、执行边界和渐进式规则路由
 - **项目优先**: 项目内约定优先于全局技术偏好，避免跨仓库机械套用
 - **规则质量**: 强规则必须有明确作用域、触发条件和可验证结果
@@ -76,8 +79,8 @@ code-agent-workbench/
 - **渐进式披露**: 执行流程、代码库发现、Git、Python、Go、AI/RAG、
   API 路由设计、后端可靠性、数据库访问、Schema/迁移、Markdown 文档、
   Agent 指令维护和验证细则
-  下沉到 `rules/references/`，同步到 Codex 后位于
-  `~/.codex/references/`。
+  下沉到 `rules/references/`，同步后分别位于 Codex 的
+  `~/.codex/references/` 或 WorkBuddy 的 `~/.workbuddy/references/`。
   `AGENTS.md` 会集中定义 reference search paths：Codex 只解析
   `~/.codex/references/`，WorkBuddy 只解析 `~/.workbuddy/references/`，
   Qoder 解析项目 `.qoder/rules/references/`；无法识别 active assistant 时
@@ -91,7 +94,7 @@ code-agent-workbench/
 当前目录已经包含一组可复用能力：
 
 - **sync-agents.sh**: 统一同步入口，可交互选择 `rules` 或单个
-  `skill`；同步 rules 到 Codex 时写入 `AGENTS.md` 和顶层
+  `skill`；同步 rules 到 Codex 或 WorkBuddy 时写入 `AGENTS.md` 和顶层
   `references/`，同步 rules 到 Qoder 时写入指定项目 rules 目录；同步
   Codex config 时只覆盖模板管理的键，并保留本机专属配置
 - **api-endpoint-analyzer**: 系统化分析 API endpoint 的请求、响应、业务流程与错误处理
@@ -158,11 +161,13 @@ skills/<skill-name>/
 - **config 备份**: 目标存在时先备份为 `config.toml.backup`；目标和备份
   都保持 `0600` 权限。备份保留最近一次同步前的版本；合并或 TOML 校验
   失败时不覆盖原文件
-- **rules 流程**: 先选择 `codex` 或 `qoder`；选择 `qoder` 时必须输入
-  以 `.qoder` 结尾的目标项目目录，例如 `/path/to/project/.qoder`
+- **rules 流程**: 先选择 `codex`、`workbuddy` 或 `qoder`；选择 `qoder`
+  时必须输入以 `.qoder` 结尾的目标项目目录，例如
+  `/path/to/project/.qoder`。Codex 和 WorkBuddy 的默认根目录可分别通过
+  `CODEX_ROOT` 和 `WORKBUDDY_ROOT` 覆盖
 - **skills 流程**: 先选择具体 skill 或全部 skills，再选择目标 assistant
-- **目标选择**: rules 支持 `codex` 或 `qoder`；`skills` 支持 `codex`、
-  `qoder` 或 `both`
+- **目标选择**: rules 支持 `codex`、`workbuddy` 或 `qoder`；`skills`
+  支持 `codex`、`qoder` 或 `both`
 - **覆盖策略**: Codex config 按受管键合并；`AGENTS.md` 直接覆盖；顶层
   `references/` 和 `skills/` 仅覆盖同名项
 - **完整性校验**: Codex config 使用 TOML 解析和合并结果校验；其他文件使用
@@ -174,6 +179,8 @@ skills/<skill-name>/
 ### 2. 典型用法
 
 - 选择 `rules` -> `codex`：把 `rules/agents.md` 同步为 Codex 根目录的
+  `AGENTS.md`，并把 `rules/references/` 下的源规则同步到 `references/`
+- 选择 `rules` -> `workbuddy`：把 `rules/agents.md` 同步为 WorkBuddy 根目录的
   `AGENTS.md`，并把 `rules/references/` 下的源规则同步到 `references/`
 - 选择 `rules` -> `qoder`：输入以 `.qoder` 结尾的项目目录，并把
   `agents.md` 和 `rules/references/` 下的规则文件同步到该目录下的

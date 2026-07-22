@@ -10,6 +10,7 @@ CODEX_CONFIG_MERGE_SCRIPT="$SCRIPT_DIR/scripts/merge_codex_config.py"
 SOURCE_SKILLS_DIR="$SCRIPT_DIR/skills"
 SOURCE_SHARED_SKILLS_DIR="$SOURCE_SKILLS_DIR/_shared"
 CODEX_ROOT="${CODEX_ROOT:-$HOME/.codex}"
+WORKBUDDY_ROOT="${WORKBUDDY_ROOT:-$HOME/.workbuddy}"
 QODER_ROOT="${QODER_ROOT:-$HOME/.qoder}"
 EXIT_SENTINEL="__SYNC_AGENTS_EXIT__"
 ALL_SKILLS_SENTINEL="__SYNC_AGENTS_ALL_SKILLS__"
@@ -201,8 +202,9 @@ choose_rules_target() {
 
     while true; do
         echo "1) codex -> AGENTS.md + references" >&2
-        echo "2) qoder -> project .qoder path" >&2
-        echo "3) exit" >&2
+        echo "2) workbuddy -> AGENTS.md + references" >&2
+        echo "3) qoder -> project .qoder path" >&2
+        echo "4) exit" >&2
         read -r -p "#? " target
         target="$(trim_spaces "$target")"
 
@@ -211,11 +213,15 @@ choose_rules_target() {
                 printf '%s\n' "codex"
                 return 0
                 ;;
-            2|qoder)
+            2|workbuddy)
+                printf '%s\n' "workbuddy"
+                return 0
+                ;;
+            3|qoder)
                 printf '%s\n' "qoder"
                 return 0
                 ;;
-            3|exit)
+            4|exit)
                 printf '%s\n' "$EXIT_SENTINEL"
                 return 0
                 ;;
@@ -356,6 +362,19 @@ sync_agents_file() {
 
     sync_path "$SOURCE_AGENTS_FILE" "$target_root/AGENTS.md"
     sync_references_dir "$target_root"
+}
+
+sync_global_rules_dir() {
+    local target_root=""
+    local target_variable="$2"
+
+    target_root="$(trim_spaces "$1")"
+    if [[ -z "$target_root" ]]; then
+        echo "$target_variable cannot be empty." >&2
+        exit 1
+    fi
+
+    sync_agents_file "$target_root"
 }
 
 sync_codex_config_file() {
@@ -522,13 +541,18 @@ main() {
         return 0
     fi
 
-    CODEX_ROOT="$(trim_spaces "$CODEX_ROOT")"
-    if [[ -z "$CODEX_ROOT" ]]; then
-        echo "CODEX_ROOT cannot be empty." >&2
-        exit 1
-    fi
-
-    sync_agents_file "$CODEX_ROOT"
+    case "$rules_target" in
+        codex)
+            sync_global_rules_dir "$CODEX_ROOT" "CODEX_ROOT"
+            ;;
+        workbuddy)
+            sync_global_rules_dir "$WORKBUDDY_ROOT" "WORKBUDDY_ROOT"
+            ;;
+        *)
+            echo "Unsupported rules target: $rules_target" >&2
+            exit 1
+            ;;
+    esac
 }
 
 main "$@"
