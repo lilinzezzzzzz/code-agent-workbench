@@ -44,13 +44,19 @@ xxxxxxx
 ### 内容精简 / 优化
 
 ```text
-不要改变核心目标，删除重复和低价值内容，补齐必要的逻辑缺口，新增或不确定的内容请单独标注。
+保留核心目标、必要约束和预期行为，删除重复、冲突或低价值内容，消除歧义，并补齐会影响执行的关键信息和必要的逻辑缺口，对新增或不确定的内容请单独标注。
 ```
 
 ### 提示词优化
 
 ```text
-根据下面连接OpenAI Developers的Prompting best practices，你觉得当前xxxx有哪些需要进行调整？
+请依据下方 OpenAI 官方《Prompting best practices》分析审查xxxxx。
 
 https://developers.openai.com/api/docs/guides/latest-model?model=gpt-5.6#prompting-best-practices
+
+要求：
+1. 保留原提核心目标、必要约束和预期行为。
+2. 删除重复、冲突或低价值内容，消除歧义，并补齐会影响执行的关键信息。
+3. 先列出最值得调整的问题及理由。
+4. 将官方文档可直接支持的调整与你的补充建议分开说明；对不确定内容标注“待确认”，不要臆测。
 ```
