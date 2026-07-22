@@ -113,6 +113,7 @@ assistant:
 | `database.md` | SQL/ORM access, join avoidance, in-memory assembly, repositories, transactions, pagination, locking, batching, or query performance |
 | `database-schema.md` | persisted models, DDL, columns, denormalization, redundant fields, indexes, relationships, migrations, or backfills |
 | `git-workflow.md` | branches, staging, commits, cherry-picks, merges, rebases, resets, stashes, tags, remotes, fetches, pulls, pushes, or PR/MR history |
+| `markdown-documentation.md` | creating, materially updating, or reviewing technical Markdown documents such as architecture docs, implementation plans, runbooks, ADRs, checklists, and rollout or status docs |
 | `project-agents-maintenance.md` | global or project agent instructions, nested `AGENTS.md`, rule routing, or durable repository guidance |
 
 ## Response Contract

@@ -201,19 +201,38 @@ verification.md
 修改 Python 实现，再组合加载 `python.md`。检索权限必须在内容进入模型上下文
 前执行，不能仅依赖生成后的过滤。
 
+### 9. 技术 Markdown 文档维护
+
+```text
+任务场景：更新同一功能的 Markdown 技术架构、实施计划和运行手册。架构文档
+需要区分当前行为与目标设计并链接事实源；计划需要区分已完成、部分完成和待办
+门禁；运行手册需要表达必须按顺序执行的步骤和预期信号。不要修改代码。
+```
+
+预期至少加载：
+
+```text
+markdown-documentation.md
+```
+
+行为断言：不能把目标设计写成当前实现，运行结果限定环境和验证范围，并优先
+链接代码、配置、测试等事实源。只有文档负责跟踪且可独立验证的任务使用
+`[ ]` / `[x]`，部分完成项保持 `[ ]` 并记录剩余工作；有顺序或依赖的步骤
+使用序号，不能仅因步骤尚未执行就改成 checkbox。
+
 ## 最小加载与负向用例
 
-### 9. 平凡只读解释
+### 10. 平凡只读解释
 
 ```text
 任务场景：解释当前文件中一条 Markdown 标题是什么意思。文件内容已完整
 提供，不修改文件，不涉及兼容性、安全、测试或项目行为。
 ```
 
-预期：通常不加载任何 reference。加载全部 reference 判定为失败；最终回复不应
-输出 `References` 区块。
+预期：通常不加载任何 reference，包括 `markdown-documentation.md`。加载全部
+reference 判定为失败；最终回复不应输出 `References` 区块。
 
-### 10. 单一 Python 纯函数
+### 11. 单一 Python 纯函数
 
 ```text
 任务场景：在熟悉模块中修改一个无 I/O、无持久化、无 API 的 Python 纯函数，
@@ -242,7 +261,7 @@ git-workflow.md
 `codebase-discovery.md` 和 `execution-workflow.md` 是否加载取决于实际复杂度，
 但不能仅因出现“修改”二字而机械全量加载。
 
-### 11. Python Optional 类型收窄
+### 12. Python Optional 类型收窄
 
 ```text
 任务场景：修复 Pylance 报告的 Optional 类型错误：一个分支只检查了
@@ -260,7 +279,7 @@ verification.md
 行为断言：修复应同时窄化所有关联的可选值，或将它们建模为单一有效状态；
 不得用 `cast`、`# type: ignore` 或无依据的 `assert` 压制诊断。
 
-### 12. 仅诊断、不修复
+### 13. 仅诊断、不修复
 
 ```text
 任务场景：诊断 CI 中一个 Python test failure，说明 root cause 和建议；不要
@@ -278,7 +297,7 @@ python.md
 行为断言：允许本地只读检查和安全验证，但不能把“诊断”扩张成实现、commit、
 push 或远端 mutation。
 
-### 13. Reference 缺失
+### 14. Reference 缺失
 
 测试前临时让 active assistant 唯一解析路径中的某个无风险 reference 不可读。
 
@@ -288,7 +307,7 @@ push 或远端 mutation。
 - 报告缺失文件的预期路径，不得声称已经读取。
 - 仅在 correctness 和 safety 不依赖该规则时继续，不得声称已加载。
 
-### 14. 非平凡任务的 References 报告
+### 15. 非平凡任务的 References 报告
 
 ```text
 任务场景：修改 Python 服务的重试逻辑，涉及外部 HTTP client、超时、错误处理，
@@ -321,6 +340,7 @@ database.md                    # Database Access And Transaction Rules
 execution-workflow.md          # Execution Workflow Rules
 git-workflow.md                # Git Workflow Rules
 golang.md                      # Go Rules
+markdown-documentation.md      # Markdown Documentation Rules
 project-agents-maintenance.md  # Agent Instruction Maintenance Rules
 python.md                      # Python Rules
 verification.md                # Verification Rules
