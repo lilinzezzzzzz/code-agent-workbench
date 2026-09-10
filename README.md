@@ -161,12 +161,13 @@ skills/<skill-name>/
 - **OpenCode config 流程**: 将 `assistants-configs/opencode/opencode.json` 直接同步到
   `OPENCODE_ROOT/opencode.json`；`OPENCODE_ROOT` 默认是
   `~/.config/opencode`
-- **rules 流程**: 先选择 `codex`、`workbuddy`、`opencode` 或 `zcode`。
-  Codex、WorkBuddy、OpenCode 和 ZCode 的默认根目录可分别通过
-  `CODEX_ROOT`、`WORKBUDDY_ROOT`、`OPENCODE_ROOT` 和 `ZCODE_ROOT` 覆盖
+- **rules 流程**: 先选择 `codex`、`workbuddy`、`opencode`、`zcode` 或 `qoder-cn`。
+  Codex、WorkBuddy、OpenCode、ZCode 和 Qoder CN 的默认根目录可分别通过
+  `CODEX_ROOT`、`WORKBUDDY_ROOT`、`OPENCODE_ROOT`、`ZCODE_ROOT` 和
+  `QODER_CN_ROOT` 覆盖；Qoder CN 默认使用 `~/.qoder-cn`
 - **skills 流程**: 先选择具体 skill 或全部 skills，再选择目标 assistant
 - **目标选择**: rules 和 skills 支持 `codex`、`workbuddy`、`opencode` 或
-  `zcode`
+  `zcode`；rules 额外支持 `qoder-cn`
 - **覆盖策略**: Codex config 按受管键合并；OpenCode config 和
   `AGENTS.md` 直接覆盖；`references/` 全量镜像覆盖，整个目标目录由本仓库管理，
   目标独有文件、子目录和隐藏文件都会被删除，同名文件中的个人修改也会被覆盖。
@@ -187,6 +188,9 @@ skills/<skill-name>/
   `AGENTS.md`，并把 `rules/references/` 下的源规则同步到 `references/`
 - 选择 `rules` -> `workbuddy`：把 `rules/agents.md` 同步为 WorkBuddy 根目录的
   `AGENTS.md`，并把 `rules/references/` 下的源规则同步到 `references/`
+- 选择 `rules` -> `qoder-cn`（数字菜单 `1` -> `5`）：把 `rules/agents.md`
+  同步为 `~/.qoder-cn/AGENTS.md`，并将 `rules/references/` 镜像同步到
+  `~/.qoder-cn/references/`
 - 选择 `config` -> `codex`：把 `assistants-configs/codex/config.toml` 中的受管键合并到
   Codex 根目录的 `config.toml`，同时备份原文件并保留本机专属配置
 - 选择 `config` -> `opencode`：把 `assistants-configs/opencode/opencode.json` 同步到

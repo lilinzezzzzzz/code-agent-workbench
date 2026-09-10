@@ -14,6 +14,7 @@ CODEX_ROOT="${CODEX_ROOT:-$HOME/.codex}"
 WORKBUDDY_ROOT="${WORKBUDDY_ROOT:-$HOME/.workbuddy}"
 OPENCODE_ROOT="${OPENCODE_ROOT:-$HOME/.config/opencode}"
 ZCODE_ROOT="${ZCODE_ROOT:-$HOME/.zcode}"
+QODER_CN_ROOT="${QODER_CN_ROOT:-$HOME/.qoder-cn}"
 EXIT_SENTINEL="__SYNC_AGENTS_EXIT__"
 ALL_SKILLS_SENTINEL="__SYNC_AGENTS_ALL_SKILLS__"
 
@@ -188,7 +189,8 @@ choose_rules_target() {
         echo "2) workbuddy -> AGENTS.md + references" >&2
         echo "3) opencode -> AGENTS.md + references" >&2
         echo "4) zcode -> AGENTS.md + references" >&2
-        echo "5) exit" >&2
+        echo "5) qoder-cn -> AGENTS.md + references" >&2
+        echo "6) exit" >&2
         read -r -p "#? " target
         target="$(trim_spaces "$target")"
 
@@ -209,7 +211,11 @@ choose_rules_target() {
                 printf '%s\n' "zcode"
                 return 0
                 ;;
-            5|exit)
+            5|qoder-cn)
+                printf '%s\n' "qoder-cn"
+                return 0
+                ;;
+            6|exit)
                 printf '%s\n' "$EXIT_SENTINEL"
                 return 0
                 ;;
@@ -507,6 +513,9 @@ main() {
             ;;
         zcode)
             sync_global_rules_dir "$ZCODE_ROOT" "ZCODE_ROOT"
+            ;;
+        qoder-cn)
+            sync_global_rules_dir "$QODER_CN_ROOT" "QODER_CN_ROOT"
             ;;
         *)
             echo "Unsupported rules target: $rules_target" >&2

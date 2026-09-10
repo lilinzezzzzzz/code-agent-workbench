@@ -102,6 +102,7 @@ active assistant:
 - WorkBuddy: `~/.workbuddy/references/<file>.md`
 - OpenCode: `~/.config/opencode/references/<file>.md`
 - ZCode: `~/.zcode/references/<file>.md`
+- Qoder CN: `~/.qoder-cn/references/<file>.md`
 - Unknown assistant: do not load task-specific references
 
 In references, "verify", "confirm", and "establish" mean inspect available

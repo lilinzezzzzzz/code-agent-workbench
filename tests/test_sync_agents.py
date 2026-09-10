@@ -104,6 +104,7 @@ class SyncAgentRulesTest(unittest.TestCase):
             ("WORKBUDDY_ROOT", "2"),
             ("OPENCODE_ROOT", "3"),
             ("ZCODE_ROOT", "4"),
+            ("QODER_CN_ROOT", "5"),
         )
         for variable, selection in targets:
             with self.subTest(target=variable), tempfile.TemporaryDirectory() as temporary_directory:
@@ -137,6 +138,51 @@ class SyncAgentRulesTest(unittest.TestCase):
                 self.assert_directory_equal(ROOT / "rules" / "references", references)
                 self.assertEqual(skill.read_text(encoding="utf-8"), "personal skill")
                 self.assertEqual(config.read_text(encoding="utf-8"), "# personal config")
+
+    def test_qoder_cn_defaults_to_home_dot_qoder_cn(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            directory = Path(temporary_directory)
+            environment = os.environ.copy()
+            environment["HOME"] = str(directory)
+            environment.pop("QODER_CN_ROOT", None)
+
+            result = subprocess.run(
+                ["bash", str(SYNC_SCRIPT)],
+                input="rules\nqoder-cn\n",
+                text=True,
+                capture_output=True,
+                check=False,
+                cwd=ROOT,
+                env=environment,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            target = directory / ".qoder-cn"
+            self.assertEqual(
+                (target / "AGENTS.md").read_bytes(),
+                (ROOT / "rules" / "agents.md").read_bytes(),
+            )
+            self.assert_directory_equal(
+                ROOT / "rules" / "references", target / "references"
+            )
+            self.assertEqual(list(directory.iterdir()), [target])
+
+    def test_rejects_blank_qoder_cn_root(self) -> None:
+        environment = os.environ.copy()
+        environment["QODER_CN_ROOT"] = "   "
+
+        result = subprocess.run(
+            ["bash", str(SYNC_SCRIPT)],
+            input="1\n5\n",
+            text=True,
+            capture_output=True,
+            check=False,
+            cwd=ROOT,
+            env=environment,
+        )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("QODER_CN_ROOT cannot be empty.", result.stderr)
 
     def test_workbuddy_defaults_to_home_dot_workbuddy(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
