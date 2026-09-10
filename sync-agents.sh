@@ -261,9 +261,9 @@ choose_target() {
     echo "Select target assistant:" >&2
     local target=""
 
-    select target in "codex" "workbuddy" "opencode" "zcode" "exit"; do
+    select target in "codex" "workbuddy" "opencode" "zcode" "qoder-cn" "exit"; do
         case "$target" in
-            codex|workbuddy|opencode|zcode)
+            codex|workbuddy|opencode|zcode|qoder-cn)
                 printf '%s\n' "$target"
                 return 0
                 ;;
@@ -293,6 +293,9 @@ resolve_target_roots() {
             ;;
         zcode)
             printf '%s\n' "$ZCODE_ROOT"
+            ;;
+        qoder-cn)
+            printf '%s\n' "$QODER_CN_ROOT"
             ;;
         *)
             echo "Unsupported target assistant: $target" >&2

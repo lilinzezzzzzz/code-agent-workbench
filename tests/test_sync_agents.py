@@ -223,6 +223,47 @@ class SyncAgentRulesTest(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("WORKBUDDY_ROOT cannot be empty.", result.stderr)
 
+    def test_syncs_all_skills_to_qoder_cn_root(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            directory = Path(temporary_directory)
+            qoder_cn_root = directory / ".qoder-cn"
+            codex_root = directory / ".codex"
+            environment = os.environ.copy()
+            environment["QODER_CN_ROOT"] = str(qoder_cn_root)
+            environment["CODEX_ROOT"] = str(codex_root)
+
+            result = subprocess.run(
+                ["bash", str(SYNC_SCRIPT)],
+                input="2\n1\n5\n",
+                text=True,
+                capture_output=True,
+                check=False,
+                cwd=ROOT,
+                env=environment,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("5) qoder-cn", result.stderr)
+            source_skills = ROOT / "skills"
+            target_skills = qoder_cn_root / "skills"
+            expected_directories = [source_skills / "_shared"]
+            expected_directories.extend(
+                sorted(
+                    path
+                    for path in source_skills.iterdir()
+                    if path.is_dir() and (path / "SKILL.md").is_file()
+                )
+            )
+            self.assertEqual(
+                sorted(path.name for path in target_skills.iterdir()),
+                sorted(path.name for path in expected_directories),
+            )
+            for source_directory in expected_directories:
+                self.assert_directory_equal(
+                    source_directory, target_skills / source_directory.name
+                )
+            self.assertFalse(codex_root.exists())
+
     def test_syncs_rules_to_opencode_root(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             directory = Path(temporary_directory)

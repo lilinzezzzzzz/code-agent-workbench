@@ -166,8 +166,8 @@ skills/<skill-name>/
   `CODEX_ROOT`、`WORKBUDDY_ROOT`、`OPENCODE_ROOT`、`ZCODE_ROOT` 和
   `QODER_CN_ROOT` 覆盖；Qoder CN 默认使用 `~/.qoder-cn`
 - **skills 流程**: 先选择具体 skill 或全部 skills，再选择目标 assistant
-- **目标选择**: rules 和 skills 支持 `codex`、`workbuddy`、`opencode` 或
-  `zcode`；rules 额外支持 `qoder-cn`
+- **目标选择**: rules 和 skills 支持 `codex`、`workbuddy`、`opencode`、
+  `zcode` 或 `qoder-cn`
 - **覆盖策略**: Codex config 按受管键合并；OpenCode config 和
   `AGENTS.md` 直接覆盖；`references/` 全量镜像覆盖，整个目标目录由本仓库管理，
   目标独有文件、子目录和隐藏文件都会被删除，同名文件中的个人修改也会被覆盖。
@@ -196,6 +196,8 @@ skills/<skill-name>/
 - 选择 `config` -> `opencode`：把 `assistants-configs/opencode/opencode.json` 同步到
   `OPENCODE_ROOT/opencode.json`
 - 选择 `skills`：选择一个 skill 或全部 skills，并同步到目标 assistant 的 `skills/`
+- 选择 `skills` -> `qoder-cn`（数字菜单 `2` -> `1` -> `5`）：把 `skills/_shared`
+  和全部 skill 同步到 `~/.qoder-cn/skills/`
 
 当前已维护的 skill 更适合以下场景：
 
