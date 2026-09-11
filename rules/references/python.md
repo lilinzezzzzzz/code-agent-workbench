@@ -27,10 +27,15 @@ support async coroutines.
 
 ## Types And Data Models
 
-- Add precise annotations at public and important internal boundaries. `Any`
-  is allowed; use it deliberately for dynamic values or when a more precise
-  type adds little value. Validate or narrow it when runtime correctness,
-  security, persistence, or a public contract depends on the value.
+- Default to meaningful, precise type annotations in new or materially changed
+  code, covering function and method signatures and data-model fields. Annotate
+  other attributes and local variables when this clarifies intent beyond type
+  inference; omit redundant annotations. Specify container element and key/value
+  types when known.
+- Use `Any` deliberately for dynamic values or when a more precise type adds
+  little value, not merely to fill annotation slots. Validate or narrow it when
+  runtime correctness, security, persistence, or a public contract depends on
+  the value.
 - For nullable annotations in Python 3.10+ code, write `T | None`. Do not
   introduce `typing.Optional`, `Optional[T]`, or `Union[T, None]`; preserve
   them only when required by an established Python <3.10 compatibility
