@@ -8,6 +8,9 @@ AGENTS 指令、按需加载的 references 与 skills。同一份内容可以服
 Codex、WorkBuddy 以及其他支持类似机制的开发工具，用 rules 驱动
 可维护的 assistant harness。
 
+目录文档：[Rules](rules/README.md) · [Skills](skills/README.md) ·
+[Configs](configs/README.md)。
+
 ---
 
 ## 📋 目录结构
@@ -19,7 +22,7 @@ code-agent-workbench/
 ├── pyproject.toml             # uv 项目与 Python 版本约束
 ├── uv.lock                    # uv 锁文件
 ├── sync-agents.sh            # 统一同步入口：rules / skills / Codex/OpenCode config
-├── assistants-configs/       # 各 assistant 配置源文件
+├── configs/       # 各 assistant 配置源文件
 │   ├── codex/
 │   │   └── config.toml        # Codex config 受管键模板
 │   └── opencode/
@@ -101,7 +104,7 @@ code-agent-workbench/
 - **git-commit-helper**: 基于 staged diff 生成或执行规范的 Conventional Commit
 - **git-create-worktree**: 为任务创建或复用 worktree，默认同时创建任务分支，支持已有分支和临时 detached 工作区
 - **git-draft-pr-or-mr**: 基于明确 base ref 和真实 git diff 生成精简的 PR/MR 标题与描述
-- **git-restack-from-base**: 基于显式基础分支重新切出版本化分支，并按原顺序 cherry-pick 当前分支独有提交
+- **git-restack-from-base**: 基于显式基础分支重新切出版本化分支，通过 rebase 重建当前分支独有提交并保留原分支
 
 ### 扩展模块（预留）
 
@@ -153,14 +156,14 @@ skills/<skill-name>/
 **脚本功能说明**:
 
 - **内容选择**: 支持 `rules`、`skills`、`config`
-- **config 流程**: 将 `assistants-configs/codex/config.toml` 中出现的受管键合并到
+- **config 流程**: 将 `configs/codex/config.toml` 中出现的受管键合并到
   Codex 根目录的 `config.toml`，目标中的其他键和区块保持原样
 - **config 受管边界**: 每次以模板中当前存在的键为受管键；从模板删除键不会
   自动删除目标中的同名键，需要时应在目标配置中显式清理
 - **config 备份**: 目标存在时先备份为 `config.toml.backup`；目标和备份
   都保持 `0600` 权限。备份保留最近一次同步前的版本；合并或 TOML 校验
   失败时不覆盖原文件
-- **OpenCode config 流程**: 将 `assistants-configs/opencode/opencode.json` 直接同步到
+- **OpenCode config 流程**: 将 `configs/opencode/opencode.json` 直接同步到
   `OPENCODE_ROOT/opencode.json`；`OPENCODE_ROOT` 默认是
   `~/.config/opencode`
 - **rules 流程**: 先选择 `codex`、`workbuddy`、`opencode`、`zcode` 或 `qoder-cn`。
@@ -193,9 +196,9 @@ skills/<skill-name>/
 - 选择 `rules` -> `qoder-cn`（数字菜单 `1` -> `5`）：把 `rules/agents.md`
   同步为 `~/.qoder-cn/AGENTS.md`，并将 `rules/references/` 镜像同步到
   `~/.qoder-cn/references/`
-- 选择 `config` -> `codex`：把 `assistants-configs/codex/config.toml` 中的受管键合并到
+- 选择 `config` -> `codex`：把 `configs/codex/config.toml` 中的受管键合并到
   Codex 根目录的 `config.toml`，同时备份原文件并保留本机专属配置
-- 选择 `config` -> `opencode`：把 `assistants-configs/opencode/opencode.json` 同步到
+- 选择 `config` -> `opencode`：把 `configs/opencode/opencode.json` 同步到
   `OPENCODE_ROOT/opencode.json`
 - 选择 `skills`：选择一个 skill 或全部 skills，并同步到目标 assistant 的 `skills/`
 - 选择 `skills` -> `qoder-cn`（数字菜单 `2` -> `1` -> `5`）：把 `skills/_shared`
@@ -211,7 +214,7 @@ skills/<skill-name>/
 - `git-draft-pr-or-mr`：基于显式 base branch 或 base ref，生成可直接
   粘贴到 GitHub/GitLab 的 PR/MR 文案
 - `git-restack-from-base`：把当前功能分支基于新 base 重建为 `-v2`、
-  `-v3` 等版本化分支，并在确认后执行 cherry-pick
+  `-v3` 等版本化分支，并在确认后执行 rebase
 
 ### 3. 个性化定制
 
