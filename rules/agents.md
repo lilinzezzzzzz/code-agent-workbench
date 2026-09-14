@@ -89,7 +89,7 @@ output.
   available. Read-only review or temporary validation may use a detached
   worktree. Isolate by task or branch; multiple agents may share a worktree
   when delegation is supported and permitted and their edits are coordinated.
-  Load `git-worktree.md` before selecting, creating, or transferring active
+  Load `git/worktree.md` before selecting, creating, or transferring active
   work to another worktree; follow its uncommitted-change confirmation rule.
   Respect an explicit user or repository workflow, and preserve ongoing work
   in its current location rather than automatically moving uncommitted changes.
@@ -105,15 +105,22 @@ output.
 
 ## Task-Specific References
 
-References provide detailed rules on demand. Resolve `<file>` only for the
+References provide detailed rules on demand. Resolve `<relative-path>` only for the
 active assistant:
 
-- Codex: `~/.codex/references/<file>.md`
-- WorkBuddy: `~/.workbuddy/references/<file>.md`
-- OpenCode: `~/.config/opencode/references/<file>.md`
-- ZCode: `~/.zcode/references/<file>.md`
-- Qoder CN: `~/.qoder-cn/references/<file>.md`
+- Codex: `~/.codex/references/<relative-path>`
+- WorkBuddy: `~/.workbuddy/references/<relative-path>`
+- OpenCode: `~/.config/opencode/references/<relative-path>`
+- ZCode: `~/.zcode/references/<relative-path>`
+- Qoder CN: `~/.qoder-cn/references/<relative-path>`
 - Unknown assistant: do not load task-specific references
+
+`<relative-path>` includes the group directory and `.md` extension, for example
+`git/worktree.md`. Resolve reference paths in the table and cross-references
+inside these files from the active assistant's `references/` root, not from the
+current file's directory. Groups organize files only; select individual files
+by their loading conditions, never load an entire group merely because one
+file applies.
 
 In references, "verify", "confirm", and "establish" mean inspect available
 evidence unless the rule explicitly requires user approval. Gather prerequisites
@@ -147,20 +154,20 @@ authorized work without treating approval as granted.
 
 | Reference | Load when the task materially involves |
 | --- | --- |
-| `codebase-discovery.md` | unfamiliar or non-trivial code, reviews, bugs, shared contracts, generated artifacts, or blast radius |
-| `execution-workflow.md` | multi-file, ambiguous, risky, data/API-affecting, externally mutating, blocked, or verification-heavy execution |
-| `verification.md` | behavior changes, tests, CI, lint, type-checking, artifact validation, or verification claims |
-| `python.md` | Python code, packaging, dependencies, frameworks, workers, or tests |
-| `golang.md` | Go code, modules, package APIs, context, concurrency, tooling, or tests |
-| `ai-applications.md` | model/provider calls, prompts, agents, structured output, tool calling, generation evaluation, model safety, latency, or cost |
-| `rag.md` | document ingestion, chunking, retrieval embeddings, vector/hybrid search, reranking, document permissions, knowledge-index lifecycle, or retrieval evaluation |
-| `backend-reliability.md` | services, APIs, workers, auth, validation, external clients, failures, observability, or security |
-| `api-route-design.md` | HTTP paths, methods, resources, commands, endpoint contracts, OpenAPI, or SDK impact |
-| `database.md` | SQL/ORM access, data assembly, repositories, transactions, pagination, locking, batching, or query performance |
-| `database-schema.md` | persisted models, DDL, columns, indexes, relationships, migrations, or backfills |
-| `git-worktree.md` | worktree selection, creation, reuse, transferring active work, shared-worktree coordination, environment isolation, removal, or metadata cleanup |
-| `git-workflow.md` | branches, staging, stashing, commits, history changes, remotes, fetches, pulls, pushes, or PR/MR refs |
-| `markdown-documentation.md` | material technical Markdown creation, update, or review |
+| `workflow/codebase-discovery.md` | unfamiliar or non-trivial code, reviews, bugs, shared contracts, generated artifacts, or blast radius |
+| `workflow/execution.md` | multi-file, ambiguous, risky, data/API-affecting, externally mutating, blocked, or verification-heavy execution |
+| `workflow/verification.md` | behavior changes, tests, CI, lint, type-checking, artifact validation, or verification claims |
+| `languages/python.md` | Python code, packaging, dependencies, frameworks, workers, or tests |
+| `languages/golang.md` | Go code, modules, package APIs, context, concurrency, tooling, or tests |
+| `ai/applications.md` | model/provider calls, prompts, agents, structured output, tool calling, generation evaluation, model safety, latency, or cost |
+| `ai/rag.md` | document ingestion, chunking, retrieval embeddings, vector/hybrid search, reranking, document permissions, knowledge-index lifecycle, or retrieval evaluation |
+| `backend/reliability.md` | services, APIs, workers, auth, validation, external clients, failures, observability, or security |
+| `backend/api-route-design.md` | HTTP paths, methods, resources, commands, endpoint contracts, OpenAPI, or SDK impact |
+| `database/access.md` | SQL/ORM access, data assembly, repositories, transactions, pagination, locking, batching, or query performance |
+| `database/schema.md` | persisted models, DDL, columns, indexes, relationships, migrations, or backfills |
+| `git/worktree.md` | worktree selection, creation, reuse, transferring active work, shared-worktree coordination, environment isolation, removal, or metadata cleanup |
+| `git/workflow.md` | branches, staging, stashing, commits, history changes, remotes, fetches, pulls, pushes, or PR/MR refs |
+| `workflow/markdown-documentation.md` | material technical Markdown creation, update, or review |
 
 ## Response Contract
 

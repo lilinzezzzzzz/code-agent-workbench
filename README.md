@@ -35,21 +35,13 @@ code-agent-workbench/
 ├── rules/                    # 全局与项目级规则源文件
 │   ├── agents.md             # Codex/WorkBuddy AGENTS.md 源模板
 │   ├── reference-loading-test-prompts.md  # references 路由与精简回归提示词
-│   └── references/
-│       ├── ai-applications.md       # 模型应用、工具调用、生成评估与成本规则
-│       ├── rag.md                   # 文档摄取、检索、索引、权限与检索评估规则
-│       ├── api-route-design.md      # HTTP method、资源与命令路径规则
-│       ├── backend-reliability.md  # 后端可靠性、安全、API/worker 规则
-│       ├── codebase-discovery.md   # 代码库上下文发现与影响面规则
-│       ├── database.md             # 数据库查询、事务与并发规则
-│       ├── database-schema.md      # Schema、冗余字段、索引、逻辑引用与迁移规则
-│       ├── execution-workflow.md   # 非平凡任务执行流程规则
-│       ├── git-workflow.md         # Git 安全工作流规则
-│       ├── git-worktree.md         # worktree 生命周期、工作转移确认与环境隔离规则
-│       ├── golang.md               # Go 语言与标准工具链规则
-│       ├── markdown-documentation.md  # 技术文档结构、证据与状态规则
-│       ├── python.md               # Python 规则
-│       └── verification.md         # 测试与验证规则
+│   └── references/           # 按职责分组，按文件加载
+│       ├── workflow/         # 代码库发现、执行、验证与文档
+│       ├── git/              # Git 操作与 worktree
+│       ├── languages/        # Python 与 Go
+│       ├── backend/          # 后端可靠性与 API 路由
+│       ├── database/         # 数据库访问与 Schema/迁移
+│       └── ai/               # AI 应用与 RAG
 ├── skills/
 │   ├── api-endpoint-analyzer/
 │   ├── git-code-reviewer/
@@ -177,10 +169,11 @@ skills/<skill-name>/
   `AGENTS.md` 直接覆盖；`references/` 全量镜像覆盖，整个目标目录由本仓库管理，
   目标独有文件、子目录和隐藏文件都会被删除，同名文件中的个人修改也会被覆盖。
   需保留的自定义规则应在同步前移出该目录；`skills/` 仍仅覆盖选中的同名项
-- **AI/RAG 规则拆分迁移**: `ai-rag.md` 已由 `ai-applications.md` 和 `rag.md`
-  替代，两者按受影响行为独立加载。执行 rules 同步会自动清理旧的
-  `references/ai-rag.md`；如有个人修改，先迁移需保留的内容。
-  同步完成后检查目标 `AGENTS.md` 的路由只指向新文件。
+- **references 分组迁移**: 规则已按职责迁入子目录，加载路由使用相对于
+  `references/` 的完整路径，例如 `languages/python.md`。rules 同步会同时更新
+  `AGENTS.md` 和整个 `references/`，并清理旧平铺文件（包括旧的 `ai-rag.md`）。
+  项目中手写的旧路径引用需一并迁移；具体分组和迁移说明见
+  [Rules README](rules/README.md)。
 - **完整性校验**: Codex config 使用 TOML 解析和合并结果校验；其他文件使用
   SHA-256，目录使用 `diff -qr`
 - **依赖要求**: 需要 `diff`；`config` 流程选择 `codex` 时额外需要 `uv` 和 Python

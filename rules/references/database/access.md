@@ -61,7 +61,7 @@ behavior or making workload-dependent claims.
   expressions, and engine-specific index behavior. An indexed sort column or
   primary key alone does not prove sort elimination. Treat composite indexes
   as candidates until supported by schema and plan evidence; follow
-  `database-schema.md` when changing indexes.
+  `database/schema.md` when changing indexes.
 - Preserve required ordering, complete results, aggregation, and consistency.
   Do not suppress failures by arbitrarily truncating results, removing DISTINCT
   or ORDER BY, or moving an unbounded sort/aggregation into application memory.
@@ -132,7 +132,7 @@ behavior or making workload-dependent claims.
   parameter limits, transaction duration, lock footprint, and memory.
 - Enforce business uniqueness and invariants in the database where the
   ownership model supports it. An application pre-check alone is race-prone.
-  For relationship integrity, follow `database-schema.md`'s logical-reference
+  For relationship integrity, follow `database/schema.md`'s logical-reference
   policy; this rule does not require new physical foreign keys.
 - Define partial-failure and retry behavior for bulk operations. Make resumable
   jobs checkpointed or idempotent rather than restarting an unbounded batch.

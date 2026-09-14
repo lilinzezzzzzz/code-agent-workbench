@@ -19,12 +19,15 @@ baseline，每次只删除或改写一组指令，然后使用同一批场景比
 
 只有任务结果继续通过时，较少加载和较低 token 才算改进。
 
-默认解析路径：
+默认解析路径（`<relative-path>` 包含分组目录和 `.md` 后缀，例如
+`languages/python.md`）：
 
 ```text
-Codex: ~/.codex/references/<file>.md
-WorkBuddy: ~/.workbuddy/references/<file>.md
-ZCode: ~/.zcode/references/<file>.md
+Codex: ~/.codex/references/<relative-path>
+WorkBuddy: ~/.workbuddy/references/<relative-path>
+OpenCode: ~/.config/opencode/references/<relative-path>
+ZCode: ~/.zcode/references/<relative-path>
+Qoder CN: ~/.qoder-cn/references/<relative-path>
 Unknown assistant: 不加载 task-specific references
 ```
 
@@ -52,14 +55,14 @@ SQLAlchemy 查询、Alembic migration、外部调用重试，并补 regression t
 预期至少加载：
 
 ```text
-codebase-discovery.md
-execution-workflow.md
-verification.md
-python.md
-backend-reliability.md
-api-route-design.md
-database.md
-database-schema.md
+workflow/codebase-discovery.md
+workflow/execution.md
+workflow/verification.md
+languages/python.md
+backend/reliability.md
+backend/api-route-design.md
+database/access.md
+database/schema.md
 ```
 
 ### 2. Go 并发修复
@@ -72,11 +75,11 @@ channel ownership、error wrapping 和 race regression test。
 预期至少加载：
 
 ```text
-codebase-discovery.md
-execution-workflow.md
-verification.md
-golang.md
-backend-reliability.md
+workflow/codebase-discovery.md
+workflow/execution.md
+workflow/verification.md
+languages/golang.md
+backend/reliability.md
 ```
 
 ### 3. 数据库查询评审
@@ -90,12 +93,12 @@ plan、read-modify-write race 和 transaction ownership。
 预期至少加载：
 
 ```text
-codebase-discovery.md
-database.md
+workflow/codebase-discovery.md
+database/access.md
 ```
 
-允许加载 `verification.md`；如果只是 read-only review 且上下文不复杂，
-不强制 `execution-workflow.md`。
+允许加载 `workflow/verification.md`；如果只是 read-only review 且上下文不复杂，
+不强制 `workflow/execution.md`。
 
 行为断言：不能机械禁止或强制 SQL/ORM join。应从一致性、过滤/聚合、排序、
 query plan、应用内存和 ownership boundary 比较 database join 与 bounded batch
@@ -112,10 +115,10 @@ replication lag。
 预期至少加载：
 
 ```text
-codebase-discovery.md
-execution-workflow.md
-verification.md
-database-schema.md
+workflow/codebase-discovery.md
+workflow/execution.md
+workflow/verification.md
+database/schema.md
 ```
 
 行为断言：所有新增 relationship、reference column、schema 和 migration 全局
@@ -138,8 +141,8 @@ async operation 和 SDK 兼容性。
 预期至少加载：
 
 ```text
-api-route-design.md
-backend-reliability.md
+backend/api-route-design.md
+backend/reliability.md
 ```
 
 行为断言：只允许 GET 和 POST，不得新增 PUT/PATCH/DELETE。GET 只能读取；
@@ -161,10 +164,10 @@ staged changes 创建 commit 并 push。现在只检查并给出执行前确认�
 预期至少加载：
 
 ```text
-git-workflow.md
-codebase-discovery.md
-execution-workflow.md
-verification.md
+git/workflow.md
+workflow/codebase-discovery.md
+workflow/execution.md
+workflow/verification.md
 ```
 
 行为断言：检查 status、staged/unstaged diff、当前分支、remote symbolic HEAD、
@@ -174,21 +177,21 @@ upstream、divergence 和 refs；支持 main/master，不能假定其中任一�
 commit mainline 和 conflict state；不能在本测试中实际 pull/cherry-pick/commit/push。
 
 负向断言：本场景不选择、创建或转入其他 worktree，不应仅因涉及 Git 操作
-而加载 `git-worktree.md`。
+而加载 `git/worktree.md`。
 
 #### Worktree 路由变体
 
 只读盘点：用户要求“查看已有 worktree 及路径，不创建、不切换”。预期加载
-`git-worktree.md`；仅盘点不需要加载 `git-workflow.md`，不触发未提交修改确认。
+`git/worktree.md`；仅盘点不需要加载 `git/workflow.md`，不触发未提交修改确认。
 
 创建：用户要求“从明确的本地提交创建任务 worktree 和新分支”。预期加载
-`git-worktree.md` 和 `git-workflow.md`；其他 references 按实际操作需要加载。
+`git/worktree.md` 和 `git/workflow.md`；其他 references 按实际操作需要加载。
 先检查工作区、分支和路径；创建目录本身不触发离开工作区的确认，不自动迁移修改。
 
 转移工作：当前目录有 staged、unstaged 或未跟踪文件，用户要求到已有 worktree
-处理另一个任务。预期加载 `git-worktree.md`，展示修改摘要和目标路径，确认
+处理另一个任务。预期加载 `git/worktree.md`，展示修改摘要和目标路径，确认
 保留原地、仅 stash 或 stash 后恢复；等待期间只继续独立检查和准备。已有有效
-决定不重复询问。选定 stash 后，在操作前加载 `git-workflow.md`；不得仅因任务
+决定不重复询问。选定 stash 后，在操作前加载 `git/workflow.md`；不得仅因任务
 不同而跳过确认，也不得把只读查看目标目录误判为转移工作。
 
 ### 7. AI/RAG 系统
@@ -202,15 +205,15 @@ calling、离线 evaluation、延迟和成本。当前未指定实现语言。
 预期至少加载：
 
 ```text
-ai-applications.md
-rag.md
-backend-reliability.md
-codebase-discovery.md
-verification.md
+ai/applications.md
+ai/rag.md
+backend/reliability.md
+workflow/codebase-discovery.md
+workflow/verification.md
 ```
 
-行为断言：未指定实现语言时不加载 `python.md` 或 `golang.md`；如果后续确认
-修改 Python 实现，再组合加载 `python.md`。检索权限必须在内容进入模型上下文
+行为断言：未指定实现语言时不加载 `languages/python.md` 或 `languages/golang.md`；如果后续确认
+修改 Python 实现，再组合加载 `languages/python.md`。检索权限必须在内容进入模型上下文
 前执行，不能仅依赖生成后的过滤。
 
 ### 8. 技术 Markdown 文档维护
@@ -224,7 +227,7 @@ verification.md
 预期至少加载：
 
 ```text
-markdown-documentation.md
+workflow/markdown-documentation.md
 ```
 
 行为断言：不能把目标设计写成当前实现，运行结果限定环境和验证范围，并优先
@@ -241,7 +244,7 @@ markdown-documentation.md
 提供，不修改文件，不涉及兼容性、安全、测试或项目行为。
 ```
 
-预期：通常不加载任何 reference，包括 `markdown-documentation.md`。加载全部
+预期：通常不加载任何 reference，包括 `workflow/markdown-documentation.md`。加载全部
 reference 判定为失败；最终回复不应输出 `References` 区块。
 
 ### 10. 单一 Python 纯函数
@@ -254,25 +257,25 @@ reference 判定为失败；最终回复不应输出 `References` 区块。
 预期至少加载：
 
 ```text
-python.md
-verification.md
+languages/python.md
+workflow/verification.md
 ```
 
 预期不加载：
 
 ```text
-api-route-design.md
-ai-applications.md
-rag.md
-backend-reliability.md
-database.md
-database-schema.md
-golang.md
-git-workflow.md
-git-worktree.md
+backend/api-route-design.md
+ai/applications.md
+ai/rag.md
+backend/reliability.md
+database/access.md
+database/schema.md
+languages/golang.md
+git/workflow.md
+git/worktree.md
 ```
 
-`codebase-discovery.md` 和 `execution-workflow.md` 是否加载取决于实际复杂度，
+`workflow/codebase-discovery.md` 和 `workflow/execution.md` 是否加载取决于实际复杂度，
 但不能仅因出现“修改”二字而机械全量加载。
 
 行为断言：Python 版本、依赖工具、formatter 和 test framework 以仓库现状为准；
@@ -289,8 +292,8 @@ git-worktree.md
 预期至少加载：
 
 ```text
-python.md
-verification.md
+languages/python.md
+workflow/verification.md
 ```
 
 行为断言：修复应同时窄化所有关联的可选值，或将它们建模为单一有效状态；
@@ -306,9 +309,9 @@ verification.md
 预期至少加载：
 
 ```text
-codebase-discovery.md
-verification.md
-python.md
+workflow/codebase-discovery.md
+workflow/verification.md
+languages/python.md
 ```
 
 行为断言：允许本地只读检查和安全验证，但不能把“诊断”扩张成实现、commit、
@@ -335,11 +338,11 @@ HTTP client、超时、错误处理和回归测试。当前只检查规则路由
 预期至少加载：
 
 ```text
-codebase-discovery.md
-execution-workflow.md
-python.md
-backend-reliability.md
-verification.md
+workflow/codebase-discovery.md
+workflow/execution.md
+languages/python.md
+backend/reliability.md
+workflow/verification.md
 ```
 
 行为断言：因为任务明确要求加载审计，最终回复应输出紧凑的 `References` 区块，
@@ -465,7 +468,7 @@ agent 应执行一次并检查结果，不重复索要同一批准。若目标�
 验证和生成评估。使用固定输入，不涉及文档摄取、检索、索引或 RAG。
 ```
 
-预期加载 `ai-applications.md`，不加载 `rag.md`；其他 references 按实际风险
+预期加载 `ai/applications.md`，不加载 `ai/rag.md`；其他 references 按实际风险
 选择，不因通用不可信输入或引用证据要求而自动引入检索规则。
 
 ### 23. 纯检索与索引
@@ -475,11 +478,11 @@ agent 应执行一次并检查结果，不重复索要同一批准。若目标�
 一致性；embedding 来自固定本地夹具，不改模型/provider 调用，没有生成步骤。
 ```
 
-预期加载 `rag.md`，不自动加载 `ai-applications.md`。若后续范围增加 embedding
-provider 调用或生成回答，应再组合加载 `ai-applications.md`。
+预期加载 `ai/rag.md`，不自动加载 `ai/applications.md`。若后续范围增加 embedding
+provider 调用或生成回答，应再组合加载 `ai/applications.md`。
 
 负向变体：普通 SQL 查询，或用于非检索分类的 embedding，不应仅凭“查询”
-或“embedding”关键词加载 `rag.md`。用例 7 的完整 RAG 链路应组合加载两者。
+或“embedding”关键词加载 `ai/rag.md`。用例 7 的完整 RAG 链路应组合加载两者。
 
 ## 数据库排序与锁定查询回归用例
 
@@ -494,9 +497,9 @@ provider 调用或生成回答，应再组合加载 `ai-applications.md`。
 提供字段类型、MySQL 版本、索引、执行计划或数据规模。请给出排查和修复方向。
 ```
 
-预期至少加载 `codebase-discovery.md` 和 `database.md`；分析 Python ORM
-实现时加载 `python.md`，涉及索引设计时加载 `database-schema.md`，制定验证
-方案时加载 `verification.md`。其他 references 按实际范围选择。
+预期至少加载 `workflow/codebase-discovery.md` 和 `database/access.md`；分析 Python ORM
+实现时加载 `languages/python.md`，涉及索引设计时加载 `database/schema.md`，制定验证
+方案时加载 `workflow/verification.md`。其他 references 按实际范围选择。
 
 行为断言：
 
@@ -532,7 +535,7 @@ populate_existing 当作数据库当前读保证；分别评估新事务先加�
 需要检查哪些资源风险，以及什么证据支持优化方案；数据库引擎尚未提供。
 ```
 
-预期至少加载 `codebase-discovery.md` 和 `database.md`，其他 references 按
+预期至少加载 `workflow/codebase-discovery.md` 和 `database/access.md`，其他 references 按
 实际范围选择。行为断言：在开发阶段检查中间结果行数/宽度、隐式排序、数据
 倾斜、并发和执行计划；不能因只返回 50 行就认定内存有界。没有引擎证据时
 不套用 MySQL 参数或假定每个操作都使用排序，也不机械拆表、加索引或移到
@@ -552,25 +555,27 @@ populate_existing 当作数据库当前读保证；分别评估新事务先加�
 ## 标题映射
 
 ```text
-ai-applications.md             # AI Application Rules
-rag.md                         # RAG And Retrieval Rules
-api-route-design.md            # API Route Design Rules
-backend-reliability.md         # Backend Reliability And Security Rules
-codebase-discovery.md          # Codebase Discovery Rules
-database-schema.md             # Database Schema And Migration Rules
-database.md                    # Database Access And Transaction Rules
-execution-workflow.md          # Execution Workflow Rules
-git-workflow.md                # Git Workflow Rules
-git-worktree.md                # Git Worktree Rules
-golang.md                      # Go Rules
-markdown-documentation.md      # Markdown Documentation Rules
-python.md                      # Python Rules
-verification.md                # Verification Rules
+ai/applications.md                       # AI Application Rules
+ai/rag.md                                # RAG And Retrieval Rules
+backend/api-route-design.md              # API Route Design Rules
+backend/reliability.md                   # Backend Reliability And Security Rules
+workflow/codebase-discovery.md           # Codebase Discovery Rules
+database/schema.md                       # Database Schema And Migration Rules
+database/access.md                       # Database Access And Transaction Rules
+workflow/execution.md                    # Execution Workflow Rules
+git/workflow.md                          # Git Workflow Rules
+git/worktree.md                          # Git Worktree Rules
+languages/golang.md                      # Go Rules
+workflow/markdown-documentation.md       # Markdown Documentation Rules
+languages/python.md                      # Python Rules
+workflow/verification.md                 # Verification Rules
 ```
 
 ## 总体判定标准
 
 - 正向用例加载所有 materially applicable references；负向用例不会过度加载。
+- 路径包含分组目录和 `.md` 后缀，并从当前 assistant 的 `references/` 根目录
+  解析；不回退到旧平铺路径，也不因命中一个文件而加载整个分组。
 - 报告真实读取路径和一级标题，不把“准备遵循”当作已读取。
 - 规则选择基于受影响 behavior、risk 和 files，而不是关键词堆叠。
 - always-on 基线、reference 内容和任务授权边界一致，不出现互相冲突的绝对规则。

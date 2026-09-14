@@ -5,7 +5,7 @@ description: Load for model/provider integration, LLM or multimodal applications
 # AI Application Rules
 
 Use these rules for language-independent model application behavior. Retrieval
-and knowledge-index changes belong to `rag.md`; load it only when that behavior
+and knowledge-index changes belong to `ai/rag.md`; load it only when that behavior
 is in scope, not for every model or embedding call.
 
 Treat model output and external content as untrusted, nondeterministic input;

@@ -17,6 +17,22 @@ assistant 根据任务影响的行为选择 reference，并只解析自身对应
 无法识别 assistant 时不加载这些 task-specific references。Markdown 链接本身
 不代表内容已经加载。具体优先级和授权要求以入口规则为准。
 
+## Reference 分组
+
+| 目录 | 内容 |
+| --- | --- |
+| [workflow/](references/workflow/) | 代码库发现、执行流程、验证和技术文档 |
+| [git/](references/git/) | Git 工作流与 worktree 生命周期 |
+| [languages/](references/languages/) | Python 与 Go |
+| [backend/](references/backend/) | 后端可靠性与 API 路由设计 |
+| [database/](references/database/) | 数据库访问、事务与 Schema/迁移 |
+| [ai/](references/ai/) | AI 应用与 RAG 检索 |
+
+分组只用于组织文件，不代表整组加载。加载表和 reference 内部交叉引用使用
+相对于 assistant 的 `references/` 根目录的完整路径，例如
+`languages/python.md` 和 `workflow/verification.md`。各文件的加载条件仍由
+`agents.md` 统一维护，不在分组内另设规则入口。
+
 ## 同步
 
 在仓库根目录运行交互式入口，再选择 `rules` 和目标 assistant：
@@ -41,6 +57,15 @@ assistant 根据任务影响的行为选择 reference，并只解析自身对应
 根目录环境变量只改变同步落点，不会改写 `agents.md` 内的 reference 路径；
 使用自定义路径时需同时核对实际加载路径。脚本通过 SHA-256 校验文件、
 通过 `diff -qr` 校验目录；实现见 [sync-agents.sh](../sync-agents.sh)。
+
+### 从平铺目录迁移
+
+执行 rules 同步会配套更新 `AGENTS.md` 和嵌套的 `references/`，并清理旧平铺文件。
+例如 `references/python.md` 迁为 `references/languages/python.md`，不保留旧路径副本。
+分组内的文件名也去掉重复领域前缀，例如 `git/git-workflow.md` 简化为
+`git/workflow.md`，`database/database.md` 改为 `database/access.md`；同步会清理旧名称。
+项目规则或个人提示词中手写的旧路径也需更新；仓库同步不会修改这些外部引用。
+同步后使用全新会话运行回归提示词，避免旧会话中已加载的路由影响检查。
 
 ## 维护
 

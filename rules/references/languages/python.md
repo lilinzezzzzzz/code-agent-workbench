@@ -160,7 +160,7 @@ support async coroutines.
 - Use the repository's test framework; for greenfield work, prefer pytest. Keep
   real domain logic with fakes or mocks only at external I/O and ownership
   boundaries.
-- Select checks and stopping conditions according to `verification.md`, using
+- Select checks and stopping conditions according to `workflow/verification.md`, using
   targeted tests and the configured formatter, linter, or type checker as
   applicable. In a standard `uv` setup, use the corresponding `uv run ...`
   commands.

@@ -6,7 +6,7 @@ description: Load for document ingestion, chunking, retrieval embeddings, vector
 
 Use these rules for retrieval and knowledge-index behavior, including systems
 without generation. Model/provider calls, prompts, structured output, and tool
-calling belong to `ai-applications.md`; load it only when those behaviors are
+calling belong to `ai/applications.md`; load it only when those behaviors are
 in scope. Ordinary SQL queries and embeddings unrelated to retrieval do not
 by themselves require this reference.
 

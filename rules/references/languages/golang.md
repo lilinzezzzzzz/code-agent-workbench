@@ -82,7 +82,7 @@ tags, code generation, tools, and conventions are authoritative.
 - Use the standard `testing` package and existing helpers. Prefer table-driven
   tests only when they improve case clarity, and keep tests deterministic and
   parallel-safe.
-- Select checks and stopping conditions according to `verification.md`.
+- Select checks and stopping conditions according to `workflow/verification.md`.
   Use targeted package tests when executable behavior changes or a review
   concern requires runtime evidence. For documentation or other changes with
   no executable impact, use the relevant static or artifact check.

@@ -8,7 +8,7 @@ Use these rules for task workspace lifecycle and worktree-specific safeguards.
 Follow the global authorization and user-work protection boundaries. This
 reference applies without requiring a worktree skill to be installed.
 
-Load `git-workflow.md` through the active assistant's reference path when the
+Load `git/workflow.md` through the active assistant's reference path when the
 operation also involves branch creation, switching or deletion, base/ref resolution,
 staging, stashing, history changes, or remote actions. Simple workspace
 inventory or reuse does not require it unless one of those operations is needed.
@@ -54,7 +54,7 @@ inventory or reuse does not require it unless one of those operations is needed.
   parent. Follow existing naming conventions, keep branch-to-path mapping
   recognizable, and check for path collisions before creation.
 - When creating a task worktree, create a new task branch with it by default.
-  Resolve the base and any fetch under the applicable `git-workflow.md`
+  Resolve the base and any fetch under the applicable `git/workflow.md`
   rules. Explicitly specify the
   branch, path, and base: `git worktree add -b <branch> <path> <base-ref>`.
   If the task branch already exists, use `git worktree add <path> <branch>`

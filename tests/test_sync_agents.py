@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import subprocess
 import tempfile
 import unittest
@@ -12,6 +13,26 @@ SYNC_SCRIPT = ROOT / "sync-agents.sh"
 
 
 class SyncAgentRulesTest(unittest.TestCase):
+    def test_reference_routes_resolve_to_grouped_files(self) -> None:
+        agents = (ROOT / "rules" / "agents.md").read_text(encoding="utf-8")
+        routes = re.findall(r"^\| `([^`]+\.md)` \|", agents, re.MULTILINE)
+        references = ROOT / "rules" / "references"
+        actual = {
+            path.relative_to(references).as_posix()
+            for path in references.rglob("*.md")
+        }
+        self.assertTrue(routes)
+        self.assertEqual(len(routes), len(set(routes)))
+        self.assertEqual(set(routes), actual)
+        for route in routes:
+            self.assertEqual(len(Path(route).parts), 2, route)
+        for path in references.rglob("*.md"):
+            cross_references = re.findall(
+                r"`([^`\n]+\.md)`", path.read_text(encoding="utf-8")
+            )
+            for reference in cross_references:
+                self.assertIn(reference, actual, f"{path}: {reference}")
+
     def assert_directory_equal(self, source: Path, target: Path) -> None:
         source_entries = sorted(
             path.relative_to(source) for path in source.rglob("*")
@@ -115,7 +136,15 @@ class SyncAgentRulesTest(unittest.TestCase):
                 (obsolete / "nested.md").write_text("obsolete", encoding="utf-8")
                 (references / "ai-rag.md").write_text("legacy", encoding="utf-8")
                 (references / ".custom").write_text("hidden", encoding="utf-8")
-                (references / "python.md").write_text("modified", encoding="utf-8")
+                for source in (ROOT / "rules" / "references").rglob("*.md"):
+                    (references / source.name).write_text("legacy", encoding="utf-8")
+                stale_nested = references / "languages" / "obsolete.md"
+                stale_nested.parent.mkdir()
+                stale_nested.write_text("obsolete", encoding="utf-8")
+                legacy_git = references / "git" / "git-workflow.md"
+                legacy_git.parent.mkdir()
+                legacy_git.write_text("legacy grouped path", encoding="utf-8")
+                (references / "git-workflow.md").write_text("legacy flat path", encoding="utf-8")
                 skill = target / "skills" / "personal" / "SKILL.md"
                 skill.parent.mkdir(parents=True)
                 skill.write_text("personal skill", encoding="utf-8")
@@ -136,6 +165,10 @@ class SyncAgentRulesTest(unittest.TestCase):
 
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assert_directory_equal(ROOT / "rules" / "references", references)
+                self.assertEqual(
+                    (target / "AGENTS.md").read_bytes(),
+                    (ROOT / "rules" / "agents.md").read_bytes(),
+                )
                 self.assertEqual(skill.read_text(encoding="utf-8"), "personal skill")
                 self.assertEqual(config.read_text(encoding="utf-8"), "# personal config")
 
