@@ -4,9 +4,9 @@ description: Load for branches, staging, commits, cherry-picks, merges, rebases,
 ---
 # Git Workflow Rules
 
-Use these rules for repository history and remote state. Read-only status,
-diff, log, and show commands are safe discovery; mutation must remain within
-the user's requested workflow.
+Use these rules for Git workspace safety, repository history, and remote state.
+Read-only status, diff, log, and show commands are safe discovery; mutation
+must remain within the user's requested workflow.
 
 ## Workspace Safety
 
@@ -27,6 +27,17 @@ the user's requested workflow.
 - Follow repository naming and base-branch conventions. If none exists, use a
   concise semantic prefix such as `feature/`, `bugfix/`, `hotfix/`, `docs/`,
   `refactor/`, `test/`, `ci/`, `chore/`, or `release/`.
+- Name branches for the task's dominant intent. When naming from existing
+  changes, inspect the real diff; when preparing work that has not started,
+  use the requested task rather than inventing changes or requiring a diff.
+- Use `docs/`, `test/`, `ci/`, or `refactor/` only when that concern describes
+  the main purpose, not merely because related files are touched. In particular,
+  `refactor/` implies preserved behavior; feature or fix work with supporting
+  documentation or tests should retain the feature or fix prefix.
+- Before creating a branch, validate its name and check for existing refs.
+  Reuse only a branch that belongs to the intended task; otherwise choose a
+  distinct name when the user has not fixed it. Do not reset or overwrite an
+  existing branch merely to make creation succeed.
 - Determine the repository's default branch only when the requested workflow
   depends on it. Use explicit user input, repository configuration or
   documentation, or the selected remote's symbolic HEAD; never assume `main`
@@ -41,6 +52,10 @@ the user's requested workflow.
 
 ## Fetch, Pull, And Upstreams
 
+- Do not automatically inherit tracking of the base branch when creating a
+  task branch. Set upstream from an established publication or tracking target,
+  not merely a matching branch name. If that target is not established, leave
+  upstream unset; configuring it does not authorize a push.
 - Before fetch, verify the selected remote and required refs. Fetch only when
   fresh remote evidence matters and existing tool/network permissions and task
   scope allow it. Missing current-branch upstream or default-branch information

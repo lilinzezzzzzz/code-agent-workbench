@@ -42,6 +42,7 @@ code-agent-workbench/
 │       ├── database-schema.md      # Schema、冗余字段、索引、逻辑引用与迁移规则
 │       ├── execution-workflow.md   # 非平凡任务执行流程规则
 │       ├── git-workflow.md         # Git 安全工作流规则
+│       ├── git-worktree.md         # worktree 生命周期、工作转移确认与环境隔离规则
 │       ├── golang.md               # Go 语言与标准工具链规则
 │       ├── markdown-documentation.md  # 技术文档结构、证据与状态规则
 │       ├── python.md               # Python 规则
@@ -98,6 +99,7 @@ code-agent-workbench/
 - **api-endpoint-analyzer**: 系统化分析 API endpoint 的请求、响应、业务流程与错误处理
 - **git-code-reviewer**: 显式调用，在提交 PR/MR 前按用户指定 base 审查当前 Python 后端分支的完整已提交差异
 - **git-commit-helper**: 基于 staged diff 生成或执行规范的 Conventional Commit
+- **git-create-worktree**: 为任务创建或复用 worktree，默认同时创建任务分支，支持已有分支和临时 detached 工作区
 - **git-draft-pr-or-mr**: 基于明确 base ref 和真实 git diff 生成精简的 PR/MR 标题与描述
 - **git-restack-from-base**: 基于显式基础分支重新切出版本化分支，并按原顺序 cherry-pick 当前分支独有提交
 

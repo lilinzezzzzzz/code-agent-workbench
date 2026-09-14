@@ -99,13 +99,15 @@ Fallback for older Git:
 git checkout -b <branch-name>
 ```
 
-Then, if `origin/<branch-name>` already exists, set upstream explicitly:
+Then, only if an existing remote branch is established as the intended
+tracking target, set upstream explicitly. A matching name alone is insufficient;
+do not assume the remote is `origin`:
 
 ```bash
-git branch --set-upstream-to=origin/<branch-name> <branch-name>
+git branch --set-upstream-to=<remote>/<remote-branch> <branch-name>
 ```
 
-If the same-name remote branch does not exist yet, do not set upstream during checkout.
+If the target is not established or does not exist yet, leave upstream unset.
 
 8. Verify and report.
 
@@ -114,7 +116,10 @@ git branch --show-current
 git status --short
 ```
 
-If `origin/<branch-name>` did not exist at checkout time, tell the user the first publish should be `git push -u origin <branch-name>`. This creates the remote branch and sets upstream in one step. Do not inherit the original branch as upstream.
+Report whether upstream was set or left unset. Do not inherit the original
+branch as upstream. If publishing is requested later, establish the destination
+remote and branch before preparing the push; branch creation does not authorize
+publication.
 
 Report the original branch, the new branch, the prefix rationale, and the evidence used to infer the slug.
 
@@ -147,7 +152,8 @@ If blocked, say exactly why:
 
 - Do not auto-commit, auto-stash, or auto-reset changes.
 - Do not change the current `HEAD` to another starting point implicitly.
-- Do not set upstream to the current branch. Only set upstream to `origin/<branch-name>` when that exact remote branch already exists.
+- Do not automatically track the source branch. Set upstream only to an
+  established, existing remote tracking target; otherwise leave it unset.
 - Do not claim the result follows "Git Flow" if the repository clearly uses another naming scheme.
 - Do not choose `docs/`, `test/`, `ci/`, or `refactor/` just because those files appear in the diff; they must be the dominant intent of the branch.
 - If only part of the current changes should move to the new branch, say that a plain branch switch is insufficient and the user likely needs selective staging, `git stash --keep-index`, or a separate commit workflow.

@@ -1,4 +1,4 @@
 interface:
   display_name: "Git Checkout Branch"
-  short_description: "先确认基础分支并按远程跟踪分支解析，再基于当前 diff 推断分支名"
-  default_prompt: "Use $git-checkout-branch to first ask me which base branch to use, follow the shared remote-base rule, inspect the current branch and diff, recommend one branch name from the dominant change, and switch only after I confirm."
+  short_description: "基于当前真实 diff 推荐分支名，按 Skill 确认规则从当前 HEAD 切出新分支"
+  default_prompt: "Use $git-checkout-branch to inspect the current branch and real diff, recommend a branch name for the dominant change, and create it from the current HEAD while preserving uncommitted changes. Do not ask for a base branch; follow the skill's confirmation requirements and reuse valid approval."

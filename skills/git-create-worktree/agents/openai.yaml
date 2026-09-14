@@ -1,0 +1,3 @@
+interface:
+  display_name: "Git Create Worktree"
+  short_description: "为任务创建或复用 Git worktree，默认同时创建任务分支"
