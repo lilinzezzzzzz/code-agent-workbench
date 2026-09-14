@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOURCE_RULES_DIR="$SCRIPT_DIR/rules"
-SOURCE_AGENTS_FILE="$SOURCE_RULES_DIR/agents.md"
+SOURCE_AGENTS_FILE="$SOURCE_RULES_DIR/baseline.md"
 SOURCE_REFERENCES_DIR="$SOURCE_RULES_DIR/references"
 SOURCE_CODEX_CONFIG_FILE="$SCRIPT_DIR/configs/codex/config.toml"
 CODEX_CONFIG_MERGE_SCRIPT="$SCRIPT_DIR/scripts/merge_codex_config.py"

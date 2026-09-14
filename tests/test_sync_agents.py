@@ -14,7 +14,7 @@ SYNC_SCRIPT = ROOT / "sync-agents.sh"
 
 class SyncAgentRulesTest(unittest.TestCase):
     def test_reference_routes_resolve_to_grouped_files(self) -> None:
-        agents = (ROOT / "rules" / "agents.md").read_text(encoding="utf-8")
+        agents = (ROOT / "rules" / "baseline.md").read_text(encoding="utf-8")
         routes = re.findall(r"^\| `([^`]+\.md)` \|", agents, re.MULTILINE)
         references = ROOT / "rules" / "references"
         actual = {
@@ -76,7 +76,7 @@ class SyncAgentRulesTest(unittest.TestCase):
             )
             self.assertEqual(
                 (workbuddy_root / "AGENTS.md").read_bytes(),
-                (ROOT / "rules" / "agents.md").read_bytes(),
+                (ROOT / "rules" / "baseline.md").read_bytes(),
             )
 
             source_references = ROOT / "rules" / "references"
@@ -167,7 +167,7 @@ class SyncAgentRulesTest(unittest.TestCase):
                 self.assert_directory_equal(ROOT / "rules" / "references", references)
                 self.assertEqual(
                     (target / "AGENTS.md").read_bytes(),
-                    (ROOT / "rules" / "agents.md").read_bytes(),
+                    (ROOT / "rules" / "baseline.md").read_bytes(),
                 )
                 self.assertEqual(skill.read_text(encoding="utf-8"), "personal skill")
                 self.assertEqual(config.read_text(encoding="utf-8"), "# personal config")
@@ -193,7 +193,7 @@ class SyncAgentRulesTest(unittest.TestCase):
             target = directory / ".qoder-cn"
             self.assertEqual(
                 (target / "AGENTS.md").read_bytes(),
-                (ROOT / "rules" / "agents.md").read_bytes(),
+                (ROOT / "rules" / "baseline.md").read_bytes(),
             )
             self.assert_directory_equal(
                 ROOT / "rules" / "references", target / "references"
@@ -324,7 +324,7 @@ class SyncAgentRulesTest(unittest.TestCase):
             )
             self.assertEqual(
                 (opencode_root / "AGENTS.md").read_bytes(),
-                (ROOT / "rules" / "agents.md").read_bytes(),
+                (ROOT / "rules" / "baseline.md").read_bytes(),
             )
 
             source_references = ROOT / "rules" / "references"

@@ -33,7 +33,7 @@ code-agent-workbench/
 │   ├── test_merge_codex_config.py  # Codex config 合并与入口测试
 │   └── test_sync_agents.py   # rules 目标选择与同步测试
 ├── rules/                    # 全局与项目级规则源文件
-│   ├── agents.md             # Codex/WorkBuddy AGENTS.md 源模板
+│   ├── baseline.md             # Codex/WorkBuddy AGENTS.md 源模板
 │   ├── reference-loading-test-prompts.md  # references 路由与精简回归提示词
 │   └── references/           # 按职责分组，按文件加载
 │       ├── workflow/         # 代码库发现、执行、验证与文档
@@ -57,7 +57,7 @@ code-agent-workbench/
 
 ### rules/
 
-规则源文件。同步 Codex 或 WorkBuddy 时，`rules/agents.md` 会写入对应根目录的
+规则源文件。同步 Codex 或 WorkBuddy 时，`rules/baseline.md` 会写入对应根目录的
 `AGENTS.md`，`rules/references/` 下的规则文件会同步到对应根目录的
 `references/`，供渐进式披露读取。默认根目录分别为 `~/.codex` 和
 `~/.workbuddy`。当前 references 覆盖执行流程、
@@ -182,11 +182,11 @@ skills/<skill-name>/
 
 ### 2. 典型用法
 
-- 选择 `rules` -> `codex`：把 `rules/agents.md` 同步为 Codex 根目录的
+- 选择 `rules` -> `codex`：把 `rules/baseline.md` 同步为 Codex 根目录的
   `AGENTS.md`，并把 `rules/references/` 下的源规则同步到 `references/`
-- 选择 `rules` -> `workbuddy`：把 `rules/agents.md` 同步为 WorkBuddy 根目录的
+- 选择 `rules` -> `workbuddy`：把 `rules/baseline.md` 同步为 WorkBuddy 根目录的
   `AGENTS.md`，并把 `rules/references/` 下的源规则同步到 `references/`
-- 选择 `rules` -> `qoder-cn`（数字菜单 `1` -> `5`）：把 `rules/agents.md`
+- 选择 `rules` -> `qoder-cn`（数字菜单 `1` -> `5`）：把 `rules/baseline.md`
   同步为 `~/.qoder-cn/AGENTS.md`，并将 `rules/references/` 镜像同步到
   `~/.qoder-cn/references/`
 - 选择 `config` -> `codex`：把 `configs/codex/config.toml` 中的受管键合并到
