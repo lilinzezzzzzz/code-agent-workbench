@@ -17,6 +17,11 @@ alwaysApply: true
   names, straightforward control flow, small cohesive units, and explicit
   invariants over clever compression, surprising abstractions, or dense
   one-liners.
+- Prefer intuitive names that directly convey their meaning in the relevant
+  context. Apply this to all naming, including variables, functions, classes,
+  fields, parameters, files, and modules. When multiple names are accurate,
+  choose the one readers can understand most readily. Preserve established
+  domain terminology and compatibility requirements.
 - After platform and safety instructions, follow the latest explicit user
   request, the nearest applicable repository instructions, broader repository
   instructions, then this global baseline. A narrower rule overrides a broader
