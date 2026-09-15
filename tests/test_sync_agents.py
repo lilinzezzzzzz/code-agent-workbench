@@ -256,6 +256,42 @@ class SyncAgentRulesTest(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("WORKBUDDY_ROOT cannot be empty.", result.stderr)
 
+    def test_syncs_only_the_skill_selected_by_menu_number(self) -> None:
+        source_skills = ROOT / "skills"
+        skills = sorted(
+            path for path in source_skills.iterdir()
+            if path.is_dir() and (path / "SKILL.md").is_file()
+        )
+        self.assertTrue(skills)
+        for menu_number, skill in enumerate(skills, start=2):
+            with self.subTest(skill=skill.name), tempfile.TemporaryDirectory() as temporary_directory:
+                target = Path(temporary_directory) / "assistant root"
+                environment = os.environ.copy()
+                environment["CODEX_ROOT"] = str(target)
+
+                result = subprocess.run(
+                    ["bash", str(SYNC_SCRIPT)],
+                    input=f"2\n{menu_number}\n1\n",
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                    cwd=ROOT,
+                    env=environment,
+                    timeout=10,
+                )
+
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn(f"{menu_number}) {skill.name}", result.stderr)
+                target_skills = target / "skills"
+                self.assertEqual(
+                    sorted(path.name for path in target_skills.iterdir()),
+                    sorted(["_shared", skill.name]),
+                )
+                self.assert_directory_equal(skill, target_skills / skill.name)
+                self.assert_directory_equal(
+                    source_skills / "_shared", target_skills / "_shared"
+                )
+
     def test_syncs_all_skills_to_qoder_cn_root(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             directory = Path(temporary_directory)

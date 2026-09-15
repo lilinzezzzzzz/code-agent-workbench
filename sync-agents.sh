@@ -347,7 +347,8 @@ choose_skill() {
                 return 0
                 ;;
             *)
-                printf '%s\n' "${skills[REPLY-1]}"
+                # 菜单从 1 开始且首项为 all，skill 数组从 0 开始。
+                printf '%s\n' "${skills[REPLY-2]}"
                 return 0
                 ;;
         esac
