@@ -21,6 +21,8 @@ Use only the sections relevant to the change. This is a thinking aid for Redis a
 - Does the change perform `EXISTS` and then `GET`, `LRANGE`, `DELETE`, `ZREM`, or another mutation in a later command, assuming the key cannot change in between?
 - If a key can expire or be recreated between steps, is the resulting behavior benign and explicit, or does it create stale cleanup, wrong totals, or surprising empty reads?
 - Should the sequence be combined into a transaction, Lua script, or single authoritative read instead of a separate pre-check?
+- If a distributed lock is used, do release and renewal check ownership atomically, and can work continuing after lease expiry overwrite a newer owner's result?
+- If deployed on Redis Cluster, do multi-key commands, transactions, and scripts respect hash-slot constraints and remain correct during retries?
 
 ## 4. Write Amplification and Hot Paths
 

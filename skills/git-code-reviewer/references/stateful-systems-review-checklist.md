@@ -28,7 +28,7 @@ Use only the sections relevant to the change. This is a thinking aid for changes
 - Counterexample: old and new versions run together during rollout. Can producers and consumers interoperate safely?
 - Counterexample: a retry or replay happens after partial success. Can the operation duplicate work, regress state, or mask data loss?
 
-Choose at least two concrete counterexamples for high-risk stateful changes, even if no code is executed.
+Apply the counterexample requirement in [SKILL.md, Validate Conclusions](../SKILL.md#3-validate-conclusions), selecting scenarios relevant to the changed invariants.
 
 ## 4. Compatibility and Rollout
 

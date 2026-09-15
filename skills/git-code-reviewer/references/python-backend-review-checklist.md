@@ -30,6 +30,8 @@ Use only the sections relevant to the change. This is a thinking aid for Python 
   execute one SQL query per row instead of using a join, `selectinload`,
   `joinedload`, bulk query, or bounded batch?
 - Are tenant predicates, soft-delete predicates, and pagination or ordering semantics preserved?
+- Is pagination deterministic, with a stable tie-breaker, and does it behave as intended under concurrent inserts or updates?
+- Are SQL, types, DDL, and locking assumptions valid for the deployed database dialect and version? Do connection-pool waits and lock waits fit the operation's deadline?
 - Does the implementation call `.all()`, `list(...)`, unbounded
   `scalars().all()`, or ORM relationship traversal in a way that loads the
   full result set or object graph into memory?
@@ -44,10 +46,9 @@ Use only the sections relevant to the change. This is a thinking aid for Python 
 ## 6. Async, Background Jobs, and External I/O
 
 - Does async code accidentally call blocking I/O such as sync DB access, filesystem work, or network clients on the event loop?
+- Do concurrent tasks improperly share a mutable session such as `AsyncSession`? Are task lifetimes, exception collection, cancellation propagation, and cleanup explicit rather than leaving detached work or swallowing cancellation?
 - Are timeout, retry, cancellation, and deadline semantics explicit for `httpx`, message queues, LLM calls, storage SDKs, or other external dependencies?
-- Does synchronous external API or LLM I/O run on a request or worker hot path
-  without explicit timeout, concurrency isolation, circuit-breaker/bulkhead, or
-  queue/offload configuration?
+- For synchronous external I/O, do the actual execution environment, timeout, and concurrency bounds prevent event-loop blocking or worker exhaustion? Account for existing isolation or offload controls without requiring a particular architecture.
 - Does the code read a whole upload, export, object-store blob, archive, or
   generated file into memory when streaming, chunked reads, or bounded spooling
   would preserve behavior?

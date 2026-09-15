@@ -25,6 +25,7 @@ Use only the questions relevant to the changed behavior. This is a thinking aid,
 - Does the changed path introduce N+1 access, unbounded work or reads, full materialization, blocking I/O, or load-amplifying retries?
 - Are resources released correctly, and can operators detect, diagnose, and roll back failures without exposing secrets?
 - Did runtime defaults, feature flags, alerts, metrics, traces, or audit behavior change?
+- When packaging or deployment changes, do supported Python and dependency versions, lockfiles, container contents, startup commands, and deployment settings remain consistent?
 
 ## Evidence and Verification
 
@@ -39,4 +40,5 @@ Use only the questions relevant to the changed behavior. This is a thinking aid,
 - Do not report style preferences without correctness, contract, or material maintainability impact.
 - Do not split one root cause into multiple findings unless remediation differs.
 - Do not recommend broad refactors unrelated to the changed risk surface.
+- Evaluate the failure behavior and existing controls, not the presence of a particular mechanism. Missing a circuit breaker, lock, or fallback is not itself a defect if the required boundary is already enforced appropriately.
 - Do not report speculative or pre-existing issues unless the change worsens or depends on them.

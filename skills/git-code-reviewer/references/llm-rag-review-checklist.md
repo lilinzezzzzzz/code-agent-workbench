@@ -6,6 +6,8 @@ Use only the sections relevant to the change. This is a thinking aid for Python 
 
 - Did system, developer, user, or tool-message structure change in a way that breaks stored conversations, retries, or downstream parsers?
 - Did function or tool schemas change, including required fields, enum values, default behavior, or strictness?
+- Are model-generated tool arguments validated by application code and authorized against the current caller and resource at execution time? A schema-valid model output is not authorization.
+- Are tool-call counts, agent iterations, and termination conditions bounded, including repeated invalid calls and fallback loops?
 - Can old and new producers and consumers coexist during rollout when tool payloads, event payloads, or message schemas change?
 - Are prompt templates, rendered variables, and fallback branches validated before they reach the model call?
 - Does the code distinguish omitted values, explicit `null`, empty strings, and default values where the model or parser behavior differs?
@@ -36,9 +38,7 @@ Use only the sections relevant to the change. This is a thinking aid for Python 
 ## 5. External Model Calls and Runtime Controls
 
 - Are timeout, retry, rate-limit, circuit-breaker, and cancellation semantics explicit for model, embedding, reranking, or moderation calls?
-- Does a synchronous model, embedding, reranking, or moderation call run on a
-  request or worker hot path without explicit timeout, concurrency limit,
-  bulkhead/isolation, queue/offload, or provider-failure fallback behavior?
+- For synchronous provider calls, do the execution environment, timeout, and concurrency bounds prevent event-loop blocking or worker exhaustion? Evaluate existing controls and caller-visible failure behavior rather than requiring a particular isolation or fallback mechanism.
 - Could retry behavior duplicate tool side effects, chargeable calls, messages, or stored outputs?
 - Did model name, provider, endpoint, API version, region, or runtime default change, and are settings and deployment defaults updated together?
 - Are cost, token budget, max output, context length, batching, and concurrency limits bounded on request or worker hot paths?

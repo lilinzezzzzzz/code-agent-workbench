@@ -6,15 +6,18 @@ Put findings first. Preserve findings, supporting evidence, scope, verification 
 
 Order findings by severity, then impact. Use one item per root cause:
 
+A finding must connect a specific change to a reachable trigger, an incorrect outcome or concrete risk, and inspected evidence. Static reasoning can establish a finding without an executed reproduction. If the core trigger or causal link is only hypothetical, use Open Questions instead. Cite the smallest relevant code location in the reviewed version, rather than an entire function or file.
+
 ```text
 1. [high] Concise defect title
+   - Trigger: reachable condition under which the changed behavior fails
    - Evidence: inspected file and line, configuration, schema, test, or command output
    - Impact: direct user, data, compatibility, security, or operational consequence
    - Recommendation: smallest reasonable correction or follow-up
-   - Unverified: optional assumption on which the impact depends
+   - Verification limits: optional detail not established, such as the full impact extent
 ```
 
-Use these severity levels:
+Assess severity using impact, affected scope, triggering conditions, and recoverability. These examples are guides, not keyword-based assignments; a race is not automatically high, nor every outage critical.
 
 | Level | Meaning |
 | --- | --- |
@@ -30,9 +33,11 @@ Always state:
 - Review mode and artifact or comparison range.
 - Included and excluded workspace changes when relevant.
 
-For complete-branch review, also state the user-provided base, exact resolved ref, whether it is remote-tracking, local, or another explicit ref, and fetch status and base commit SHA (or the approved cached-ref downgrade and freshness warning).
+For complete-branch review, also state the user-provided base, exact resolved ref, whether it is remote-tracking, local, or another explicit ref, fetch status and base commit SHA (or the approved cached-ref downgrade and freshness warning), actual merge-base SHA, and reviewed HEAD SHA.
 
-For staged review, state `HEAD` → index, with the inspected `HEAD` SHA (or empty tree for an unborn branch). Make clear that unstaged and untracked changes are excluded. No user-provided base or fetch details are required.
+For staged review, state `HEAD` → index, with the inspected `HEAD` SHA (or empty tree for an unborn branch) and index snapshot identifier, or the limitation preventing identification. Make clear that unstaged and untracked changes are excluded. No user-provided base or fetch details are required.
+
+Disclose material uninspected portions and any snapshot changes that limit the report. Do not imply the current revision was reviewed when conclusions apply only to an earlier snapshot.
 
 ## Verification
 
