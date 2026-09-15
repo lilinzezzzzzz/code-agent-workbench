@@ -1,6 +1,6 @@
 interface:
   display_name: "Git Code Reviewer"
-  short_description: "提交 PR/MR 前按指定 base 审查完整分支"
-  default_prompt: "Use $git-code-reviewer to review the complete current Python backend branch before PR/MR submission against base <base-ref>. If the placeholder has not been replaced, use a base explicitly provided by the user earlier in the conversation when it clearly applies to this review; otherwise ask `基础分支是什么？`. The placeholder itself is not a user-provided ref."
+  short_description: "审查 Python 后端完整分支或当前 staged 代码"
+  default_prompt: "Use $git-code-reviewer to review my Python backend changes in the scope I specify: current staged changes, or the complete branch before PR/MR submission against my explicit base ref. If the scope is unspecified, ask which mode I want."
 policy:
   allow_implicit_invocation: false

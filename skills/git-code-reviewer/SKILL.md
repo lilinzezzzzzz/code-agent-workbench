@@ -1,6 +1,6 @@
 ---
 name: git-code-reviewer
-description: Review the complete current branch against a user-specified base before opening a PR or MR for a Python backend service. Invoke explicitly with $git-code-reviewer for pre-PR/MR whole-branch review; do not use for workspace changes, individual commits or diffs, localized implementation checks, debugging, or ordinary requests to inspect code.
+description: Review a Python backend service's complete current branch against a user-specified base before PR/MR submission, or review its current staged changes. Invoke explicitly with $git-code-reviewer for whole-branch or staged review (检查当前 staged 代码 / 检查暂存区); do not use for unstaged workspace changes, individual commits or arbitrary diffs, localized implementation checks, or debugging.
 ---
 
 # Code Review
@@ -9,12 +9,25 @@ Turn a change set into evidence-backed findings. Prioritize correctness and oper
 
 ## Scope Gate
 
-- This skill is only for a pre-PR/MR review of the complete current branch. Ordinary workspace, commit, diff, debugging, design-conformance, and localized code-review requests must use normal code inspection instead of this workflow.
+- Choose the review mode from the user's request: complete-branch pre-PR/MR review or current staged/index review. A request such as `检查当前 staged 代码` or `检查暂存区` selects staged mode, even when a base was provided earlier. If the intended scope is unclear, ask whether to review the complete branch or staged changes; do not infer it from a nonempty index or a default prompt example.
+- Unstaged workspace, individual commit, arbitrary diff, debugging, design-conformance, and localized code-review requests use normal code inspection instead of this workflow.
+- Once the selected mode's prerequisites are satisfied, complete the authorized review and report without asking whether to proceed.
+
+### Complete Branch
+
 - Require a base branch or base ref explicitly provided by the user, including an earlier instruction that remains applicable to this review. If missing, ask `基础分支是什么？`; do not resolve the comparison range, fetch, or begin branch-delta review. Do not infer the base from PR metadata, repository defaults, the current branch, or local context.
-- Independent read-only preparation, such as locating repository instructions and inspecting workspace status, may continue while the base is missing. Once prerequisites are satisfied, complete the authorized review and report without asking whether to proceed.
+- Independent read-only preparation, such as locating repository instructions and inspecting workspace status, may continue while the base is missing.
 - After receiving the base, load and follow [../_shared/git-remote-base-resolution.md](../_shared/git-remote-base-resolution.md) for ref resolution and freshness.
 - Review the committed branch delta from the merge base through the current `HEAD`. Report relevant staged, unstaged, and untracked workspace changes separately; do not silently include them in the branch artifact.
 - Keep evidence tied to the reviewed revision: when workspace changes affect inspected files or validation inputs, use committed content for branch conclusions and state which revision each check actually validates. Do not attribute workspace-only fixes or passing tests to `HEAD`. Preserve user changes; if committed-state validation is unavailable, report that limitation.
+
+### Staged Changes
+
+- Review only the delta from `HEAD` to the index using `git diff --cached`. No user-provided base, remote ref resolution, or fetch is required; do not load the remote-base guidance for this mode. On an unborn branch, review the staged additions against the empty tree.
+- If the index has no staged changes, report that and stop; do not expand to the branch or workspace. If it contains unresolved merge entries, report that the staged artifact is not ready for review; do not resolve conflicts or change the index.
+- Read staged file content from the index, for example with `git show :path/to/file`, and compare with `HEAD` where relevant. A file can contain both staged and unstaged edits; do not substitute its working-tree content for its staged version. Exclude unstaged and untracked changes from the artifact.
+- Inspect relevant callers, tests, and configuration as context, using the index version when available. Tie findings to the staged delta rather than unrelated existing defects. Keep evidence tied to the inspected index state; if it changes during review, recheck affected conclusions before reporting.
+- State whether checks validated the staged snapshot or the working tree. Working-tree checks may include unstaged edits or untracked inputs and do not by themselves prove the staged snapshot passes. Preserve user changes and the index; if staged-state validation is unavailable, report that limitation.
 
 ## Workflow
 

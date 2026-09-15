@@ -27,15 +27,16 @@ Use these severity levels:
 
 Always state:
 
-- Review artifact or comparison range.
-- User-provided base and exact resolved ref.
-- Whether the ref is remote-tracking, local, or another explicit ref.
-- Fetch status and base commit SHA, or the approved cached-ref downgrade and freshness warning.
+- Review mode and artifact or comparison range.
 - Included and excluded workspace changes when relevant.
+
+For complete-branch review, also state the user-provided base, exact resolved ref, whether it is remote-tracking, local, or another explicit ref, and fetch status and base commit SHA (or the approved cached-ref downgrade and freshness warning).
+
+For staged review, state `HEAD` → index, with the inspected `HEAD` SHA (or empty tree for an unborn branch). Make clear that unstaged and untracked changes are excluded. No user-provided base or fetch details are required.
 
 ## Verification
 
-State commands or checks that ran and their observed outcomes. If none ran, say the review was limited to static inspection. State skipped or blocked checks only when they leave material risk.
+State commands or checks that ran, their observed outcomes, and whether they validated committed content, the staged snapshot, or the working tree. If none ran, say the review was limited to static inspection. State skipped or blocked checks only when they leave material risk.
 
 ## Open Questions
 
