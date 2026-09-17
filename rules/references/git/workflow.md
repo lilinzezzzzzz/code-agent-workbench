@@ -10,6 +10,9 @@ must remain within the user's requested workflow.
 
 ## Workspace Safety
 
+- Perform Git operations in the current repository directory. Do not create
+  or switch to another worktree as task preparation. Keep existing worktrees
+  and their metadata untouched unless the user explicitly requests maintenance.
 - Inspect `git status --short`, the relevant staged/unstaged diff, current
   branch, and required refs before staging, committing, switching,
   pulling, cherry-picking, merging, rebasing, reverting, resetting, stashing,

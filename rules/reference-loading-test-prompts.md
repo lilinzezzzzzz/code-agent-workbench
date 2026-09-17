@@ -176,23 +176,22 @@ upstream、divergence 和 refs；支持 main/master，不能假定其中任一�
 不得自动 stash。cherry-pick 应检查目标分支、commit 顺序、重复 patch、merge
 commit mainline 和 conflict state；不能在本测试中实际 pull/cherry-pick/commit/push。
 
-负向断言：本场景不选择、创建或转入其他 worktree，不应仅因涉及 Git 操作
-而加载 `git/worktree.md`。
+负向断言：在当前仓库目录检查，不创建或转入其他 worktree，不自动清理
+已有 worktree 或其元数据。
 
-#### Worktree 路由变体
+#### 当前工作目录变体
 
-只读盘点：用户要求“查看已有 worktree 及路径，不创建、不切换”。预期加载
-`git/worktree.md`；仅盘点不需要加载 `git/workflow.md`，不触发未提交修改确认。
+任务准备：用户要求在当前项目修复问题，未要求分支操作。预期留在当前目录
+开展工作，不为隔离任务创建 worktree，也不自动创建或切换分支。references
+按实际修改和验证需要加载，不仅因任务准备而加载 `git/workflow.md`。
 
-创建：用户要求“从明确的本地提交创建任务 worktree 和新分支”。预期加载
-`git/worktree.md` 和 `git/workflow.md`；其他 references 按实际操作需要加载。
-先检查工作区、分支和路径；创建目录本身不触发离开工作区的确认，不自动迁移修改。
+已有修改：当前目录有 staged、unstaged 或未跟踪文件。预期先检查相关 diff，
+保护无关修改，不自动 stash、迁移或丢弃修改；只有实际冲突无法安全绕开时，
+才说明具体冲突并请求所需决定。
 
-转移工作：当前目录有 staged、unstaged 或未跟踪文件，用户要求到已有 worktree
-处理另一个任务。预期加载 `git/worktree.md`，展示修改摘要和目标路径，确认
-保留原地、仅 stash 或 stash 后恢复；等待期间只继续独立检查和准备。已有有效
-决定不重复询问。选定 stash 后，在操作前加载 `git/workflow.md`；不得仅因任务
-不同而跳过确认，也不得把只读查看目标目录误判为转移工作。
+分支操作：用户明确要求从给定本地提交创建任务分支。预期加载
+`git/workflow.md`，检查名称、已有 refs 和工作区状态，在当前目录按请求操作，
+不创建额外工作目录。
 
 ### 7. AI/RAG 系统
 
@@ -272,7 +271,6 @@ database/access.md
 database/schema.md
 languages/golang.md
 git/workflow.md
-git/worktree.md
 ```
 
 `workflow/codebase-discovery.md` 和 `workflow/execution.md` 是否加载取决于实际复杂度，
@@ -564,7 +562,6 @@ database/schema.md                       # Database Schema And Migration Rules
 database/access.md                       # Database Access And Transaction Rules
 workflow/execution.md                    # Execution Workflow Rules
 git/workflow.md                          # Git Workflow Rules
-git/worktree.md                          # Git Worktree Rules
 languages/golang.md                      # Go Rules
 workflow/markdown-documentation.md       # Markdown Documentation Rules
 languages/python.md                      # Python Rules

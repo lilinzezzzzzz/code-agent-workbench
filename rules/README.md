@@ -25,7 +25,7 @@ assistant 根据任务影响的行为选择 reference，并只解析自身对应
 | 目录 | 内容 |
 | --- | --- |
 | [workflow/](references/workflow/) | 代码库发现、执行流程、验证和技术文档 |
-| [git/](references/git/) | Git 工作流与 worktree 生命周期 |
+| [git/](references/git/) | 当前工作目录中的 Git 操作、分支、历史与远端安全 |
 | [languages/](references/languages/) | Python 与 Go |
 | [backend/](references/backend/) | 后端可靠性与 API 路由设计 |
 | [database/](references/database/) | 数据库访问、事务与 Schema/迁移 |

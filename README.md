@@ -37,7 +37,7 @@ code-agent-workbench/
 │   ├── reference-loading-test-prompts.md  # references 路由与精简回归提示词
 │   └── references/           # 按职责分组，按文件加载
 │       ├── workflow/         # 代码库发现、执行、验证与文档
-│       ├── git/              # Git 操作与 worktree
+│       ├── git/              # Git 操作、分支、历史与远端安全
 │       ├── languages/        # Python 与 Go
 │       ├── backend/          # 后端可靠性与 API 路由
 │       ├── database/         # 数据库访问与 Schema/迁移

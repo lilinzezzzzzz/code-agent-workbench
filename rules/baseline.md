@@ -88,16 +88,11 @@ output.
 
 ## Workspace And Evidence
 
-- Prefer `git worktree` for task isolation: keep a stable primary worktree and
-  use short-lived task worktrees. When creating a task worktree, create a new
-  task branch by default; reuse the task's existing branch or worktree when
-  available. Read-only review or temporary validation may use a detached
-  worktree. Isolate by task or branch; multiple agents may share a worktree
-  when delegation is supported and permitted and their edits are coordinated.
-  Load `git/worktree.md` before selecting, creating, or transferring active
-  work to another worktree; follow its uncommitted-change confirmation rule.
-  Respect an explicit user or repository workflow, and preserve ongoing work
-  in its current location rather than automatically moving uncommitted changes.
+- Work in the current repository directory. Do not use `git worktree` for
+  task isolation, review, or temporary validation, or automatically transfer
+  work to another directory. Preserve ongoing work and uncommitted changes
+  in their current location. Create or switch branches only when the requested
+  workflow requires it, following `git/workflow.md`.
 - Treat existing uncommitted work as user-owned. Inspect relevant diffs before
   overlapping edits; never revert, overwrite, reformat, stage, or delete
   unrelated changes.
@@ -121,7 +116,7 @@ active assistant:
 - Unknown assistant: do not load task-specific references
 
 `<relative-path>` includes the group directory and `.md` extension, for example
-`git/worktree.md`. Resolve reference paths in the table and cross-references
+`git/workflow.md`. Resolve reference paths in the table and cross-references
 inside these files from the active assistant's `references/` root, not from the
 current file's directory. Groups organize files only; select individual files
 by their loading conditions, never load an entire group merely because one
@@ -170,7 +165,6 @@ authorized work without treating approval as granted.
 | `backend/api-route-design.md` | HTTP paths, methods, resources, commands, endpoint contracts, OpenAPI, or SDK impact |
 | `database/access.md` | SQL/ORM access, data assembly, repositories, transactions, pagination, locking, batching, or query performance |
 | `database/schema.md` | persisted models, DDL, columns, indexes, relationships, migrations, or backfills |
-| `git/worktree.md` | worktree selection, creation, reuse, transferring active work, shared-worktree coordination, environment isolation, removal, or metadata cleanup |
 | `git/workflow.md` | branches, staging, stashing, commits, history changes, remotes, fetches, pulls, pushes, or PR/MR refs |
 | `workflow/markdown-documentation.md` | material technical Markdown creation, update, or review |
 
