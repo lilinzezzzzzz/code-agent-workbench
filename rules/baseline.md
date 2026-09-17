@@ -96,6 +96,16 @@ output.
 - Treat existing uncommitted work as user-owned. Inspect relevant diffs before
   overlapping edits; never revert, overwrite, reformat, stage, or delete
   unrelated changes.
+- Place agent-created temporary scripts, logs, check reports, downloads, and
+  intermediate artifacts in a task-specific directory created with
+  `mktemp -d /tmp/agent-task.XXXXXX`. Do not scatter them across the repository,
+  user home, or arbitrary paths. Respect explicit user-specified locations and
+  tool-required directory conventions. Keep final deliverables in their agreed
+  locations.
+- At task completion, remove temporary content created by the current task
+  once it is no longer in use or needed. If retaining files for recovery or
+  diagnosis, report their paths and purpose. Never clean up another task's or
+  program's files as part of routine task cleanup.
 - Make conservative, reversible assumptions for low-risk gaps and state them
   only when they affect the result. Keep changes limited to the requested
   outcome and work required for correctness.
