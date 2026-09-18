@@ -1,12 +1,12 @@
 # Code Agent Workbench
 
-> 个人 AI assistant rules、skills 与同步工具，支持 Codex、WorkBuddy 和
-> AGENTS.md 工作流，聚焦渐进式披露与 harness engineering
+> 个人 AI assistant rules、skills 与同步工具，支持 Codex、WorkBuddy、
+> DeepSeek Harness 和 AGENTS.md 工作流，聚焦渐进式披露与 harness engineering
 
 一套可复用的个人级 AI assistant 配置工作台，包含编码规范、Git 工作流、
 AGENTS 指令、按需加载的 references 与 skills。同一份内容可以服务于
-Codex、WorkBuddy 以及其他支持类似机制的开发工具，用 rules 驱动
-可维护的 assistant harness。
+Codex、WorkBuddy、DeepSeek Harness 以及其他支持类似机制的开发工具，用 rules
+驱动可维护的 assistant harness。
 
 目录文档：[Rules](rules/README.md) · [Skills](skills/README.md) ·
 [Configs](configs/README.md)。
@@ -33,7 +33,7 @@ code-agent-workbench/
 │   ├── test_merge_codex_config.py  # Codex config 合并与入口测试
 │   └── test_sync_agents.py   # rules 目标选择与同步测试
 ├── rules/                    # 全局与项目级规则源文件
-│   ├── baseline.md             # Codex/WorkBuddy AGENTS.md 源模板
+│   ├── baseline.md             # 各 assistant 的 AGENTS.md 源模板
 │   ├── reference-loading-test-prompts.md  # references 路由与精简回归提示词
 │   └── references/           # 按职责分组，按文件加载
 │       ├── workflow/         # 代码库发现、执行、验证与文档
@@ -60,12 +60,14 @@ code-agent-workbench/
 规则源文件。同步 Codex 或 WorkBuddy 时，`rules/baseline.md` 会写入对应根目录的
 `AGENTS.md`，`rules/references/` 下的规则文件会同步到对应根目录的
 `references/`，供渐进式披露读取。默认根目录分别为 `~/.codex` 和
-`~/.workbuddy`。当前 references 覆盖执行流程、
+`~/.workbuddy`；DeepSeek Harness 的默认根目录是 `~/.dsh`，即用户全局
+`AGENTS.md` 所在位置。当前 references 覆盖执行流程、
 代码库发现、Git 工作流、Python、Go、AI 应用、RAG 检索、API 路由设计、后端可靠性、
 数据库访问、Schema/迁移、Markdown 文档、测试验证等高频
 技术场景。
 
-- **适用范围**: Codex、WorkBuddy 和其他支持 `AGENTS.md` 规则注入的工具
+- **适用范围**: Codex、WorkBuddy、DeepSeek Harness 和其他支持 `AGENTS.md`
+  规则注入的工具
 - **角色定位**: 跨项目安全基线、执行边界和渐进式规则路由
 - **项目优先**: 项目内约定优先于全局技术偏好，避免跨仓库机械套用
 - **授权边界**: 只读任务允许安全检查但不实施；变更任务直接完成范围内本地修改
@@ -75,9 +77,11 @@ code-agent-workbench/
 - **渐进式披露**: 执行流程、代码库发现、Git、Python、Go、AI 应用、RAG 检索、
   API 路由设计、后端可靠性、数据库访问、Schema/迁移、Markdown 文档和验证细则
   下沉到 `rules/references/`，同步后分别位于 Codex 的
-  `~/.codex/references/` 或 WorkBuddy 的 `~/.workbuddy/references/`。
+  `~/.codex/references/`、WorkBuddy 的 `~/.workbuddy/references/` 或
+  DeepSeek Harness 的 `~/.dsh/references/`。
   `AGENTS.md` 会集中定义 reference search paths：Codex 只解析
-  `~/.codex/references/`，WorkBuddy 只解析 `~/.workbuddy/references/`；
+  `~/.codex/references/`，WorkBuddy 只解析 `~/.workbuddy/references/`，
+  DeepSeek Harness 只解析 `~/.dsh/references/`；
   无法识别 active assistant 时
   不加载 task-specific references，也不依赖 Markdown 链接自动展开
 - **Harness engineering**: 把 always-on 基线、按需 references、skills
@@ -89,7 +93,8 @@ code-agent-workbench/
 当前目录已经包含一组可复用能力：
 
 - **sync-agents.sh**: 统一同步入口，可交互选择 `rules` 或单个
-  `skill`；同步 rules 到 Codex 或 WorkBuddy 时写入 `AGENTS.md` 和顶层
+  `skill`；同步 rules 到 Codex、WorkBuddy、OpenCode、ZCode、Qoder CN 或
+  DeepSeek Harness 时写入 `AGENTS.md` 和顶层
   `references/`；同步 Codex config 时只覆盖模板管理的键，并保留本机专属配置
 - **api-endpoint-analyzer**: 系统化分析 API endpoint 的请求、响应、业务流程与错误处理
 - **git-code-reviewer**: 显式调用，审查当前 Python 后端 staged 代码，或在提交 PR/MR 前按用户指定 base 审查完整分支的已提交差异
@@ -158,13 +163,18 @@ skills/<skill-name>/
 - **OpenCode config 流程**: 将 `configs/opencode/opencode.json` 直接同步到
   `OPENCODE_ROOT/opencode.json`；`OPENCODE_ROOT` 默认是
   `~/.config/opencode`
-- **rules 流程**: 先选择 `codex`、`workbuddy`、`opencode`、`zcode` 或 `qoder-cn`。
-  Codex、WorkBuddy、OpenCode、ZCode 和 Qoder CN 的默认根目录可分别通过
-  `CODEX_ROOT`、`WORKBUDDY_ROOT`、`OPENCODE_ROOT`、`ZCODE_ROOT` 和
-  `QODER_CN_ROOT` 覆盖；Qoder CN 默认使用 `~/.qoder-cn`
+- **rules 流程**: 先选择 `codex`、`workbuddy`、`opencode`、`zcode`、`qoder-cn`
+  或 `dsh`。Codex、WorkBuddy、OpenCode、ZCode 和 Qoder CN
+  的默认根目录可分别通过 `CODEX_ROOT`、`WORKBUDDY_ROOT`、`OPENCODE_ROOT`、
+  `ZCODE_ROOT` 和 `QODER_CN_ROOT` 覆盖；Qoder CN 默认使用
+  `~/.qoder-cn`，DeepSeek Harness 固定同步到 `~/.dsh`，对应默认安装路径
 - **skills 流程**: 先选择具体 skill 或全部 skills，再选择目标 assistant
 - **目标选择**: rules 和 skills 支持 `codex`、`workbuddy`、`opencode`、
-  `zcode` 或 `qoder-cn`
+  `zcode`、`qoder-cn` 或 `dsh`
+- **DeepSeek Harness 默认安装的加载方式**: harness 只会自动注入用户全局
+  `~/.dsh/AGENTS.md`（即本脚本写入的 `AGENTS.md`），`references/` 与
+  `skills/` 不会被自动加载，而是在任务中按 `AGENTS.md` 的路由和 `SKILL.md`
+  的触发条件按需读取；`skills/` 的默认扫描位置是 `~/.dsh/skills/`
 - **覆盖策略**: Codex config 按受管键合并；OpenCode config 和
   `AGENTS.md` 直接覆盖；`references/` 全量镜像覆盖，整个目标目录由本仓库管理，
   目标独有文件、子目录和隐藏文件都会被删除，同名文件中的个人修改也会被覆盖。
@@ -196,6 +206,13 @@ skills/<skill-name>/
 - 选择 `skills`：选择一个 skill 或全部 skills，并同步到目标 assistant 的 `skills/`
 - 选择 `skills` -> `qoder-cn`（数字菜单 `2` -> `1` -> `5`）：把 `skills/_shared`
   和全部 skill 同步到 `~/.qoder-cn/skills/`
+- 选择 `rules` -> `dsh`（数字菜单 `1` -> `6`）：把 `rules/baseline.md` 同步为
+  `~/.dsh/AGENTS.md`，并将 `rules/references/`
+  镜像同步到 `~/.dsh/references/`；该文件会在每个项目的首次请求中作为
+  用户全局指令注入
+- 选择 `skills` -> `dsh`（数字菜单 `2` -> `1` -> `6`）：把 `skills/_shared`
+  和全部 skill 同步到 `~/.dsh/skills/`，harness 会按 skill 目录扫描并
+  在匹配任务中按需加载
 
 当前已维护的 skill 更适合以下场景：
 

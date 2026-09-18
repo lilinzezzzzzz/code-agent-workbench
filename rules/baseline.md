@@ -123,6 +123,7 @@ active assistant:
 - OpenCode: `~/.config/opencode/references/<relative-path>`
 - ZCode: `~/.zcode/references/<relative-path>`
 - Qoder CN: `~/.qoder-cn/references/<relative-path>`
+- DeepSeek Harness: `~/.dsh/references/<relative-path>`
 - Unknown assistant: do not load task-specific references
 
 `<relative-path>` includes the group directory and `.md` extension, for example

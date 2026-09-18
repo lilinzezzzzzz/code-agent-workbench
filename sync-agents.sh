@@ -190,7 +190,8 @@ choose_rules_target() {
         echo "3) opencode -> AGENTS.md + references" >&2
         echo "4) zcode -> AGENTS.md + references" >&2
         echo "5) qoder-cn -> AGENTS.md + references" >&2
-        echo "6) exit" >&2
+        echo "6) dsh -> AGENTS.md + references (DeepSeek Harness)" >&2
+        echo "7) exit" >&2
         read -r -p "#? " target
         target="$(trim_spaces "$target")"
 
@@ -215,7 +216,11 @@ choose_rules_target() {
                 printf '%s\n' "qoder-cn"
                 return 0
                 ;;
-            6|exit)
+            6|dsh|deepseek|deepseek-harness)
+                printf '%s\n' "dsh"
+                return 0
+                ;;
+            7|exit)
                 printf '%s\n' "$EXIT_SENTINEL"
                 return 0
                 ;;
@@ -259,11 +264,12 @@ choose_config_target() {
 
 choose_target() {
     echo "Select target assistant:" >&2
+    echo "dsh = DeepSeek Harness" >&2
     local target=""
 
-    select target in "codex" "workbuddy" "opencode" "zcode" "qoder-cn" "exit"; do
+    select target in "codex" "workbuddy" "opencode" "zcode" "qoder-cn" "dsh" "exit"; do
         case "$target" in
-            codex|workbuddy|opencode|zcode|qoder-cn)
+            codex|workbuddy|opencode|zcode|qoder-cn|dsh)
                 printf '%s\n' "$target"
                 return 0
                 ;;
@@ -296,6 +302,9 @@ resolve_target_roots() {
             ;;
         qoder-cn)
             printf '%s\n' "$QODER_CN_ROOT"
+            ;;
+        dsh)
+            printf '%s\n' "$HOME/.dsh"
             ;;
         *)
             echo "Unsupported target assistant: $target" >&2
@@ -520,6 +529,9 @@ main() {
             ;;
         qoder-cn)
             sync_global_rules_dir "$QODER_CN_ROOT" "QODER_CN_ROOT"
+            ;;
+        dsh)
+            sync_agents_file "$HOME/.dsh"
             ;;
         *)
             echo "Unsupported rules target: $rules_target" >&2

@@ -28,6 +28,7 @@ WorkBuddy: ~/.workbuddy/references/<relative-path>
 OpenCode: ~/.config/opencode/references/<relative-path>
 ZCode: ~/.zcode/references/<relative-path>
 Qoder CN: ~/.qoder-cn/references/<relative-path>
+DeepSeek Harness: ~/.dsh/references/<relative-path>
 Unknown assistant: 不加载 task-specific references
 ```
 

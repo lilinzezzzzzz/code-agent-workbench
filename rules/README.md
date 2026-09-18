@@ -51,6 +51,7 @@ assistant 根据任务影响的行为选择 reference，并只解析自身对应
 | OpenCode | `~/.config/opencode` | `OPENCODE_ROOT` |
 | ZCode | `~/.zcode` | `ZCODE_ROOT` |
 | Qoder CN | `~/.qoder-cn` | `QODER_CN_ROOT` |
+| DeepSeek Harness | `~/.dsh` | 不支持覆盖 |
 
 同步将 `baseline.md` 覆盖写入目标根目录的 `AGENTS.md`，并将 `references/`
 完整镜像到目标根目录的同名目录。目标 `references/` 中独有的文件、子目录和
@@ -60,6 +61,11 @@ assistant 根据任务影响的行为选择 reference，并只解析自身对应
 根目录环境变量只改变同步落点，不会改写 `baseline.md` 内的 reference 路径；
 使用自定义路径时需同时核对实际加载路径。脚本通过 SHA-256 校验文件、
 通过 `diff -qr` 校验目录；实现见 [sync-agents.sh](../sync-agents.sh)。
+
+DeepSeek Harness 默认安装时只会自动加载用户全局的 `~/.dsh/AGENTS.md`（即同步目标
+文件本身）；`references/` 与 `skills/` 不会被自动注入，而是由 agent 在执行
+任务时按 `baseline.md` 的路由和 `SKILL.md` 的触发条件按需读取。因此该目标
+必须保证 `~/.dsh/references/` 真实存在，且 session 有读取该目录的权限。
 
 ### 从平铺目录迁移
 

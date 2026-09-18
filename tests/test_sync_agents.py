@@ -126,10 +126,11 @@ class SyncAgentRulesTest(unittest.TestCase):
             ("OPENCODE_ROOT", "3"),
             ("ZCODE_ROOT", "4"),
             ("QODER_CN_ROOT", "5"),
+            ("HOME", "6"),
         )
         for variable, selection in targets:
             with self.subTest(target=variable), tempfile.TemporaryDirectory() as temporary_directory:
-                target = Path(temporary_directory) / "assistant root"
+                target = Path(temporary_directory) / (".dsh" if selection == "6" else "assistant root")
                 references = target / "references"
                 obsolete = references / "obsolete"
                 obsolete.mkdir(parents=True)
@@ -151,7 +152,7 @@ class SyncAgentRulesTest(unittest.TestCase):
                 config = target / "config.toml"
                 config.write_text("# personal config", encoding="utf-8")
                 environment = os.environ.copy()
-                environment[variable] = str(target)
+                environment[variable] = temporary_directory if selection == "6" else str(target)
 
                 result = subprocess.run(
                     ["bash", str(SYNC_SCRIPT)],
@@ -171,6 +172,56 @@ class SyncAgentRulesTest(unittest.TestCase):
                 )
                 self.assertEqual(skill.read_text(encoding="utf-8"), "personal skill")
                 self.assertEqual(config.read_text(encoding="utf-8"), "# personal config")
+
+    def test_syncs_rules_to_dsh_root(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            directory = Path(temporary_directory)
+            dsh_root = directory / ".dsh"
+            codex_root = directory / ".codex"
+            environment = os.environ.copy()
+            environment["HOME"] = str(directory)
+            environment["CODEX_ROOT"] = str(codex_root)
+
+            result = subprocess.run(
+                ["bash", str(SYNC_SCRIPT)],
+                input="1\n6\n",
+                text=True,
+                capture_output=True,
+                check=False,
+                cwd=ROOT,
+                env=environment,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("6) dsh -> AGENTS.md + references", result.stderr)
+            self.assertEqual(
+                (dsh_root / "AGENTS.md").read_bytes(),
+                (ROOT / "rules" / "baseline.md").read_bytes(),
+            )
+            self.assert_directory_equal(
+                ROOT / "rules" / "references", dsh_root / "references"
+            )
+            self.assertFalse(codex_root.exists())
+
+    def test_dsh_rules_aliases(self) -> None:
+        for target in ("deepseek", "deepseek-harness"):
+            with self.subTest(target=target), tempfile.TemporaryDirectory() as directory:
+                environment = os.environ.copy()
+                environment["HOME"] = directory
+                result = subprocess.run(
+                    ["bash", str(SYNC_SCRIPT)],
+                    input=f"rules\n{target}\n",
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                    cwd=ROOT,
+                    env=environment,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(
+                    (Path(directory) / ".dsh" / "AGENTS.md").read_bytes(),
+                    (ROOT / "rules" / "baseline.md").read_bytes(),
+                )
 
     def test_qoder_cn_defaults_to_home_dot_qoder_cn(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -494,6 +545,46 @@ class SyncAgentRulesTest(unittest.TestCase):
                     source_directory, target_skills / source_directory.name
                 )
             self.assertFalse(codex_root.exists())
+
+    def test_syncs_skills_to_dsh_root(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            directory = Path(temporary_directory)
+            dsh_root = directory / ".dsh"
+            environment = os.environ.copy()
+            environment["HOME"] = str(directory)
+            environment["CODEX_ROOT"] = str(directory / ".codex")
+
+            result = subprocess.run(
+                ["bash", str(SYNC_SCRIPT)],
+                input="2\n1\n6\n",
+                text=True,
+                capture_output=True,
+                check=False,
+                cwd=ROOT,
+                env=environment,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("6) dsh", result.stderr)
+            source_skills = ROOT / "skills"
+            target_skills = dsh_root / "skills"
+            expected_directories = [source_skills / "_shared"]
+            expected_directories.extend(
+                sorted(
+                    path
+                    for path in source_skills.iterdir()
+                    if path.is_dir() and (path / "SKILL.md").is_file()
+                )
+            )
+            self.assertEqual(
+                sorted(path.name for path in target_skills.iterdir()),
+                sorted(path.name for path in expected_directories),
+            )
+            for source_directory in expected_directories:
+                self.assert_directory_equal(
+                    source_directory, target_skills / source_directory.name
+                )
+            self.assertFalse((directory / ".codex").exists())
 
 
 if __name__ == "__main__":
