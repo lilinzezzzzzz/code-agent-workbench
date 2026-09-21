@@ -175,13 +175,16 @@ model = "gpt-5.6-sol"
 local_marker = "keep-me"
 """
             target.write_text(original, encoding="utf-8")
+            managed_source = merge_codex_config.tomllib.loads(
+                (ROOT / "configs" / "codex" / "config.toml").read_text(encoding="utf-8")
+            )
             environment = os.environ.copy()
             environment["CODEX_ROOT"] = str(codex_root)
             environment["PYTHONDONTWRITEBYTECODE"] = "1"
 
             result = subprocess.run(
                 ["bash", str(ROOT / "sync-agents.sh")],
-                input="3\n",
+                input="3\n1\n",
                 text=True,
                 capture_output=True,
                 check=False,
@@ -193,7 +196,7 @@ local_marker = "keep-me"
             merged = merge_codex_config.tomllib.loads(
                 target.read_text(encoding="utf-8")
             )
-            self.assertEqual(merged["model"], "gpt-5.6-sol")
+            self.assertEqual(merged["model"], managed_source["model"])
             self.assertEqual(merged["model_context_window"], 872000)
             self.assertEqual(merged["desktop"]["local_marker"], "keep-me")
             self.assertEqual(
