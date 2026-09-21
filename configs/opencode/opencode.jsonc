@@ -36,8 +36,6 @@
     }
   },
 
-
-
   // V2 插件：填写 npm 包名，需要传参时用 { package, options } 形式。
   // V1 插件实现无法在 V2 运行，即使是同一个包也要用 V2 原生入口。
   "plugins": [
@@ -56,12 +54,12 @@
       "context7": {
         "type": "remote",
         "url": "https://mcp.context7.com/mcp"
-      },
-      // 浏览器自动化；首次使用前需安装 Playwright 浏览器副本。
-      "playwright": {
-        "type": "local",
-        "command": ["npx", "-y", "@playwright/mcp"]
       }
+      // 浏览器自动化默认用桌面端内置 browser 工具（导航/点击/表单/截图/console/network/
+      // 性能 trace/Lighthouse/CPU 与堆分析），无需 MCP，因此不配置 playwright。
+      // 仅当需要 Playwright 独有能力（run_code_unsafe 任意脚本、视口 resize/media 模拟）
+      // 或非桌面端（TUI/CLI/headless）场景时再加回，并先执行 npx playwright install chromium：
+      //   "playwright": { "type": "local", "command": ["npx", "-y", "@playwright/mcp"] }
     }
   }
 }

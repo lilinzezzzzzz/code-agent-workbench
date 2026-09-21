@@ -21,6 +21,7 @@
 
 配置按 OpenCode V2 原生字段维护（`formatter`、`permissions`、`agents`、`plugins`、`mcp.servers`），文件使用 JSONC 语法，可写 `//` 注释说明选型与用途。V2 插件实现与 V1 不兼容，npm 插件需使用 V2 原生包。
 
-## MCP 环境准备
+## 浏览器自动化
 
-- Playwright (`opencode.jsonc` 中 `mcp.servers.playwright`)：首次使用前需安装 Playwright 浏览器副本（macOS：`npx playwright install chromium`；Linux：`npx playwright install --with-deps chromium`）。Playwright 的浏览器二进制与系统 Chrome/Safari 相互独立，未安装时启动 MCP 会报 `Executable doesn't exist`。
+- 默认使用桌面端内置 `browser` 工具（导航、点击、填表、截图、console/network、性能 trace、Lighthouse、CPU/堆分析），无需额外安装；截图要求标签页可见且聚焦。
+- 仅当需要 Playwright 独有能力（`run_code_unsafe` 任意脚本、视口 resize/media 模拟）或非桌面端场景（TUI/CLI/headless）时，才把 `mcp.servers.playwright` 加回配置，并先安装浏览器副本：macOS `npx playwright install chromium`；Linux `npx playwright install --with-deps chromium`。
