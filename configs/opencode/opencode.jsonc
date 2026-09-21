@@ -1,0 +1,35 @@
+{
+  // OpenCode V2 全局配置源文件，同步脚本直接覆盖 ~/.config/opencode/opencode.jsonc。
+  // 需要修改请在仓库内改，直接改本机文件下次同步会被覆盖。
+  "$schema": "https://opencode.ai/config.json",
+
+  // 终端与 shell 工具使用的 shell。
+  "shell": "zsh",
+
+  // V2 插件：填写 npm 包名，需要传参时用 { package, options } 形式。
+  // V1 插件实现无法在 V2 运行，即使是同一个包也要用 V2 原生入口。
+  "plugins": [
+    {
+      // 持久交互式 PTY（spawn/write/read/resize/kill），V2 原生实现。
+      // 不用 opencode-pty 的 ./v2 子路径导出：V2 2.0.11 的 package 只接受
+      // 「包名[+版本]」形式的 npm/Git spec，带子路径会按 Git 短写解析并安装失败。
+      "package": "opencode-pty-v2"
+    }
+  ],
+
+  // MCP 服务器统一放在 mcp.servers 下；默认启用，禁用改用 disabled: true。
+  "mcp": {
+    "servers": {
+      // 查询框架/库的最新文档。
+      "context7": {
+        "type": "remote",
+        "url": "https://mcp.context7.com/mcp"
+      },
+      // 浏览器自动化；首次使用前需安装 Playwright 浏览器副本。
+      "playwright": {
+        "type": "local",
+        "command": ["npx", "-y", "@playwright/mcp"]
+      }
+    }
+  }
+}

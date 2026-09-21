@@ -8,7 +8,7 @@
 | Assistant | 源文件 | 默认目标 | 同步方式 |
 | --- | --- | --- | --- |
 | [Codex](codex/README.md) | [codex/config.toml](codex/config.toml) | `~/.codex/config.toml` | 按模板中的受管键合并 |
-| [OpenCode](opencode/README.md) | [opencode/opencode.json](opencode/opencode.json) | `~/.config/opencode/opencode.json` | 整个文件覆盖 |
+| [OpenCode](opencode/README.md) | [opencode/opencode.jsonc](opencode/opencode.jsonc) | `~/.config/opencode/opencode.jsonc` | 整个文件覆盖 |
 
 具体配置值以源文件为准，合并边界、备份行为和环境准备见各 assistant 的 README。
 当前同步入口只提供这两个 assistant 的 config 选项；rules 和 skills 的目标列表更广。

@@ -7,7 +7,7 @@ SOURCE_AGENTS_FILE="$SOURCE_RULES_DIR/baseline.md"
 SOURCE_REFERENCES_DIR="$SOURCE_RULES_DIR/references"
 SOURCE_CODEX_CONFIG_FILE="$SCRIPT_DIR/configs/codex/config.toml"
 CODEX_CONFIG_MERGE_SCRIPT="$SCRIPT_DIR/scripts/merge_codex_config.py"
-SOURCE_OPENCODE_CONFIG_FILE="$SCRIPT_DIR/configs/opencode/opencode.json"
+SOURCE_OPENCODE_CONFIG_FILE="$SCRIPT_DIR/configs/opencode/opencode.jsonc"
 SOURCE_SKILLS_DIR="$SCRIPT_DIR/skills"
 SOURCE_SHARED_SKILLS_DIR="$SOURCE_SKILLS_DIR/_shared"
 CODEX_ROOT="${CODEX_ROOT:-$HOME/.codex}"
@@ -237,7 +237,7 @@ choose_config_target() {
 
     while true; do
         echo "1) codex -> config.toml" >&2
-        echo "2) opencode -> opencode.json" >&2
+        echo "2) opencode -> opencode.jsonc" >&2
         echo "3) exit" >&2
         read -r -p "#? " target
         target="$(trim_spaces "$target")"
@@ -396,7 +396,7 @@ sync_codex_config_file() {
 sync_opencode_config_file() {
     local target_root="$1"
 
-    sync_path "$SOURCE_OPENCODE_CONFIG_FILE" "$target_root/opencode.json"
+    sync_path "$SOURCE_OPENCODE_CONFIG_FILE" "$target_root/opencode.jsonc"
 }
 
 sync_references_dir() {

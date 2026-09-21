@@ -26,7 +26,7 @@ code-agent-workbench/
 │   ├── codex/
 │   │   └── config.toml        # Codex config 受管键模板
 │   └── opencode/
-│       └── opencode.json      # OpenCode 全局配置源文件
+│       └── opencode.jsonc     # OpenCode 全局配置源文件
 ├── scripts/
 │   └── merge_codex_config.py # 保留本机设置的 TOML 合并器
 ├── tests/
@@ -160,8 +160,8 @@ skills/<skill-name>/
 - **config 备份**: 目标存在时先备份为 `config.toml.backup`；目标和备份
   都保持 `0600` 权限。备份保留最近一次同步前的版本；合并或 TOML 校验
   失败时不覆盖原文件
-- **OpenCode config 流程**: 将 `configs/opencode/opencode.json` 直接同步到
-  `OPENCODE_ROOT/opencode.json`；`OPENCODE_ROOT` 默认是
+- **OpenCode config 流程**: 将 `configs/opencode/opencode.jsonc` 直接同步到
+  `OPENCODE_ROOT/opencode.jsonc`；`OPENCODE_ROOT` 默认是
   `~/.config/opencode`
 - **rules 流程**: 先选择 `codex`、`workbuddy`、`opencode`、`zcode`、`qoder-cn`
   或 `dsh`。Codex、WorkBuddy、OpenCode、ZCode 和 Qoder CN
@@ -201,8 +201,8 @@ skills/<skill-name>/
   `~/.qoder-cn/references/`
 - 选择 `config` -> `codex`：把 `configs/codex/config.toml` 中的受管键合并到
   Codex 根目录的 `config.toml`，同时备份原文件并保留本机专属配置
-- 选择 `config` -> `opencode`：把 `configs/opencode/opencode.json` 同步到
-  `OPENCODE_ROOT/opencode.json`
+- 选择 `config` -> `opencode`：把 `configs/opencode/opencode.jsonc` 同步到
+  `OPENCODE_ROOT/opencode.jsonc`
 - 选择 `skills`：选择一个 skill 或全部 skills，并同步到目标 assistant 的 `skills/`
 - 选择 `skills` -> `qoder-cn`（数字菜单 `2` -> `1` -> `5`）：把 `skills/_shared`
   和全部 skill 同步到 `~/.qoder-cn/skills/`
