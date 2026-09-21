@@ -6,6 +6,38 @@
   // 终端与 shell 工具使用的 shell。
   "shell": "zsh",
 
+  // 写入/编辑后自动格式化（V2 默认关闭）。
+  // 匹配到的格式化器依次尝试，命令或项目依赖缺失时自动跳过，不影响写入。
+  // 当前可用：gofmt（Go）、uv format（Python，项目内已声明 ruff）、prettier（需项目内依赖）。
+  "formatter": true,
+
+  // 权限：有序规则，最后匹配生效；未匹配的默认是 allow。
+  // shell 的资源是扫描器解析出的命令串，规则只做尽力而为的兜底（覆盖不到的写法不受此限）。
+  "permissions": [
+    // 推送前必须确认，对齐规则里的“推送需用户明确要求”。
+    { "action": "shell", "resource": "git push *", "effect": "ask" },
+    // 破坏性操作兜底确认。
+    { "action": "shell", "resource": "rm -rf *", "effect": "ask" },
+    { "action": "shell", "resource": "git reset --hard *", "effect": "ask" },
+    // 私钥类文件不读入模型上下文；若确需读取可临时改为 ask。
+    { "action": "read", "resource": "*.pem", "effect": "deny" },
+    { "action": "read", "resource": "*id_rsa*", "effect": "deny" }
+  ],
+
+  // 只读评审子代理：评审类技能（git-code-reviewer 等）用它时，
+  // 「不修改文件」由权限保证，而不是只靠提示词。
+  "agents": {
+    "reviewer": {
+      "description": "只读代码评审：分析 diff、定位风险与缺失测试，不修改文件",
+      "mode": "subagent",
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "deny" }
+      ]
+    }
+  },
+
+
+
   // V2 插件：填写 npm 包名，需要传参时用 { package, options } 形式。
   // V1 插件实现无法在 V2 运行，即使是同一个包也要用 V2 原生入口。
   "plugins": [

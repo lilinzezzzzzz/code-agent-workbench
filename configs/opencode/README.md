@@ -19,7 +19,7 @@
 
 脚本使用 SHA-256 校验复制结果，不验证 OpenCode schema、插件或 MCP 是否可启动。
 
-配置按 OpenCode V2 原生字段维护（`plugins`、`mcp.servers`），文件使用 JSONC 语法，可写 `//` 注释说明选型与用途。V2 插件实现与 V1 不兼容，npm 插件需使用 V2 原生包。
+配置按 OpenCode V2 原生字段维护（`formatter`、`permissions`、`agents`、`plugins`、`mcp.servers`），文件使用 JSONC 语法，可写 `//` 注释说明选型与用途。V2 插件实现与 V1 不兼容，npm 插件需使用 V2 原生包。
 
 ## MCP 环境准备
 
