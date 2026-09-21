@@ -22,7 +22,7 @@
 ```
 
 使用 `CODEX_ROOT` 或 `OPENCODE_ROOT` 环境变量可以改变对应目标根目录。
-入口为交互式脚本，不接受命令行参数。通用依赖见
+入口为交互式脚本，不接受命令行参数；stdin 关闭时会立即报错退出（exit 1），不会空转重试。通用依赖见
 [仓库 README](../README.md)，实现见 [sync-agents.sh](../sync-agents.sh)。
 
 ## 维护

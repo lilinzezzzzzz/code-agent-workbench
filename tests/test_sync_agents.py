@@ -445,6 +445,44 @@ class SyncAgentRulesTest(unittest.TestCase):
                 (ROOT / "configs" / "opencode" / "opencode.jsonc").read_bytes(),
             )
 
+    def test_aborts_when_stdin_closes_at_any_menu(self) -> None:
+        cases = {
+            "content": "",
+            "rules target": "1\n",
+            "config target": "3\n",
+            "skills": "2\n",
+        }
+
+        for label, input_text in cases.items():
+            with self.subTest(menu=label), tempfile.TemporaryDirectory() as temporary_directory:
+                environment = os.environ.copy()
+                environment["CODEX_ROOT"] = str(Path(temporary_directory) / ".codex")
+                environment["WORKBUDDY_ROOT"] = str(
+                    Path(temporary_directory) / ".workbuddy"
+                )
+                environment["OPENCODE_ROOT"] = str(
+                    Path(temporary_directory) / ".config" / "opencode"
+                )
+                environment["ZCODE_ROOT"] = str(Path(temporary_directory) / ".zcode")
+                environment["QODER_CN_ROOT"] = str(
+                    Path(temporary_directory) / ".qoder-cn"
+                )
+
+                result = subprocess.run(
+                    ["bash", str(SYNC_SCRIPT)],
+                    input=input_text,
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                    cwd=ROOT,
+                    env=environment,
+                )
+
+                self.assertEqual(result.returncode, 1, result.stderr)
+                self.assertIn(
+                    "Standard input is closed (EOF); aborting.", result.stderr
+                )
+
     def test_rejects_empty_opencode_root_for_config(self) -> None:
         environment = os.environ.copy()
         environment["OPENCODE_ROOT"] = "   "

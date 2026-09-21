@@ -83,6 +83,11 @@ trim_spaces() {
     printf '%s\n' "$value"
 }
 
+abort_closed_input() {
+    echo "Standard input is closed (EOF); aborting." >&2
+    exit 1
+}
+
 verify_file_copy() {
     local source_path="$1"
     local dest_path="$2"
@@ -153,7 +158,9 @@ choose_content() {
         echo "2) skills" >&2
         echo "3) config" >&2
         echo "4) exit" >&2
-        read -r -p "#? " content
+        if ! read -r -p "#? " content; then
+            abort_closed_input
+        fi
         content="$(trim_spaces "$content")"
 
         case "$content" in
@@ -192,7 +199,9 @@ choose_rules_target() {
         echo "5) qoder-cn -> AGENTS.md + references" >&2
         echo "6) dsh -> AGENTS.md + references (DeepSeek Harness)" >&2
         echo "7) exit" >&2
-        read -r -p "#? " target
+        if ! read -r -p "#? " target; then
+            abort_closed_input
+        fi
         target="$(trim_spaces "$target")"
 
         case "$target" in
@@ -239,7 +248,9 @@ choose_config_target() {
         echo "1) codex -> config.toml" >&2
         echo "2) opencode -> opencode.jsonc" >&2
         echo "3) exit" >&2
-        read -r -p "#? " target
+        if ! read -r -p "#? " target; then
+            abort_closed_input
+        fi
         target="$(trim_spaces "$target")"
 
         case "$target" in
@@ -282,6 +293,8 @@ choose_target() {
                 ;;
         esac
     done
+
+    abort_closed_input
 }
 
 resolve_target_roots() {
@@ -362,6 +375,8 @@ choose_skill() {
                 ;;
         esac
     done
+
+    abort_closed_input
 }
 
 sync_agents_file() {
