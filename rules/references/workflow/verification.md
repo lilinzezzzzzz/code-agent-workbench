@@ -1,7 +1,3 @@
----
-trigger: model_decision
-description: Load for behavior changes, bug fixes, test planning, regression coverage, CI failures, lint, type-checking, artifact validation, or reporting verification claims.
----
 # Verification Rules
 
 Verification should produce evidence for the claims made about the change. Run

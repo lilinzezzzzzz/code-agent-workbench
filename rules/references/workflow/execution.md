@@ -1,7 +1,3 @@
----
-trigger: model_decision
-description: Load for multi-file, ambiguous, risky, data-affecting, API-affecting, externally mutating, blocked, or verification-heavy technical execution.
----
 # Execution Workflow Rules
 
 Use this workflow when coordination prevents missed dependencies or unsafe

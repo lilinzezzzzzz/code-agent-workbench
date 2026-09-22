@@ -1,7 +1,3 @@
----
-trigger: model_decision
-description: Load for creating, changing, or reviewing HTTP paths, method conventions, resource naming, command actions, endpoint contracts, OpenAPI, or SDK compatibility.
----
 # API Route Design Rules
 
 Use these rules for HTTP endpoint design and review. First establish the

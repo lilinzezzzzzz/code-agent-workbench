@@ -1,7 +1,3 @@
----
-trigger: model_decision
-description: Load for services, APIs, workers, auth, validation, configuration, external clients, errors, retries, timeouts, idempotency, observability, or security-sensitive behavior.
----
 # Backend Reliability And Security Rules
 
 Use these rules at service, worker, message, and external-integration

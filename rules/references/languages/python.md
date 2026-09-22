@@ -1,7 +1,3 @@
----
-trigger: model_decision
-description: Load for Python implementation, review, refactor, packaging, dependencies, typing, frameworks, workers, or tests.
----
 # Python Rules
 
 Follow the repository's Python version, environment, dependency, framework,

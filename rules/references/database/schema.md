@@ -1,7 +1,3 @@
----
-trigger: model_decision
-description: Load for persisted models, database schema, DDL, columns, denormalization, redundant fields, indexes, relationships, constraints, migrations, backfills, or data compatibility.
----
 # Database Schema And Migration Rules
 
 Use these rules for persisted structure and data evolution. Verify from evidence

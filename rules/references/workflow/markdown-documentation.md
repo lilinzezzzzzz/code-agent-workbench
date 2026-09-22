@@ -1,7 +1,3 @@
----
-trigger: model_decision
-description: Load when creating, materially updating, or reviewing technical Markdown documents such as architecture docs, implementation plans, runbooks, ADRs, checklists, and rollout or status docs.
----
 # Markdown Documentation Rules
 
 Use these rules to keep technical documents accurate, decision-oriented, and

@@ -1,7 +1,3 @@
----
-trigger: model_decision
-description: Load for document ingestion, chunking, retrieval embeddings, vector or hybrid search, reranking, document permissions, knowledge-index lifecycle, retrieval evaluation, or RAG evidence assembly.
----
 # RAG And Retrieval Rules
 
 Use these rules for retrieval and knowledge-index behavior, including systems

@@ -1,7 +1,3 @@
----
-trigger: model_decision
-description: Load for non-trivial changes, reviews, bug investigations, unfamiliar modules, instruction discovery, blast-radius analysis, shared contracts, generated artifacts, or overlap with user work.
----
 # Codebase Discovery Rules
 
 Use these rules to gather enough verified context for a small, correct change

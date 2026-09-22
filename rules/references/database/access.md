@@ -1,7 +1,3 @@
----
-trigger: model_decision
-description: Load for SQL or ORM access, joins, application-side data assembly, repositories, transactions, pagination, batching, locking, concurrency, query performance, or query memory and temporary-storage pressure.
----
 # Database Access And Transaction Rules
 
 Use these rules for database access and persistence behavior. Verify from

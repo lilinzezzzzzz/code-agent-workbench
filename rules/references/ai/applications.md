@@ -1,7 +1,3 @@
----
-trigger: model_decision
-description: Load for model/provider integration, LLM or multimodal applications, prompts, structured output, tool calling, agents, generation evaluation, model safety, or model latency and cost.
----
 # AI Application Rules
 
 Use these rules for language-independent model application behavior. Retrieval

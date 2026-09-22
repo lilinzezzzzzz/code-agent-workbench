@@ -1,7 +1,3 @@
----
-trigger: model_decision
-description: Load for branches, staging, commits, cherry-picks, merges, rebases, resets, reverts, stashes, tags, remotes, fetches, pulls, pushes, or PR/MR history-sensitive work.
----
 # Git Workflow Rules
 
 Use these rules for Git workspace safety, repository history, and remote state.

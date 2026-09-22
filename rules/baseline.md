@@ -1,7 +1,3 @@
----
-trigger: always_on
-alwaysApply: true
----
 # Agent Instructions
 
 > Apply to technical work only. For non-technical conversation, respond
@@ -88,11 +84,7 @@ output.
 
 ## Workspace And Evidence
 
-- Work in the current repository directory. Do not use `git worktree` for
-  task isolation, review, or temporary validation, or automatically transfer
-  work to another directory. Preserve ongoing work and uncommitted changes
-  in their current location. Create or switch branches only when the requested
-  workflow requires it, following `git/workflow.md`.
+- Work in the current repository directory. Avoid using git worktree for task isolation, review, or temporary validation, and avoid automatically transferring work to another directory. Preserve ongoing work and uncommitted changes in their current location. Create or switch branches only when the requested workflow requires it, following git/workflow.md.
 - Treat existing uncommitted work as user-owned. Inspect relevant diffs before
   overlapping edits; never revert, overwrite, reformat, stage, or delete
   unrelated changes.
@@ -102,6 +94,25 @@ output.
   user home, or arbitrary paths. Respect explicit user-specified locations and
   tool-required directory conventions. Keep final deliverables in their agreed
   locations.
+- Use `~/.agent-backups/<repository absolute path, leading slash removed>/`
+  for backups that must survive across sessions: copies of files or
+  configuration taken before high-risk changes, exports, and rollback
+  snapshots. Keep one directory per task, `<YYYY-MM-DD>-<topic>/`, mirroring
+  the original repo-relative path inside it so recovery is a direct copy back.
+  Keeping the store outside the repository keeps it out of the working tree,
+  repository search, and image build contexts; create it with `mkdir -p`
+  before first use.
+- Unlike `/tmp/agent-task.XXXXXX`, which the system purges after a few days,
+  this store is never purged automatically: keep nothing temporary in it, and
+  remove a task directory once the change it protects is settled. Choosing
+  between the two locations is a convention, not a hard rule.
+- The store may hold real configuration and credential copies. Before
+  restoring to a target path, compare the snapshot against the live file and
+  restore only when the snapshot is newer or the live file is unchanged; when
+  the live file is newer, report the path and ask instead of overwriting.
+  Content already present when the task starts belongs to the user: do not
+  clean it up automatically. Read from the store only for recovery,
+  comparison, or rollback, never as evidence of current behavior.
 - At task completion, remove temporary content created by the current task
   once it is no longer in use or needed. If retaining files for recovery or
   diagnosis, report their paths and purpose. Never clean up another task's or

@@ -1,7 +1,3 @@
----
-trigger: model_decision
-description: Load for Go implementation, review, refactor, modules, dependencies, package APIs, context, concurrency, tests, or standard tooling.
----
 # Go Rules
 
 Use these rules for Go work. The repository's Go version, module layout, build
