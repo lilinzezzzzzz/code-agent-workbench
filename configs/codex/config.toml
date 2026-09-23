@@ -5,8 +5,8 @@ model = "gpt-6-sol"
 # 使用 Codex 模型目录声明的扩展上下文上限；按 95% 有效比例，界面约显示 828K。
 model_context_window = 872000
 
-# 默认使用中等 reasoning effort，在推理质量、响应时间和 token 消耗之间取平衡。
-model_reasoning_effort = "medium"
+# 默认使用较高 reasoning effort，适合复杂编码和调试任务。
+model_reasoning_effort = "high"
 
 # 默认使用标准服务档位，不额外消耗 Fast mode credits；需要加速时可在会话中临时开启 /fast。
 service_tier = "default"
