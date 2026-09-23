@@ -53,10 +53,6 @@ network_access = true
 # 除当前 workspace 外，额外允许写入 /tmp，方便测试、构建和临时产物。
 writable_roots = ["/tmp"]
 
-[features]
-# 禁用跨会话 Memories，避免 Codex 保存或复用本地记忆上下文。
-memories = false
-
 [tools.web_search]
 # 保持 top-level web_search = "live"，搜索结果上下文保持中等，避免资料类问题信息不足。
 context_size = "medium"
