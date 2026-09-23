@@ -57,9 +57,6 @@ writable_roots = ["/tmp"]
 # 禁用跨会话 Memories，避免 Codex 保存或复用本地记忆上下文。
 memories = false
 
-# 禁用 Chronicle，不从近期屏幕上下文自动整理和生成记忆。
-chronicle = false
-
 [tools.web_search]
 # 保持 top-level web_search = "live"，搜索结果上下文保持中等，避免资料类问题信息不足。
 context_size = "medium"
