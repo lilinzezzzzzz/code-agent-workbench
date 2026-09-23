@@ -197,6 +197,7 @@ local_marker = "keep-me"
                 target.read_text(encoding="utf-8")
             )
             self.assertEqual(merged["model"], managed_source["model"])
+            self.assertEqual(merged["agents"]["max_concurrent_threads_per_session"], 3)
             self.assertEqual(merged["model_context_window"], 872000)
             self.assertEqual(merged["desktop"]["local_marker"], "keep-me")
             self.assertEqual(

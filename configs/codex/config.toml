@@ -1,6 +1,6 @@
 #:schema https://developers.openai.com/codex/config-schema.json
 
-model = "gpt-6-astra"
+model = "gpt-6-sol"
 
 # 使用 Codex 模型目录声明的扩展上下文上限；按 95% 有效比例，界面约显示 828K。
 model_context_window = 872000
@@ -20,9 +20,6 @@ model_verbosity = "low"
 # 使用文件方式保存 Codex 登录凭据，便于 VS Code 插件和 CLI 共享 ~/.codex/auth.json。
 cli_auth_credentials_store = "file"
 
-# 默认沟通风格：保持直接、务实、少废话。
-personality = "pragmatic"
-
 # 需要越过沙盒边界时按需发起审批。
 approval_policy = "on-request"
 
@@ -32,10 +29,10 @@ approvals_reviewer = "auto_review"
 # 允许读写当前 workspace，适合日常编码；不会给出全盘写权限。
 sandbox_mode = "workspace-write"
 
-# 默认使用缓存搜索；需要最新资料时在会话里显式要求联网查询。
-web_search = "cached"
+# 默认使用实时网页搜索，获取最新资料。
+web_search = "live"
 
-# 单次工具输出保留的 token 上限；控制长日志进入上下文的成本，必要时再针对性重跑/截取。
+# 单条工具输出写入会话历史时的 token 预算；长日志可按需针对性重跑或截取。
 tool_output_token_limit = 8000
 
 # 后台终端空轮询最长等待 10 分钟，适合较慢的测试、构建和服务启动。
@@ -63,26 +60,16 @@ memories = false
 # 禁用 Chronicle，不从近期屏幕上下文自动整理和生成记忆。
 chronicle = false
 
-# 禁用 JavaScript REPL，保持使用常规工具调用路径，不启用 JavaScript 运行时编排。
-js_repl = false
-
-[tools]
-# 启用本地图片查看工具；GPT-5.6 支持 original/auto detail 保留原始尺寸。
-view_image = true
-
 [tools.web_search]
-# 保持 top-level web_search = "cached"，搜索结果上下文保持中等，避免资料类问题信息不足。
+# 保持 top-level web_search = "live"，搜索结果上下文保持中等，避免资料类问题信息不足。
 context_size = "medium"
 
 [agents]
-# 最多同时打开 4 个 agent thread：包含根 agent 时，通常可并行运行 3 个直接子 agent。
-max_threads = 4
+# 最多同时运行 3 个子 agent thread，不含根 agent。
+max_concurrent_threads_per_session = 3
 
-# 仅允许根 agent 创建一层直接子 agent，禁止子 agent 继续递归派生。
+# V1 multi-agent 最多派生一层子 agent；V2 不使用此设置。
 max_depth = 1
-
-# spawn_agents_on_csv 任务中每个 worker 默认最多运行 30 分钟。
-job_max_runtime_seconds = 1800
 
 [mcp_servers.openaiDeveloperDocs]
 # 官方 OpenAI/Codex 文档 MCP，用于查询最新配置、模型和 API 文档。
