@@ -1,78 +1,75 @@
 #:schema https://developers.openai.com/codex/config-schema.json
 
-model = "gpt-6-sol"
+# 默认模型；常见选择有 gpt-6-astra、gpt-6-sol、gpt-6-luna，其他可用模型以当前目录为准。
+model = "gpt-6-astra"
 
-# 使用 Codex 模型目录声明的扩展上下文上限；按 95% 有效比例，界面约显示 828K。
+# 指定 872000 token 的上下文窗口；按 95% 有效比例，界面约显示 828K。
 model_context_window = 872000
 
-# 默认使用较高 reasoning effort，适合复杂编码和调试任务。
-model_reasoning_effort = "high"
+# Astra 可选 low、medium、high、xhigh、max；默认用 medium 平衡效果与响应速度。
+model_reasoning_effort = "medium"
 
-# 默认使用标准服务档位，不额外消耗 Fast mode credits；需要加速时可在会话中临时开启 /fast。
+# 可选 default（标准）或 fast（加速）；其他档位以模型目录为准。需要时可临时开启 /fast。
 service_tier = "default"
 
-# 支持 reasoning summary 的模型输出简短推理摘要，便于回看关键判断。
-model_reasoning_summary = "concise"
+# 可选 auto、concise、detailed、none；使用 concise 输出简短推理摘要。
+model_reasoning_summary = "auto"
 
-# 默认使用较低输出详细度，减少冗余说明和 output token 消耗；复杂任务可在 prompt 中临时要求展开。
+# 可选 low、medium、high；使用 low 减少冗余输出，模型支持时生效。
 model_verbosity = "low"
 
-# 使用文件方式保存 Codex 登录凭据，便于 VS Code 插件和 CLI 共享 ~/.codex/auth.json。
+# 可选 file、keyring、auto、ephemeral；使用 file 保存凭据，便于插件和 CLI 共享。
 cli_auth_credentials_store = "file"
 
-# 需要越过沙盒边界时按需发起审批。
+# 可选 on-request、never 或 granular 细分策略；使用 on-request 按需发起审批。
 approval_policy = "on-request"
 
-# 将符合条件的审批请求交给自动 Reviewer，避免弹出人工确认。
+# 可选 user、auto_review；使用 auto_review 审核符合条件的审批请求。
 approvals_reviewer = "auto_review"
 
-# 允许读写当前 workspace，适合日常编码；不会给出全盘写权限。
+# 可选 read-only、workspace-write、danger-full-access；使用 workspace-write 读写当前 workspace。
 sandbox_mode = "workspace-write"
 
-# 默认使用实时网页搜索，获取最新资料。
+# 可选 disabled、cached、indexed、live；使用 live 获取实时网页资料。
 web_search = "live"
 
-# 单条工具输出写入会话历史时的 token 预算；长日志可按需针对性重跑或截取。
+# 单条工具输出写入会话历史时的 token 预算；长日志可按需重跑或截取。
 tool_output_token_limit = 8000
 
-# 后台终端空轮询最长等待 10 分钟，适合较慢的测试、构建和服务启动。
+# 后台终端空轮询最长等待 600000 毫秒（10 分钟），适合较慢的测试和构建。
 background_terminal_max_timeout = 600000
 
-# 保存会话历史，便于恢复上下文和排查之前的操作。
+# 可选 save-all、none；使用 save-all 保存会话历史，便于恢复和排查。
 history.persistence = "save-all"
 
-# 限制本地历史文件体积，避免长期使用后无限增长；当前为 100 MiB。
+# 将本地历史文件上限设为 104857600 字节（100 MiB）。
 history.max_bytes = 104857600
 
+# 回合结束时调用指定命令并传入通知 JSON；数组依次填写命令路径和参数。
 notify = ["/Users/lilinze/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
 
 [sandbox_workspace_write]
-# 允许 workspace-write 沙盒内的 shell 命令直接访问外网。
+# 可选 true、false；true 允许 workspace-write 沙盒内的 shell 命令访问外网。
 network_access = true
 
-# 除当前 workspace 外，额外允许写入 /tmp，方便测试、构建和临时产物。
+# 在当前 workspace 外额外允许写入 /tmp；可按需列出其他路径。
 writable_roots = ["/tmp"]
 
 [tools.web_search]
-# 保持 top-level web_search = "live"，搜索结果上下文保持中等，避免资料类问题信息不足。
+# 搜索上下文可选 low、medium、high；使用 medium，搜索模式仍由顶层 web_search 指定。
 context_size = "medium"
 
 [agents]
 # 最多同时运行 3 个子 agent thread，不含根 agent。
 max_concurrent_threads_per_session = 3
 
-# V1 multi-agent 最多派生一层子 agent；V2 不使用此设置。
-max_depth = 1
-
 [mcp_servers.openaiDeveloperDocs]
-# 官方 OpenAI/Codex 文档 MCP，用于查询最新配置、模型和 API 文档。
+# 官方 OpenAI/Codex 文档 MCP 地址，用于查询最新配置、模型和 API 文档。
 url = "https://developers.openai.com/mcp"
 
-# 文档 MCP 不作为启动硬依赖，避免网络或服务异常导致 Codex 无法启动。
+# 可选 true、false；false 表示文档 MCP 初始化失败时不阻止 Codex 启动。
 required = false
 
-# 官方文档 MCP 偶尔冷启动或长页面读取较慢，适当放宽超时。
+# MCP 启动和单次工具调用的超时，单位为秒。
 startup_timeout_sec = 20
 tool_timeout_sec = 120
-
-# 项目级信任设置，覆盖全局配置；路径必须绝对且唯一，支持文件系统和 IDE 虚拟路径。
