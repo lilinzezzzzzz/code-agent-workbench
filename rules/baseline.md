@@ -94,7 +94,22 @@ output.
   user home, or arbitrary paths. Respect explicit user-specified locations and
   tool-required directory conventions. Keep final deliverables in their agreed
   locations.
-- Use `~/.agent-backups/<repository absolute path, leading slash removed>/`
+- Do not create backups by default. Ordinary code, documentation, and
+  configuration edits do not require a backup merely because a file will
+  change. Prefer existing Git history, reviewable diffs, and small scoped edits
+  to support recovery.
+- Create a backup only when the user explicitly requests one, or an authorized
+  operation could cause irreversible data loss and existing recovery
+  mechanisms are insufficient. Examples include overwriting irreplaceable
+  content with no version history or performing an irreversible data
+  transformation. Back up only the minimum necessary content; do not create
+  another copy when an adequate recovery copy already exists.
+- Untracked files, uncommitted changes, configuration files, or edits spanning
+  multiple files do not by themselves justify a backup. A backup does not
+  replace required authorization or permit overwriting or discarding existing
+  user changes.
+- When a backup is needed, use
+  `~/.agent-backups/<repository absolute path, leading slash removed>/`
   for backups that must survive across sessions: copies of files or
   configuration taken before high-risk changes, exports, and rollback
   snapshots. Keep one directory per task, `<YYYY-MM-DD>-<topic>/`, mirroring
