@@ -21,8 +21,8 @@
 新增模板键会开始接管目标同名键；从模板删除键不会自动删除目标中的同名键，
 需要移除旧配置时应单独清理目标。
 
-模板为 GPT-6 Sol 设置 `model_context_window = 872000`，对应 Codex 模型目录声明的
-扩展上下文上限。本次更新移除了模板中的 `personality`、`features.js_repl`、
+模板为默认模型 `gpt-6-astra` 设置 `model_context_window = 872000`，按 95% 有效比例
+界面约显示 828K。本次更新移除了模板中的 `personality`、`features.js_repl`、
 `tools.view_image` 和 `agents.job_max_runtime_seconds`，
 并将 `agents.max_threads` 改为 `agents.max_concurrent_threads_per_session`。
 若目标配置此前含有这些旧键，同步后需手动移除，以免旧值继续生效或与新键并存。
