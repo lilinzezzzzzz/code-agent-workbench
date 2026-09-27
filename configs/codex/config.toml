@@ -12,11 +12,11 @@ model_reasoning_effort = "medium"
 # 可选 default（标准）或 fast（加速）；其他档位以模型目录为准。需要时可临时开启 /fast。
 service_tier = "default"
 
-# 可选 auto、concise、detailed、none；使用 concise 输出简短推理摘要。
+# 可选 auto、concise、detailed、none；使用 auto 由模型决定推理摘要形式。
 model_reasoning_summary = "auto"
 
-# 可选 low、medium、high；使用 low 减少冗余输出，模型支持时生效。
-model_verbosity = "low"
+# 可选 low、medium、high；使用 medium 兼顾结论、证据和解释，模型支持时生效。
+model_verbosity = "medium"
 
 # 可选 file、keyring、auto、ephemeral；使用 file 保存凭据，便于插件和 CLI 共享。
 cli_auth_credentials_store = "file"
@@ -24,7 +24,7 @@ cli_auth_credentials_store = "file"
 # 可选 on-request、never 或 granular 细分策略；使用 on-request 按需发起审批。
 approval_policy = "on-request"
 
-# 可选 user、auto_review；使用 auto_review 审核符合条件的审批请求。
+# 可选 user、auto_review；使用 auto_review 审核符合条件的审批请求，保留沙盒边界及必要的人工确认。
 approvals_reviewer = "auto_review"
 
 # 可选 read-only、workspace-write、danger-full-access；使用 workspace-write 读写当前 workspace。

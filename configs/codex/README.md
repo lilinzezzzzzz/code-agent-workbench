@@ -21,6 +21,15 @@
 新增模板键会开始接管目标同名键；从模板删除键不会自动删除目标中的同名键，
 需要移除旧配置时应单独清理目标。
 
+模板默认使用 `medium` 输出详细度和 `auto_review` 审批审核，保留 `on-request`
+审批策略及 `workspace-write` 沙盒边界。
+
+旧 `mcp_servers.computer-use` 属于本机集成配置，模板不接管该区块。确认
+`unified-computer-use` 的 `cua_repl` 浏览器与桌面控制可用后，可在已有的本地
+区块中设置 `enabled = false`，保留启动参数以便恢复。不要仅创建含 `enabled`
+的 MCP 区块：当前 CLI 即使对停用项也要求有效的传输配置。同步会保留本地停用状态；
+不要删除仍可能被新版服务和 `notify` 使用的 Computer Use 程序。
+
 模板为默认模型 `gpt-6-astra` 设置 `model_context_window = 872000`，按 95% 有效比例
 界面约显示 828K。本次更新移除了模板中的 `personality`、`features.js_repl`、
 `tools.view_image` 和 `agents.job_max_runtime_seconds`，
