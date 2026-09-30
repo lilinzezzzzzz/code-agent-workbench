@@ -84,7 +84,13 @@ output.
 
 ## Workspace And Evidence
 
-- Work in the current repository directory. Avoid using git worktree for task isolation, review, or temporary validation, and avoid automatically transferring work to another directory. Preserve ongoing work and uncommitted changes in their current location. Create or switch branches only when the requested workflow requires it, following git/workflow.md.
+- Create or switch branches, or create, switch to, or maintain worktrees,
+  only when required by the user's requested workflow or explicitly requested
+  by the user. If the agent proposes creating a new worktree and the user has
+  not already authorized its creation, explain why it is needed and obtain
+  user approval before creating it.
+- When creating a new worktree, also create and check out a new task branch
+  from the agreed starting ref, unless the user explicitly requests otherwise.
 - Treat existing uncommitted work as user-owned. Inspect relevant diffs before
   overlapping edits; never revert, overwrite, reformat, stage, or delete
   unrelated changes.

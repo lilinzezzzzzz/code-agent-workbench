@@ -6,9 +6,13 @@ must remain within the user's requested workflow.
 
 ## Workspace Safety
 
-- Perform Git operations in the current repository directory. Do not create
-  or switch to another worktree as task preparation. Keep existing worktrees
-  and their metadata untouched unless the user explicitly requests maintenance.
+- Create or switch branches, or create, switch to, or maintain worktrees,
+  only when required by the user's requested workflow or explicitly requested
+  by the user. If the agent proposes creating a new worktree and the user has
+  not already authorized its creation, explain why it is needed and obtain
+  user approval before creating it.
+- When creating a new worktree, also create and check out a new task branch
+  from the agreed starting ref, unless the user explicitly requests otherwise.
 - Inspect `git status --short`, the relevant staged/unstaged diff, current
   branch, and required refs before staging, committing, switching,
   pulling, cherry-picking, merging, rebasing, reverting, resetting, stashing,

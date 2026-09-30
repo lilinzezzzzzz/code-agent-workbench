@@ -11,7 +11,6 @@
 | [git-checkout-branch](git-checkout-branch/SKILL.md) | 根据当前修改推荐分支名，并按技能约定确认后从当前 HEAD 切出新分支 |
 | [git-code-reviewer](git-code-reviewer/SKILL.md) | 显式调用，基于用户指定 base 审查当前 Python 后端分支的完整已提交差异 |
 | [git-commit-helper](git-commit-helper/SKILL.md) | 根据 staged changes 或明确范围生成 Conventional Commit 信息，用户要求提交时执行提交流程 |
-| [git-create-worktree](git-create-worktree/SKILL.md) | 创建或复用任务 worktree，明确分支、路径与 base |
 | [git-draft-pr-or-mr](git-draft-pr-or-mr/SKILL.md) | 根据用户指定 base 和真实 diff 起草 PR/MR 标题与描述 |
 | [git-restack-from-base](git-restack-from-base/SKILL.md) | 基于用户指定 base，在确认后通过 rebase 将分支独有提交重建到新版本分支，保留原分支 |
 
