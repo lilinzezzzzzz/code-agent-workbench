@@ -1,13 +1,13 @@
 #:schema https://developers.openai.com/codex/config-schema.json
 
-# 默认模型；常见选择有 gpt-6-astra、gpt-6-sol、gpt-6-luna，其他可用模型以当前目录为准。
-model = "gpt-6-astra"
+# 默认模型；常见选择有 gpt-6.1-sol、gpt-6-astra、gpt-6-luna，其他可用模型以当前目录为准。
+model = "gpt-6.1-sol"
 
 # 指定 872000 token 的上下文窗口；按 95% 有效比例，界面约显示 828K。
 model_context_window = 872000
 
-# Astra 可选 low、medium、high、xhigh、max；默认用 medium 平衡效果与响应速度。
-model_reasoning_effort = "medium"
+# GPT-6.1 Sol 可选 low、medium、high、xhigh、max；默认用 high 加深推理。
+model_reasoning_effort = "high"
 
 # 可选 default（标准）或 fast（加速）；其他档位以模型目录为准。需要时可临时开启 /fast。
 service_tier = "default"

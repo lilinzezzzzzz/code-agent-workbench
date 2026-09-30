@@ -30,7 +30,7 @@
 的 MCP 区块：当前 CLI 即使对停用项也要求有效的传输配置。同步会保留本地停用状态；
 不要删除仍可能被新版服务和 `notify` 使用的 Computer Use 程序。
 
-模板为默认模型 `gpt-6-astra` 设置 `model_context_window = 872000`，按 95% 有效比例
+模板默认使用 `gpt-6.1-sol` 和 `high` 推理档位，设置 `model_context_window = 872000`，按 95% 有效比例
 界面约显示 828K。本次更新移除了模板中的 `personality`、`features.js_repl`、
 `tools.view_image` 和 `agents.job_max_runtime_seconds`，
 并将 `agents.max_threads` 改为 `agents.max_concurrent_threads_per_session`。
