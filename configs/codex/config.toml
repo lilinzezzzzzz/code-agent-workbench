@@ -73,3 +73,7 @@ required = false
 # MCP 启动和单次工具调用的超时，单位为秒。
 startup_timeout_sec = 20
 tool_timeout_sec = 120
+
+[mcp_servers.context7]
+# 查询第三方库与框架的最新文档和代码示例。
+url = "https://mcp.context7.com/mcp"
