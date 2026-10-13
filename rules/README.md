@@ -1,6 +1,7 @@
 # Rules
 
-本目录维护跨项目的 agent 行为基线和按需加载的技术规则。任务专属流程见
+本目录维护跨项目的 agent 行为基线和按需加载的技术规则，仅适用于技术工作；
+非技术对话自然回应，不套用技术执行流程。任务专属流程见
 [Skills](../skills/README.md)，assistant 运行配置见
 [Configs](../configs/README.md)。
 
@@ -11,9 +12,9 @@
 
 | 路径 | 用途 |
 | --- | --- |
-| [baseline.md](baseline.md) | always-on 入口：指令优先级、授权边界、执行原则和 reference 加载路由 |
+| [baseline.md](baseline.md) | always-on 入口：指令优先级、独立判断与方案审查、授权边界、执行原则和 reference 加载路由 |
 | [references/](references/) | 按受影响行为加载的技术细则，涵盖执行、验证、语言、后端、数据库、AI/RAG 和 Git 等领域 |
-| [reference-loading-test-prompts.md](reference-loading-test-prompts.md) | 用于人工回归规则路由和加载范围的提示词 |
+| [reference-loading-test-prompts.md](reference-loading-test-prompts.md) | 用于人工回归规则路由、加载范围和执行行为的提示词 |
 
 `baseline.md` 中的 `Task-Specific References` 表是加载条件的统一入口。
 assistant 根据任务影响的行为选择 reference，并只解析自身对应的路径；
@@ -79,8 +80,12 @@ DeepSeek Harness 默认安装时只会自动加载用户全局的 `~/.dsh/AGENTS
 ## 维护
 
 - 通用执行边界放在 `baseline.md`，领域细则放在对应 reference，避免重复维护。
+- 独立判断与方案审查由 `baseline.md` 的 `Independent Judgment And Proposal Review`
+  统一定义；审查用户及 agent 自身的方案，同时保留明确约束、授权边界和持续执行要求。
 - 新增、拆分或重命名 reference 时，同时更新入口中的加载表和受影响的引用。
 - 调整加载条件后，使用回归提示词检查应加载与不应加载的场景；提示词不是自动化测试。
+- 调整决策或执行规则后，补充相应行为回归，同时检查必要异议与过度质疑；
+  静态检查不能证明模型实际遵循规则，未运行的会话用例应标为未验证。
 - 修改仓库源文件后再同步；直接编辑同步目标可能在下次同步时丢失。
 
 同步依赖和整体使用方式见[仓库 README](../README.md)。
