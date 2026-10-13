@@ -1,7 +1,8 @@
 # Rules
 
-本目录维护跨项目的 agent 行为基线和按需加载的技术规则，仅适用于技术工作；
-非技术对话自然回应，不套用技术执行流程。任务专属流程见
+本目录维护适用于所有任务的通用协作原则，以及仅适用于技术工作的工程规则。
+非技术任务仍遵循独立判断、授权和证据要求，普通对话保持自然、轻量，
+不套用工程流程。任务专属流程见
 [Skills](../skills/README.md)，assistant 运行配置见
 [Configs](../configs/README.md)。
 
@@ -12,14 +13,27 @@
 
 | 路径 | 用途 |
 | --- | --- |
-| [baseline.md](baseline.md) | always-on 入口：指令优先级、独立判断与方案审查、授权边界、执行原则和 reference 加载路由 |
-| [references/](references/) | 按受影响行为加载的技术细则，涵盖执行、验证、语言、后端、数据库、AI/RAG 和 Git 等领域 |
+| [baseline.md](baseline.md) | always-on 入口：通用协作原则、限定技术范围的工程规则和 reference 加载路由 |
+| [references/](references/) | 仅用于工程任务的按需细则，涵盖执行、验证、语言、后端、数据库、AI/RAG 和 Git 等领域 |
 | [reference-loading-test-prompts.md](reference-loading-test-prompts.md) | 用于人工回归规则路由、加载范围和执行行为的提示词 |
 
-`baseline.md` 中的 `Task-Specific References` 表是加载条件的统一入口。
-assistant 根据任务影响的行为选择 reference，并只解析自身对应的路径；
+`baseline.md` 分为 `General Collaboration` 和 `Engineering Work` 两层。
+前者适用于所有任务，后者只适用于代码、软件系统、基础设施、技术配置和
+工程文档等工作。混合任务只对技术部分应用工程规则；例如编写数据处理脚本
+按工程规则验证，业务结论按通用证据原则审查，不将整份分析变成代码评审。
+
+`Engineering Work` 中的 `Task-Specific References` 表是加载条件的统一入口。
+assistant 先判断当前任务部分是否属于工程范围，再按受影响行为选择 reference，
+并只解析自身对应的路径；
 无法识别 assistant 时不加载这些 task-specific references。Markdown 链接本身
 不代表内容已经加载。具体优先级和授权要求以入口规则为准。
+
+`workflow/` 也属于工程 references；普通文稿、生活规划、业务分析不会仅因
+涉及多个文件、风险、验证、Markdown 格式或外部工具就触发这些规则。
+适用的其他 skills 和工具指令仍按自身范围执行，不自动触发工程 references。
+
+入口规则被注入上下文，不等于其中每一部分都适用于当前任务。话题切换后，
+先前读过的 reference 可能仍在上下文中，但超出当前任务范围时不应继续应用。
 
 ## Reference 分组
 
@@ -79,11 +93,15 @@ DeepSeek Harness 默认安装时只会自动加载用户全局的 `~/.dsh/AGENTS
 
 ## 维护
 
-- 通用执行边界放在 `baseline.md`，领域细则放在对应 reference，避免重复维护。
+- 通用协作原则放在 `baseline.md` 的 `General Collaboration`，工程约束和路由
+  放在 `Engineering Work`，工程领域细则放在对应 reference，避免重复维护。
 - 独立判断与方案审查由 `baseline.md` 的 `Independent Judgment And Proposal Review`
-  统一定义；审查用户及 agent 自身的方案，同时保留明确约束、授权边界和持续执行要求。
+  统一定义，适用于技术与非技术任务；审查用户及 agent 自身的方案，同时保留
+  明确约束、授权边界和持续执行要求，不为普通对话增加形式化审查。
 - 新增、拆分或重命名 reference 时，同时更新入口中的加载表和受影响的引用。
 - 调整加载条件后，使用回归提示词检查应加载与不应加载的场景；提示词不是自动化测试。
+- 调整适用范围后，检查非技术任务、混合任务和话题切换；不能将“不加载工程
+  references”理解为不需要通用独立判断、授权边界或证据核对。
 - 调整决策或执行规则后，补充相应行为回归，同时检查必要异议与过度质疑；
   静态检查不能证明模型实际遵循规则，未运行的会话用例应标为未验证。
 - 修改仓库源文件后再同步；直接编辑同步目标可能在下次同步时丢失。
