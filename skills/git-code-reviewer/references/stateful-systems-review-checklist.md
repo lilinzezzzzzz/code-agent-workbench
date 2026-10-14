@@ -23,6 +23,8 @@ Use only the sections relevant to the change. This is a thinking aid for changes
 
 ## 3. Counterexamples
 
+Where mutable reference data, persisted decisions, or compatibility paths interact, include a sequence that changes state between an initial operation and a later supported call among the selected counterexamples. Prioritize identity, consistency, history preservation, and backward compatibility; do not enumerate every combination.
+
 - Counterexample: the authoritative write succeeds, but the index or cache update fails. What stale state remains and who repairs it?
 - Counterexample: a read races with delete, expiry, or recreation. What can the caller observe?
 - Counterexample: old and new versions run together during rollout. Can producers and consumers interoperate safely?
@@ -33,6 +35,8 @@ Apply the counterexample requirement in [SKILL.md, Validate Conclusions](../SKIL
 ## 4. Compatibility and Rollout
 
 - Does the change affect public API, persisted format, message schema, or cross-service contract?
+- Does validation distinguish explicit input from defaulted or inherited values when the contract gives them different semantics?
+- After reference data changes, do older callers and persisted decisions still behave as contracted? Identify which values must follow current reference data and which must retain their historical snapshot.
 - Can old and new readers and writers coexist during mixed-version rollout?
 - Is rollback safe, or does the new state become unreadable, unrepairable, or semantically ambiguous to older code?
 

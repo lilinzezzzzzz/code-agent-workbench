@@ -10,6 +10,12 @@ Use only the questions relevant to the changed behavior. This is a thinking aid,
 - Can old and new readers, writers, producers, and consumers coexist during rollout and rollback?
 - Were affected tests, schemas, generated artifacts, configuration, and documentation kept aligned?
 
+## Input Completeness
+
+- For imports, parsers, or paginated input, can in-scope data be silently skipped or truncated while the operation reports success or an empty result? Trace completeness through reading, validation, and the final result; distinguish intended filtering from data loss.
+- Which metadata controls iteration or termination, and what happens when it disagrees with actual content? Inspect the reader and relevant analogous handling rather than assuming declared bounds are authoritative.
+- Do validation and resource limits account for actual input, including content outside inaccurate declared bounds?
+
 ## State, Concurrency, and External Effects
 
 - Is authoritative state clear, and do create, update, delete, expire, retry, replay, repair, and rollback paths keep derived state consistent?
