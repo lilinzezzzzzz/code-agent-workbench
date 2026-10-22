@@ -3,11 +3,17 @@
 # 默认模型；常见选择有 gpt-6.1-sol、gpt-6-astra、gpt-6-luna，其他可用模型以当前目录为准。
 model = "gpt-6.1-sol"
 
+# GPT-6.1 Sol 可选 low、medium、high、xhigh、max；默认用 high 加深推理。
+model_reasoning_effort = "high"
+
 # 指定 872000 token 的上下文窗口；按 95% 有效比例，界面约显示 828K。
 model_context_window = 872000
 
-# GPT-6.1 Sol 可选 low、medium、high、xhigh、max；默认用 high 加深推理。
-model_reasoning_effort = "high"
+# 将自动压缩阈值设为 780000 tokens，减少长任务中的压缩频率。
+model_auto_compact_token_limit = 780000
+
+# 按整个活跃上下文统计自动压缩阈值。
+model_auto_compact_token_limit_scope = "total"
 
 # 可选 default（标准）或 fast（加速）；其他档位以模型目录为准。需要时可临时开启 /fast。
 service_tier = "default"
