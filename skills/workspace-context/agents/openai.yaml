@@ -1,4 +1,4 @@
 interface:
   display_name: "Workspace Context"
   short_description: "只读确认工作目录、Git worktree、分支及已暂存、未暂存和未跟踪状态"
-  default_prompt: "使用 $workspace-context 查询当前对话的工作目录、Git worktree 和分支，并汇总当前工作树的 Git 状态。"
+  default_prompt: "使用 $workspace-context 查询工作目录、Git worktree、分支和 Git 状态，按独立 Markdown 列表项排版，状态计数使用子列表。"
