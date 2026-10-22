@@ -1,0 +1,69 @@
+---
+name: workspace-context
+description: 只读查询当前 agent 对话的工作目录、Git worktree 路径、分支和工作树状态。用于“当前工作区在哪”“现在在哪个目录 / worktree / 分支”“当前 worktree 有未提交改动吗”等上下文查询；不负责切换分支、创建 worktree 或处理改动。
+---
+
+# Workspace Context
+
+根据本次查询的实时证据，用中文简洁报告当前执行位置及其 Git 上下文。
+
+## 确定查询位置
+
+- 默认使用当前对话提供的工作目录作为命令执行目录，先运行 `pwd -P` 核实绝对路径；不要使用 skill 安装目录、历史对话路径或其他终端窗口的位置。
+- 用户明确指定目录时，使用该目录并标注“查询目录”，不要把它描述为当前对话的工作目录。
+- 后续 Git 命令使用同一个执行目录，或通过 `git -C "<已确认的绝对路径>"` 指定它。若环境提供多个工作区且无法确定当前目标，列出候选并询问，不要任选一个。
+- 无法执行命令时，只报告对话上下文提供的路径并注明“未实时验证”；worktree、分支和 Git 状态保持未知。
+
+## 读取 Git 上下文
+
+先在已确认的目录分别执行：
+
+```bash
+git rev-parse --is-inside-work-tree
+git rev-parse --is-bare-repository
+```
+
+确认位于工作树内后，执行：
+
+```bash
+git rev-parse --show-toplevel
+git symbolic-ref --quiet --short HEAD
+git rev-parse --verify --short HEAD
+git worktree list --porcelain
+```
+
+- `--show-toplevel` 给出当前 worktree 根目录；当前工作目录可能只是它的子目录，两者应分别报告。
+- 用根目录匹配 `worktree list` 中的完整 `worktree` 路径，不能按目录名、分支名或输出顺序猜当前条目。路径有符号链接时比较规范化路径；有引号或转义时正确解码，必要时读取 `--porcelain -z`，不要按空格切割路径。
+- 匹配的首条记录若不是 `bare`，表示主工作树；其他匹配记录为 linked worktree。列表查询失败或无法匹配时，仍报告已确认的根目录，类型标注“未确认”。不要把 `.git/worktrees/...` 管理目录当作工作树根目录。
+- symbolic ref 成功时使用返回的分支名。若 HEAD 尚无提交，保留分支名并注明“尚无提交”。只有 symbolic ref 表明 HEAD 不是符号引用、且 HEAD commit 可以解析时，才报告 `detached HEAD` 和短 commit ID；不要把 `HEAD` 当成分支名。
+- 明确的“not a git repository”表示非 Git 目录，worktree 和分支为“不适用”。bare repository 没有工作树，应报告“裸仓库，无工作树”，需要时可用 `git rev-parse --absolute-git-dir` 补充仓库位置。
+- 若处于 Git 管理目录内但不在工作树中，明确说明这一状态，不把管理目录当成工作目录对应的 worktree。权限错误、Git 不可用或其他失败应注明原因，不等同于非 Git 目录。
+
+## 读取当前 worktree 的 Git 状态
+
+确认 worktree 根目录后，在该根目录执行以下只读命令，不加 pathspec，确保从子目录发起查询也覆盖整个当前工作树：
+
+```bash
+git --no-optional-locks status --porcelain=v1 --untracked-files=normal --ignore-submodules=none
+```
+
+- 命令成功且输出为空时，报告“干净（无已跟踪改动或未跟踪项）”。忽略文件不计入；这不代表提交已推送或与远端同步。
+- 有输出时，按两列 `XY` 状态汇总已暂存、未暂存、未跟踪和冲突项。先识别 `??` 为未跟踪，`DD`、`AU`、`UD`、`UA`、`DU`、`AA`、`UU` 为冲突；其余记录的 `X` 非空表示已暂存，`Y` 非空表示未暂存。同一路径可能同时属于已暂存和未暂存，分类计数不能直接相加当作唯一文件总数。
+- 未跟踪目录可能折叠为一项，因此使用“项”而不是“文件数”。默认不递归展开未跟踪目录；用户要求完整文件列表时再使用 `--untracked-files=all`。
+- 路径按 worktree 根目录相对路径展示，正确处理引号、空格和转义。需要程序化解析时使用 `-z` 并正确消费重命名的双路径记录，不能按行或空格拆分文件名。
+- 冲突优先提示；子模块变化注明为子模块状态，不深入扫描其仓库。状态查询失败时报告“状态未确认”及原因，不能用空输出推断干净。非 Git 目录或无工作树时，该字段为“不适用”。
+
+## 输出
+
+默认只输出当前目标及状态摘要。有改动时最多展示 5 条状态与路径，冲突优先；更多条目注明已省略，不读取 diff 内容。用户要求列出全部 worktree 时，才根据同一次查询的列表展开并标记当前项，不自动检查其他 worktree 的改动。默认不查询远端信息或扫描仓库内容。
+
+```text
+工作目录：<绝对路径>
+Git worktree：<根目录>（主工作树 / linked worktree）
+当前分支：<分支名 / detached HEAD（短 commit ID）>
+Git 状态：<干净 / 有改动（已暂存 N 项、未暂存 N 项、未跟踪 N 项、冲突 N 项）>
+```
+
+按实际状态替换不适用的字段；尚无提交时在分支后注明。用户仅询问某一项时，可以只回答该项。路径冲突或查询失败时附一行必要说明，不用占位符冒充已确认信息。
+
+此 skill 只读取本地状态，不切换分支、不创建或删除 worktree、不修改 Git 配置，不暂存、stash、丢弃或修复改动，也不 fetch、提交或同步。每次调用重新读取状态，不复用上次查询结果。

@@ -23,10 +23,11 @@
 按工程规则验证，业务结论按通用证据原则审查，不将整份分析变成代码评审。
 
 `Engineering Work` 中的 `Task-Specific References` 表是加载条件的统一入口。
-assistant 先判断当前任务部分是否属于工程范围，再按受影响行为选择 reference，
-并只解析自身对应的路径；
-无法识别 assistant 时不加载这些 task-specific references。Markdown 链接本身
-不代表内容已经加载。具体优先级和授权要求以入口规则为准。
+assistant 先判断当前任务部分是否属于工程范围，再按受影响行为选择 reference。
+解析基准为声明这段加载规则的入口 `AGENTS.md` 同级的 `references/`，不按
+assistant 名称选择目录。入口来源路径必须由加载上下文或已核实的文件证据确定；
+无法确定时报告基准未确认，只继续不依赖这些 references 的工作，不猜测默认路径。
+Markdown 链接本身不代表内容已经加载。具体优先级和授权要求以入口规则为准。
 
 `workflow/` 也属于工程 references；普通文稿、生活规划、业务分析不会仅因
 涉及多个文件、风险、验证、Markdown 格式或外部工具就触发这些规则。
@@ -47,9 +48,14 @@ assistant 先判断当前任务部分是否属于工程范围，再按受影响�
 | [ai/](references/ai/) | AI 应用与 RAG 检索 |
 
 分组只用于组织文件，不代表整组加载。加载表和 reference 内部交叉引用使用
-相对于 assistant 的 `references/` 根目录的完整路径，例如
+相对于声明规则的入口文件同级 `references/` 根目录的完整路径，例如
 `languages/python.md` 和 `workflow/verification.md`。各文件的加载条件仍由
 `baseline.md` 统一维护，不在分组内另设规则入口。
+
+从子目录执行命令、读取嵌套 reference 或加载另一个项目级 `AGENTS.md`，都不
+改变原入口的解析基准；另一个入口若声明自己的 references，则使用它自己的基准。
+仓库维护时源入口名为 `rules/baseline.md`，对应源文件位于同级 `rules/references/`；
+同步后入口名为 `AGENTS.md`，两者保持相同的目录关系。
 
 ## 同步
 
@@ -73,8 +79,9 @@ assistant 先判断当前任务部分是否属于工程范围，再按受影响�
 隐藏文件会被删除，同名文件的本地修改也会被覆盖。需保留的自定义内容应先移出
 该目录。此 README 和回归提示词文件不参与同步。
 
-根目录环境变量只改变同步落点，不会改写 `baseline.md` 内的 reference 路径；
-使用自定义路径时需同时核对实际加载路径。脚本通过 SHA-256 校验文件、
+根目录环境变量改变同步落点；references 随已确认的入口位置解析，无需改写
+规则中的路径。使用自定义根目录时仍须让 agent 能确认实际加载的 `AGENTS.md`
+来源，不能只注入不带来源的文本并假定它知道所在目录。脚本通过 SHA-256 校验文件、
 通过 `diff -qr` 校验目录；实现见 [sync-agents.sh](../sync-agents.sh)。
 
 DeepSeek Harness 默认安装时只会自动加载用户全局的 `~/.dsh/AGENTS.md`（即同步目标

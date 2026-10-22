@@ -234,22 +234,24 @@ apply the loading conditions below. Do not load these references for unrelated
 non-technical work. Other applicable skills and tool instructions retain their
 own scope and do not automatically trigger these engineering references.
 
-Resolve `<relative-path>` only for the active assistant:
+Resolve all task-specific references relative to the directory containing
+the entrypoint AGENTS.md that declares this section.
 
-- Codex: `~/.codex/references/<relative-path>`
-- WorkBuddy: `~/.workbuddy/references/<relative-path>`
-- OpenCode: `~/.config/opencode/references/<relative-path>`
-- ZCode: `~/.zcode/references/<relative-path>`
-- Qoder CN: `~/.qoder-cn/references/<relative-path>`
-- DeepSeek Harness: `~/.dsh/references/<relative-path>`
-- Unknown assistant: do not load task-specific references
-
+The reference root is `<entrypoint-directory>/references/`.
 `<relative-path>` includes the group directory and `.md` extension, for example
-`git/workflow.md`. Resolve reference paths in the table and cross-references
-inside these files from the active assistant's `references/` root, not from the
-current file's directory. Groups organize files only; select individual files
-by their loading conditions, never load an entire group merely because one
-file applies.
+`git/workflow.md`.
+
+Resolve both table entries and cross-references inside reference files
+from this same reference root, regardless of the current working directory,
+other loaded AGENTS.md files, or the reference file currently being read.
+
+Establish the entrypoint's source path from available loading context or
+verified file evidence. If it cannot be established, report the unresolved
+reference root and continue only with work that does not depend on those
+references; do not guess an assistant-specific directory.
+
+Groups organize files only; select individual files by their loading
+conditions, never load an entire group merely because one file applies.
 
 In references, "verify", "confirm", and "establish" mean inspect available
 evidence unless the rule explicitly requires user approval. Gather prerequisites

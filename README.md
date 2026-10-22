@@ -76,14 +76,11 @@ code-agent-workbench/
 - **Git 规范**: 保护用户工作区和历史，仓库约定优先
 - **渐进式披露**: 执行流程、代码库发现、Git、Python、Go、AI 应用、RAG 检索、
   API 路由设计、后端可靠性、数据库访问、Schema/迁移、Markdown 文档和验证细则
-  下沉到 `rules/references/`，同步后分别位于 Codex 的
-  `~/.codex/references/`、WorkBuddy 的 `~/.workbuddy/references/` 或
-  DeepSeek Harness 的 `~/.dsh/references/`。
-  `AGENTS.md` 会集中定义 reference search paths：Codex 只解析
-  `~/.codex/references/`，WorkBuddy 只解析 `~/.workbuddy/references/`，
-  DeepSeek Harness 只解析 `~/.dsh/references/`；
-  无法识别 active assistant 时
-  不加载 task-specific references，也不依赖 Markdown 链接自动展开
+  下沉到 `rules/references/`，同步后位于声明加载规则的 `AGENTS.md`
+  同级 `references/` 目录。加载表和文件内交叉引用统一相对于该根目录解析，
+  不受当前工作目录、其他入口文件或 assistant 名称影响，也支持自定义同步根目录。
+  入口来源路径无法确认时报告解析基准缺失，只继续不依赖这些 references 的工作；
+  不猜测默认安装路径，也不依赖 Markdown 链接自动展开
 - **Harness engineering**: 把 always-on 基线、按需 references、skills
   和同步脚本拆成可演进的 assistant runtime 配置，避免把长期规则散落在
   单次 prompt 中

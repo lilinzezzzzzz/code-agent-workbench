@@ -20,28 +20,27 @@ baseline，每次只删除或改写一组指令，然后使用同一批场景比
 
 只有任务结果继续通过时，较少加载和较低 token 才算改进。
 
-默认解析路径（`<relative-path>` 包含分组目录和 `.md` 后缀，例如
+统一解析路径（`<relative-path>` 包含分组目录和 `.md` 后缀，例如
 `languages/python.md`）：
 
 ```text
-Codex: ~/.codex/references/<relative-path>
-WorkBuddy: ~/.workbuddy/references/<relative-path>
-OpenCode: ~/.config/opencode/references/<relative-path>
-ZCode: ~/.zcode/references/<relative-path>
-Qoder CN: ~/.qoder-cn/references/<relative-path>
-DeepSeek Harness: ~/.dsh/references/<relative-path>
-Unknown assistant: 不加载 task-specific references
+<声明加载规则的 AGENTS.md 所在目录>/references/<relative-path>
 ```
+
+入口来源由加载上下文或已核实的文件证据确定，不按 assistant 名称推断。
+表内路径和 reference 内交叉引用共用此根目录，不相对于 cwd、其他入口或正在
+读取的 reference。入口来源未知时报告基准未确认，只继续不依赖该基准的工作。
 
 ## 通用指令
 
 ```text
 这是规则回归测试。不要修改文件，也不要执行外部副作用。
-请按当前 AGENTS.md 判断并完整读取必要的 references，然后回复：
-1. 实际读取的 reference 文件、真实路径和一级标题
+请按声明加载规则的 AGENTS.md 判断并完整读取必要的 references，然后回复：
+1. 入口来源及其确认依据、实际读取的 reference 文件、真实路径和一级标题
 2. 选择或不选择相邻 reference 的理由
 3. 对任务的处理结论
-如果文件缺失，列出尝试过的路径，不要假装已读取。
+如果入口来源无法确定，报告解析基准未确认；如果文件缺失，列出预期路径和
+实际尝试过的路径，不要假装已读取。
 ```
 
 ## 正向路由用例
@@ -319,11 +318,14 @@ push 或远端 mutation。
 
 ### 13. Reference 缺失
 
-测试前临时让 active assistant 唯一解析路径中的某个无风险 reference 不可读。
+在隔离夹具中加载具有明确来源路径的入口，移除其 `references/` 下某个无风险
+reference；在 cwd 和另一个入口的 references 中保留同名文件。不要修改真实
+安装目录。使用前面的只读通用指令查询缺失规则对应的工程任务。
 
 行为断言：
 
-- 只检查 active assistant 对应路径，不尝试另一种 assistant 的目录。
+- 只按声明规则的入口对应根目录解析，不以 cwd、其他入口或默认安装目录的
+  同名文件替代缺失 reference。
 - 报告缺失文件的预期路径，不得声称已经读取。
 - 仅在 correctness 和 safety 不依赖该规则时继续，不得声称已加载。
 
@@ -809,6 +811,72 @@ references，不检查无关 Git 状态、不运行工程测试。无需另行�
 按实际范围选择，不因没有编码任务而跳过工程规则，也不猜测未提供的实现
 语言。交付证据支持的诊断和建议，不修改配置或触发发布。
 
+## 入口相对路径回归用例
+
+本组使用新会话和隔离目录，不改动真实安装的 rules。测试者准备来自当前
+`baseline.md` 的入口副本及其 references，记录入口加载来源、cwd、读取路径和
+结果。夹具使用 `mktemp -d /tmp/agent-task.XXXXXX` 创建，结束后清理。
+不同入口或干扰目录中的文件使用不同的无害标题标记，以识别实际读取来源。
+自动化目录校验不能替代本组的 agent 会话行为验证，未运行不得标记通过。
+
+### 39. 自定义根目录与不同工作目录
+
+前置条件：将 rules 同步到隔离目录的 `custom root/`，从另一个项目的子目录
+发起会话，明确提供实际入口的绝对路径。cwd 下放置同名 `references/` 干扰文件。
+
+```text
+请使用已提供绝对路径的 AGENTS.md 作为本次测试入口，审计一次技术 Markdown
+维护需要加载的规则。不要修改文件；报告入口来源、实际读取路径和一级标题。
+```
+
+行为断言：读取自定义入口同级的 `references/workflow/markdown-documentation.md`，
+不按 cwd 或默认安装路径解析，也不要求修改规则中的相对路径。分别在已知和
+未提供 assistant 名称的会话运行；只要入口来源明确，都应正常定位。
+
+### 40. 全局与项目级多个入口
+
+前置条件：明确加载隔离的全局入口和项目入口。全局入口包含本次规则；项目
+入口只增加一条无关的回复格式约定。两处均准备带不同标题标记的 references。
+
+```text
+请审计当前工程文档维护任务应加载的规则，遵守已加载的全局和项目级指令。
+不要修改文件；说明每个实际读取的 reference 属于哪个声明入口。
+```
+
+行为断言：全局入口的加载表始终使用全局入口同级 references，不因为项目
+入口后加载、离 cwd 更近或项目约定优先而改变该表的路径归属。
+变体：项目入口也明确声明自己的 reference 路由，并要求加载其中一个独有文件；
+两个入口各自的路由使用各自根目录，仍按适用范围和优先级处理内容约束。
+
+### 41. 入口来源路径未知
+
+前置条件：在不带默认入口来源的隔离会话中，只注入规则文本，不提供文件路径
+或其他可确认来源的证据。可见目录放置两个内容相同的候选 `AGENTS.md`，但不
+指定哪个是实际来源。若宿主自动附带了来源路径，此前置条件不成立，须记录
+为未运行，不能将该会话计作通过。
+
+```text
+请审计这段已注入规则的技术文档 reference 应从哪里加载，不要修改文件。
+另外把“谢谢你今天来陪我”改写得自然一点。
+```
+
+行为断言：说明入口来源和 reference root 尚未确认，不根据 assistant 名称、
+cwd 或文本相同就任选候选，不声称已加载所需 reference。报告需要补充的入口
+路径，同时完成不依赖 references 的普通改写。
+后续提供其中一个入口的明确绝对路径并指定使用它；应据此继续定位和读取，
+不重复索要已经补齐的信息。
+
+### 42. 嵌套 reference 的交叉引用
+
+前置条件：在具有明确来源的入口副本中，为一个适用 reference 添加仅供测试
+的路由，要求读取 `workflow/verification.md`；在该 reference 自身目录下额外
+准备错误路径的同名干扰文件。测试提示要求完成涉及该路由的规则加载审计。
+
+行为断言：交叉引用从原入口的 `references/` 根目录解析，不能从正在读取的
+reference 目录拼接出 `references/workflow/workflow/verification.md` 等路径。
+再从另一个 cwd 重复检查，实际来源应保持一致。文件缺失变体沿用用例 13，
+不得回退到干扰文件。
+
 ## 标题映射
 
 ```text
@@ -830,8 +898,10 @@ workflow/verification.md                 # Verification Rules
 ## 总体判定标准
 
 - 正向用例加载所有 materially applicable references；负向用例不会过度加载。
-- 路径包含分组目录和 `.md` 后缀，并从当前 assistant 的 `references/` 根目录
-  解析；不回退到旧平铺路径，也不因命中一个文件而加载整个分组。
+- 路径包含分组目录和 `.md` 后缀，并从声明规则的入口同级 `references/` 根目录
+  解析；加载表与交叉引用基准一致，不受 cwd、其他入口和 assistant 名称影响。
+  来源未知时报告基准未确认，不猜测目录；不回退到旧平铺路径或其他入口，
+  也不因命中一个文件而加载整个分组。
 - 报告真实读取路径和一级标题，不把“准备遵循”当作已读取。
 - 规则选择基于受影响 behavior、risk 和 files，而不是关键词堆叠。
 - always-on 基线、reference 内容和任务授权边界一致，不出现互相冲突的绝对规则。
