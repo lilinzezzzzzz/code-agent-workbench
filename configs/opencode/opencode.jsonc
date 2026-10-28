@@ -45,6 +45,16 @@
       // 不用 opencode-pty 的 ./v2 子路径导出：V2 2.0.11 的 package 只接受
       // 「包名[+版本]」形式的 npm/Git spec，带子路径会按 Git 短写解析并安装失败。
       "package": "opencode-pty-v2"
+    },
+    {
+      // 浏览器内批注 plan / diff / PR，反馈直接回传 agent。
+      // workflow=plan-agent：只给内置 plan agent 注册 submit_plan，不影响 build；
+      // 其他场景用 /plannotator-review、/plannotator-annotate、/plannotator-last。
+      // 锁定版本便于复现，升级时改这里的版本号。
+      "package": "@plannotator/opencode@0.28.30",
+      "options": {
+        "workflow": "plan-agent"
+      }
     }
   ],
 
