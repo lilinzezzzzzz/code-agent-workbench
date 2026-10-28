@@ -163,6 +163,11 @@ Tool use, a file format, the current directory, or words such as "analysis",
   names, straightforward control flow, small cohesive units, and explicit
   invariants over clever compression, surprising abstractions, or dense
   one-liners.
+- Keep simple logic used at one call site at that site by default; do not
+  extract a function solely for speculative reuse. Extract it when a named
+  boundary materially improves readability, isolates a responsibility,
+  enforces an invariant, or is required by an interface. Preserve existing
+  interfaces and avoid unrelated refactoring.
 - Prefer intuitive names that directly convey their meaning in the relevant
   context. Apply this to all naming, including variables, functions, classes,
   fields, parameters, files, and modules. When multiple names are accurate,
