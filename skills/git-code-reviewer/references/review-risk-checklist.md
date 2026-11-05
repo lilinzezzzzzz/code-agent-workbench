@@ -35,7 +35,7 @@ Use only the questions relevant to the changed behavior. This is a thinking aid,
 
 ## Evidence and Verification
 
-- Does each finding cite inspected evidence and a direct user or operational impact?
+- Does each finding cite inspected evidence and a direct user, operational, or concrete maintenance impact?
 - Were immediate callers, callees, and nearest tests inspected when the conclusion depends on shared behavior?
 - Were plausible counterexamples used to challenge high-risk conclusions?
 - Is an unverified concern phrased as an assumption, question, or residual risk rather than a confirmed defect?

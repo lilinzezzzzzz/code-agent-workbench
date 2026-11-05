@@ -1,6 +1,6 @@
 interface:
   display_name: "Git Code Reviewer"
   short_description: "审查 Python 后端完整分支或当前 staged 代码"
-  default_prompt: "Use $git-code-reviewer to review my Python backend changes in the scope I specify: current staged changes, or the complete branch before PR/MR submission against my explicit base ref. If the scope is unspecified, ask which mode I want."
+  default_prompt: "Use $git-code-reviewer to review my Python backend changes for correctness, complexity, readability, maintainability, and simplicity: current staged changes, or the complete branch before PR/MR submission against my explicit base ref. If the scope is unspecified, ask which mode I want. Separate issues to address from evidence-backed optional improvements; report without editing code."
 policy:
   allow_implicit_invocation: false

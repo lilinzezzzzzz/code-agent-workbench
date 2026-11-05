@@ -1,11 +1,18 @@
 ---
 name: git-code-reviewer
-description: Review a Python backend service's complete current branch against a user-specified base before PR/MR submission, or review its current staged changes. Invoke explicitly with $git-code-reviewer for whole-branch or staged review (检查当前 staged 代码 / 检查暂存区); do not use for unstaged workspace changes, individual commits or arbitrary diffs, localized implementation checks, or debugging.
+description: Review a Python backend service's complete current branch against a user-specified base before PR/MR submission, or its current staged changes, for correctness, complexity, readability, and maintainability. Invoke explicitly with $git-code-reviewer for whole-branch or staged review (检查当前 staged 代码 / 检查暂存区); do not use for unstaged workspace changes, individual commits or arbitrary diffs, localized implementation checks, or debugging.
 ---
 
 # Code Review
 
 Turn a change set into evidence-backed findings. Prioritize correctness and operational risk over style.
+
+## Review Principles
+
+- Treat correctness, safety, and compatibility as constraints. Assess readability and maintainability in the context of business semantics, callers, existing interfaces, and project conventions.
+- Simplify to reduce the cost of understanding and changing code: remove unnecessary concepts, state, branches, indirection, and dependencies. Fewer lines or denser expressions are not goals; function length, parameter count, nesting depth, and complexity scores are clues rather than findings.
+- Recognize necessary business complexity. Favor local, incremental, easy-to-verify adjustments that preserve boundary cases, error handling, and business constraints. Recommend larger refactors only when concrete benefits and prerequisites justify their cost.
+- Report material problems or improvements with a clear practical benefit. Follow existing conventions for stylistic choices; do not invent findings to fill a checklist.
 
 ## Scope Gate
 
@@ -46,6 +53,7 @@ Turn a change set into evidence-backed findings. Prioritize correctness and oper
 ### 2. Load Relevant Review Guidance
 
 - Load [references/review-risk-checklist.md](./references/review-risk-checklist.md) for the cross-cutting review pass.
+- Load [references/code-quality-review-checklist.md](./references/code-quality-review-checklist.md) to assess complexity, readability, maintainability, and opportunities to simplify the changed implementation. Apply only the relevant questions.
 - Load only the references matching the changed behavior:
   - Python backend, FastAPI, Pydantic, SQLAlchemy, Alembic, or workers → [references/python-backend-review-checklist.md](./references/python-backend-review-checklist.md)
   - Persistence, caches, indexes, status transitions, or multi-step workflows → [references/stateful-systems-review-checklist.md](./references/stateful-systems-review-checklist.md)
@@ -55,16 +63,17 @@ Turn a change set into evidence-backed findings. Prioritize correctness and oper
 ### 3. Validate Conclusions
 
 - Treat inspected code, configuration, tests, schemas, and command output as evidence. Keep inference and unverified assumptions separate from confirmed facts.
+- Support maintainability conclusions with a concrete execution path, call relationship, or representative business-change scenario. Before recommending deletion, merging, or refactoring, check compatibility, boundary and error semantics, resource cleanup, and concurrency constraints. Explain the benefit, cost, and behavior that must be preserved.
 - For high-risk stateful changes, challenge the conclusions with at least two relevant concrete counterexamples such as partial retry, race, mixed-version rollout, or replay after cleanup. Static reasoning is acceptable; distinguish it from executed tests.
 - Run focused, non-destructive checks when they can materially confirm or falsify a concern, and preserve required repository checks. Match validation to impact and risk. Do not add implementation-mirroring tests for low-impact, reversible changes. After relevant checks pass, broaden or repeat validation only for new changes, failures, or unresolved concerns. Report observed outcomes and material verification gaps.
 - Attribute failed tests, lint, and type checks to the change, a pre-existing failure, or the environment where evidence permits. When useful and safe, run the same check on the comparison's before-version. Otherwise report attribution as unknown; a failing check alone does not establish a regression. Mocks, SQLite, or other substitutes only validate the behavior and environment they exercise, not production service or database compatibility.
 - Reconcile the material invariants with inspected evidence or explicit coverage gaps before concluding. Passing tests support only the scenarios exercised, not unchecked paths or operation sequences.
-- Before finishing, check the changed path for dead parameters, unreachable branches, and obsolete wrappers.
+- Before finishing, check the changed path for dead parameters, unreachable branches, and obsolete wrappers. Inspect relevant callers and dynamic registration or configuration before calling code unused; report evidence gaps when its purpose cannot be established.
 - Before reporting, verify that the reviewed HEAD and, in staged mode, index still match the inspected snapshot. If they changed, recheck affected conclusions or explicitly limit the report to the old snapshot. Confirm every changed file received a risk assessment and disclose material coverage gaps.
 
 ### 4. Report
 
 - Load and follow [references/review-output-template.md](./references/review-output-template.md).
-- Report only concrete, actionable findings, ordered by user impact. Combine symptoms that share one root cause.
+- Start with a short overall judgment, then distinguish issues to address from optional improvements, ordered by actual impact within each category. Keep both concrete and actionable, and combine symptoms that share one root cause. End with the most valuable next action; apply the template's evidence prerequisites before recommending retaining the current implementation.
 - Report a missing test as a finding only when it hides a concrete contract, migration, security, concurrency, or failure-path risk.
-- Review requests authorize inspection and findings. Patch code only when the user requests implementation. Prepare review comments when requested, and publish them only after satisfying applicable explicit approval requirements. Reuse approval that remains valid for the same target, content, and scope.
+- Review requests authorize inspection, a report, and brief local examples where needed. Patch code only when the user requests implementation. Prepare review comments when requested, and publish them only after satisfying applicable explicit approval requirements. Reuse approval that remains valid for the same target, content, and scope.
