@@ -57,9 +57,9 @@ code-agent-workbench/
 
 ### rules/
 
-规则源文件。同步 Codex 或 WorkBuddy 时，`rules/baseline.md` 会写入对应根目录的
-`AGENTS.md`，`rules/references/` 下的规则文件会同步到对应根目录的
-`references/`，供渐进式披露读取。默认根目录分别为 `~/.codex` 和
+规则源文件。同步 rules 时，脚本将安装元数据与 `rules/baseline.md` 原正文组合为
+目标根目录的 `AGENTS.md`，`rules/references/` 下的规则文件会同步到对应根目录的
+`references/`，供渐进式披露读取。Codex、WorkBuddy 的默认根目录分别为 `~/.codex` 和
 `~/.workbuddy`；DeepSeek Harness 的默认根目录是 `~/.dsh`，即用户全局
 `AGENTS.md` 所在位置。当前 references 覆盖执行流程、
 代码库发现、Git 工作流、Python、Go、AI 应用、RAG 检索、API 路由设计、后端可靠性、
@@ -76,11 +76,12 @@ code-agent-workbench/
 - **Git 规范**: 保护用户工作区和历史，仓库约定优先
 - **渐进式披露**: 执行流程、代码库发现、Git、Python、Go、AI 应用、RAG 检索、
   API 路由设计、后端可靠性、数据库访问、Schema/迁移、Markdown 文档和验证细则
-  下沉到 `rules/references/`，同步后位于声明加载规则的 `AGENTS.md`
-  同级 `references/` 目录。加载表和文件内交叉引用统一相对于该根目录解析，
-  不受当前工作目录、其他入口文件或 assistant 名称影响，也支持自定义同步根目录。
-  入口来源路径无法确认时报告解析基准缺失，只继续不依赖这些 references 的工作；
-  不猜测默认安装路径，也不依赖 Markdown 链接自动展开
+  下沉到 `rules/references/`，同步时写入 `Instruction file` 和 `Reference root`
+  的绝对路径。两项按需使用，不可用时跳过对应项，不搜索、推导或补齐。
+  加载表和文件内交叉引用统一使用本段规则的显式根目录，不受 cwd、其他入口
+  或 assistant 名称影响。所需引用缺少可用根目录时报告 `Unresolved`，继续独立工作；
+  根目录确定且精确路径证实不存在时才报告 `Missing`，读取失败与未加载分别报告。
+  缺少元数据时不回退到其他目录，也不依赖 Markdown 链接自动展开
 - **Harness engineering**: 把 always-on 基线、按需 references、skills
   和同步脚本拆成可演进的 assistant runtime 配置，避免把长期规则散落在
   单次 prompt 中
@@ -180,8 +181,9 @@ skills/<skill-name>/
   `AGENTS.md` 和整个 `references/`，并清理旧平铺文件（包括旧的 `ai-rag.md`）。
   项目中手写的旧路径引用需一并迁移；具体分组和迁移说明见
   [Rules README](rules/README.md)。
-- **完整性校验**: Codex config 使用 TOML 解析和合并结果校验；其他文件使用
-  SHA-256，目录使用 `diff -qr`
+- **完整性校验**: Codex config 使用 TOML 解析和合并结果校验；`AGENTS.md` 使用
+  包含目标路径元数据的完整生成文件校验安装副本，文件使用 SHA-256，目录使用
+  `diff -qr`
 - **依赖要求**: 需要 `diff`；`config` 流程选择 `codex` 时额外需要 `uv` 和 Python
   3.11+。`uv` 根据项目 `pyproject.toml` 创建或复用虚拟环境；文件校验会
   优先使用 `sha256sum`，并兼容 `shasum` 或 `openssl`

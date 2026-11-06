@@ -51,6 +51,116 @@ class SyncAgentRulesTest(unittest.TestCase):
                     target_entry.read_bytes(), source_entry.read_bytes()
                 )
 
+    def assert_agents_file(self, target_root: Path) -> None:
+        contents = (target_root / "AGENTS.md").read_bytes()
+        metadata, separator, body = contents.partition(b"\n\n")
+        self.assertEqual(separator, b"\n\n")
+        entries = re.findall(
+            r"^(Instruction file|Reference root): (.+)$",
+            metadata.decode("utf-8"),
+            re.MULTILINE,
+        )
+        self.assertEqual(len(entries), 2)
+        absolute_root = target_root.resolve()
+        self.assertEqual(
+            dict(entries),
+            {
+                "Instruction file": str(absolute_root / "AGENTS.md"),
+                "Reference root": f"{absolute_root / 'references'}/",
+            },
+        )
+        self.assertEqual(body, (ROOT / "rules" / "baseline.md").read_bytes())
+
+    def test_rules_metadata_uses_absolute_paths_and_is_stable(self) -> None:
+        root_names = ("relative assistant", "规则 $(touch injected) `literal` '& root")
+        for root_name in root_names:
+            with (
+                self.subTest(root=root_name),
+                tempfile.TemporaryDirectory() as temporary_directory,
+            ):
+                directory = Path(temporary_directory)
+                target = directory / root_name
+                environment = os.environ.copy()
+                environment["CODEX_ROOT"] = root_name
+                installed_contents = []
+
+                for _ in range(2):
+                    result = subprocess.run(
+                        ["bash", str(SYNC_SCRIPT)],
+                        input="rules\ncodex\n",
+                        text=True,
+                        capture_output=True,
+                        check=False,
+                        cwd=directory,
+                        env=environment,
+                    )
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assert_agents_file(target)
+                    installed_contents.append((target / "AGENTS.md").read_bytes())
+
+                self.assertEqual(installed_contents[0], installed_contents[1])
+                self.assertFalse((directory / "injected").exists())
+                self.assert_directory_equal(
+                    ROOT / "rules" / "references", target / "references"
+                )
+
+    def test_rules_metadata_uses_physical_installation_path(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            directory = Path(temporary_directory)
+            physical_root = directory / "physical root"
+            physical_root.mkdir()
+            linked_root = directory / "linked root"
+            linked_root.symlink_to(physical_root, target_is_directory=True)
+            environment = os.environ.copy()
+            environment["CODEX_ROOT"] = str(linked_root)
+
+            result = subprocess.run(
+                ["bash", str(SYNC_SCRIPT)],
+                input="rules\ncodex\n",
+                text=True,
+                capture_output=True,
+                check=False,
+                cwd=ROOT,
+                env=environment,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assert_agents_file(linked_root)
+            self.assertTrue(linked_root.is_symlink())
+
+    def test_rules_metadata_rejects_line_breaks_in_installation_path(self) -> None:
+        for root_name in ("assistant\nroot", "assistant\rroot", "assistant\n"):
+            with (
+                self.subTest(root=root_name),
+                tempfile.TemporaryDirectory() as temporary_directory,
+            ):
+                directory = Path(temporary_directory)
+                target = directory / root_name
+                target.mkdir()
+                linked_root = directory / "linked root"
+                linked_root.symlink_to(target, target_is_directory=True)
+
+                for configured_root in (target, linked_root):
+                    with self.subTest(configured_root=str(configured_root)):
+                        environment = os.environ.copy()
+                        environment["CODEX_ROOT"] = f"{configured_root}/."
+                        result = subprocess.run(
+                            ["bash", str(SYNC_SCRIPT)],
+                            input="rules\ncodex\n",
+                            text=True,
+                            capture_output=True,
+                            check=False,
+                            cwd=ROOT,
+                            env=environment,
+                        )
+
+                        self.assertEqual(result.returncode, 1)
+                        self.assertIn(
+                            "Rules target path cannot contain line breaks.",
+                            result.stderr,
+                        )
+                        self.assertFalse((target / "AGENTS.md").exists())
+
     def test_syncs_rules_to_workbuddy_root(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             directory = Path(temporary_directory)
@@ -74,10 +184,7 @@ class SyncAgentRulesTest(unittest.TestCase):
             self.assertIn(
                 "2) workbuddy -> AGENTS.md + references", result.stderr
             )
-            self.assertEqual(
-                (workbuddy_root / "AGENTS.md").read_bytes(),
-                (ROOT / "rules" / "baseline.md").read_bytes(),
-            )
+            self.assert_agents_file(workbuddy_root)
 
             source_references = ROOT / "rules" / "references"
             target_references = workbuddy_root / "references"
@@ -117,7 +224,11 @@ class SyncAgentRulesTest(unittest.TestCase):
             self.assertEqual(
                 workbuddy_result.returncode, 0, workbuddy_result.stderr
             )
-            self.assert_directory_equal(codex_root, workbuddy_root)
+            self.assert_agents_file(codex_root)
+            self.assert_agents_file(workbuddy_root)
+            self.assert_directory_equal(
+                codex_root / "references", workbuddy_root / "references"
+            )
 
     def test_rules_mirror_references_without_removing_sibling_content(self) -> None:
         targets = (
@@ -166,10 +277,7 @@ class SyncAgentRulesTest(unittest.TestCase):
 
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assert_directory_equal(ROOT / "rules" / "references", references)
-                self.assertEqual(
-                    (target / "AGENTS.md").read_bytes(),
-                    (ROOT / "rules" / "baseline.md").read_bytes(),
-                )
+                self.assert_agents_file(target)
                 self.assertEqual(skill.read_text(encoding="utf-8"), "personal skill")
                 self.assertEqual(config.read_text(encoding="utf-8"), "# personal config")
 
@@ -194,10 +302,7 @@ class SyncAgentRulesTest(unittest.TestCase):
 
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("6) dsh -> AGENTS.md + references", result.stderr)
-            self.assertEqual(
-                (dsh_root / "AGENTS.md").read_bytes(),
-                (ROOT / "rules" / "baseline.md").read_bytes(),
-            )
+            self.assert_agents_file(dsh_root)
             self.assert_directory_equal(
                 ROOT / "rules" / "references", dsh_root / "references"
             )
@@ -218,10 +323,7 @@ class SyncAgentRulesTest(unittest.TestCase):
                     env=environment,
                 )
                 self.assertEqual(result.returncode, 0, result.stderr)
-                self.assertEqual(
-                    (Path(directory) / ".dsh" / "AGENTS.md").read_bytes(),
-                    (ROOT / "rules" / "baseline.md").read_bytes(),
-                )
+                self.assert_agents_file(Path(directory) / ".dsh")
 
     def test_qoder_cn_defaults_to_home_dot_qoder_cn(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -242,10 +344,7 @@ class SyncAgentRulesTest(unittest.TestCase):
 
             self.assertEqual(result.returncode, 0, result.stderr)
             target = directory / ".qoder-cn"
-            self.assertEqual(
-                (target / "AGENTS.md").read_bytes(),
-                (ROOT / "rules" / "baseline.md").read_bytes(),
-            )
+            self.assert_agents_file(target)
             self.assert_directory_equal(
                 ROOT / "rules" / "references", target / "references"
             )
@@ -287,7 +386,7 @@ class SyncAgentRulesTest(unittest.TestCase):
 
             self.assertEqual(result.returncode, 0, result.stderr)
             workbuddy_root = directory / ".workbuddy"
-            self.assertTrue((workbuddy_root / "AGENTS.md").is_file())
+            self.assert_agents_file(workbuddy_root)
             self.assertTrue((workbuddy_root / "references").is_dir())
 
     def test_rejects_empty_workbuddy_root(self) -> None:
@@ -409,10 +508,7 @@ class SyncAgentRulesTest(unittest.TestCase):
             self.assertIn(
                 "3) opencode -> AGENTS.md + references", result.stderr
             )
-            self.assertEqual(
-                (opencode_root / "AGENTS.md").read_bytes(),
-                (ROOT / "rules" / "baseline.md").read_bytes(),
-            )
+            self.assert_agents_file(opencode_root)
 
             source_references = ROOT / "rules" / "references"
             target_references = opencode_root / "references"

@@ -146,7 +146,10 @@ or authorized inspection. Do not inspect a repository unrelated to the task.
   Do not force engineering reports or checklists onto ordinary conversation.
 - Include a `References` block only for agent-rule or reference maintenance,
   missing or conflicting references, or when the user requests a loading audit.
-  List actual loaded paths and state `Missing: none` when none were unavailable.
+  List actual loaded paths and separately report outstanding states for
+  required or attempted references using the evidence distinctions below.
+  State `Missing: none` only when all such references have been resolved and
+  read successfully; do not inspect unrelated references to fill the block.
 
 ## Engineering Work
 
@@ -206,26 +209,6 @@ Tool use, a file format, the current directory, or words such as "analysis",
   multiple files do not by themselves justify a backup. A backup does not
   replace required authorization or permit overwriting or discarding existing
   user changes.
-- When a backup is needed, use
-  `~/.agent-backups/<repository absolute path, leading slash removed>/`
-  for backups that must survive across sessions: copies of files or
-  configuration taken before high-risk changes, exports, and rollback
-  snapshots. Keep one directory per task, `<YYYY-MM-DD>-<topic>/`, mirroring
-  the original repo-relative path inside it so recovery is a direct copy back.
-  Keeping the store outside the repository keeps it out of the working tree,
-  repository search, and image build contexts; create it with `mkdir -p`
-  before first use.
-- Unlike `/tmp/agent-task.XXXXXX`, which the system purges after a few days,
-  this store is never purged automatically: keep nothing temporary in it, and
-  remove a task directory once the change it protects is settled. Choosing
-  between the two locations is a convention, not a hard rule.
-- The store may hold real configuration and credential copies. Before
-  restoring to a target path, compare the snapshot against the live file and
-  restore only when the snapshot is newer or the live file is unchanged; when
-  the live file is newer, report the path and ask instead of overwriting.
-  Content already present when the task starts belongs to the user: do not
-  clean it up automatically. Read from the store only for recovery,
-  comparison, or rollback, never as evidence of current behavior.
 - At task completion, remove temporary content created by the current task
   once it is no longer in use or needed. If retaining files for recovery or
   diagnosis, report their paths and purpose. Never clean up another task's or
@@ -239,21 +222,29 @@ apply the loading conditions below. Do not load these references for unrelated
 non-technical work. Other applicable skills and tool instructions retain their
 own scope and do not automatically trigger these engineering references.
 
-Resolve all task-specific references relative to the directory containing
-the entrypoint AGENTS.md that declares this section.
+Use the `Instruction file` and `Reference root` installation metadata only
+when usable locations are provided and the task requires them. A usable
+location is an explicit, unambiguous absolute path, not proof of existence or
+readability. Skip unavailable entries without searching for, inferring, or
+completing their locations, including deriving one entry from the other.
+These entries do not require rereading the instruction file or enumerating
+the reference directory. They record installation locations, not proof of
+which file the host loaded at runtime.
 
-The reference root is `<entrypoint-directory>/references/`.
+Resolve each task-specific reference as `<Reference root>/<relative-path>`.
 `<relative-path>` includes the group directory and `.md` extension, for example
-`git/workflow.md`.
+`git/workflow.md`. If a required reference has no usable explicit root, report
+`Unresolved` and continue only with work that does not depend on that reference.
 
 Resolve both table entries and cross-references inside reference files
 from this same reference root, regardless of the current working directory,
-other loaded AGENTS.md files, or the reference file currently being read.
+other loaded instruction files, or the reference file currently being read.
 
-Establish the entrypoint's source path from available loading context or
-verified file evidence. If it cannot be established, report the unresolved
-reference root and continue only with work that does not depend on those
-references; do not guess an assistant-specific directory.
+For required or attempted references, report `Missing` only after the reference
+root is established and the exact resolved path is confirmed absent. If a read
+fails without establishing absence, report `Unreadable`. An existing file not
+yet read is `Not loaded`; an unchecked path is not evidence of absence. Do not
+inspect unrelated references solely to populate these states.
 
 Groups organize files only; select individual files by their loading
 conditions, never load an entire group merely because one file applies.
