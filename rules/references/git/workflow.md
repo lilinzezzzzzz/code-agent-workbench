@@ -93,16 +93,50 @@ must remain within the user's requested workflow.
   artifacts, and run checks appropriate to the transplanted behavior. Report
   original and new commit IDs when cherry-pick created new commits.
 
+## Commit Messages
+
+- Follow applicable user requirements and repository commit-message conventions.
+  When no format convention is specified, default to
+  [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/).
+  This default is a workflow choice, not a requirement imposed by the specification.
+- When using Conventional Commits, use
+  `<type>[optional scope][optional !]: <description>`. Require a noun type label
+  and a short, non-empty description after `: `. An optional scope is a noun
+  naming a codebase area, enclosed in parentheses. Optional `!` goes immediately
+  before `:`. Bracketed parts in this notation are not literal text.
+- Use `feat` for new features and `fix` for bug fixes. Other types are allowed;
+  common type lists are not closed enums required by the specification.
+- Mark breaking changes of any type with `!`, an uppercase
+  `BREAKING CHANGE: <description>` footer (equivalently `BREAKING-CHANGE:`),
+  or both. Whenever `!` is used, describe the breaking change in the title as
+  well; a footer is optional. Migration guidance may go in the body or footer.
+- Body and footers are optional. Separate a body or footer section from the
+  title with a blank line, and a footer section from a preceding body with a
+  blank line. Bodies are free-form; footers use a
+  word token followed by `: ` or ` #` and a string value. Replace whitespace
+  in tokens with hyphens, except for `BREAKING CHANGE`. Footer values may span
+  lines until the next valid footer token/separator pair.
+- Language, lowercase types, imperative wording, final punctuation, and length
+  limits are writing or repository conventions, not specification requirements.
+  Apart from the uppercase breaking-change footer tokens, do not reject tokens
+  solely for casing. Preserve code identifiers as written.
+
 ## Commits And Remote Actions
 
 - Create a commit, cherry-pick, pull, push, tag, merge, or open/update a PR/MR
   only when the user explicitly requests that action or an explicitly invoked
   workflow includes it.
-- Base commit messages on the staged diff or an explicit range. Before commit,
-  verify the staged file list and inspect staged content for unrelated changes,
-  secrets, generated noise, and incomplete required artifacts.
-- Preserve repository commit-message and signing conventions. Do not amend a
-  commit or rewrite shared history without explicit direction.
+- Base message drafts on the user-designated diff or explicit range, defaulting
+  to the staged diff. Drafting does not authorize staging or committing those
+  changes. Before commit, verify the final staged file list and inspect staged
+  content for unrelated changes, secrets, generated noise, and incomplete
+  required artifacts; ensure the message describes the final staged scope.
+- When the requested workflow includes staging and it is already authorized
+  for a clear scope, stage only those changes and re-inspect the final staged
+  diff. Do not pause merely because nothing was initially staged; without
+  staging authorization, do not choose files to stage automatically.
+- Preserve repository signing conventions. Do not amend a commit or rewrite
+  shared history without explicit direction.
 - Before push, report or verify the destination remote, branch, and upstream.
   Never force push by default; if approved, prefer `--force-with-lease` and
   confirm the expected remote ref.

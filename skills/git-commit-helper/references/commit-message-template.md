@@ -1,33 +1,34 @@
 # Commit Message Template
 
-Use this as the default output shape. Keep it compact unless the change genuinely needs more structure.
+These examples use Conventional Commits. Follow the skill's format policy and adapt the output to other applicable user or repository conventions. Keep it compact unless the change genuinely needs more structure.
+
+The label `建议的 commit message:` is response text, not part of the commit message. Keep it outside the copyable message block; pass only the message to Git. Placeholders below are illustrative, not literal text to commit.
 
 ## Draft Only
 
 Use when the user asked for a message but not for an actual commit.
 
-```text
 建议的 commit message:
 
+```text
 <type>(<scope>): <subject>
 ```
 
 If `scope` is unnecessary, omit it:
 
-```text
 建议的 commit message:
 
+```text
 <type>: <subject>
 ```
 
 ## Draft With Body
 
-Use when the subject alone cannot convey necessary context for the selected change set.
-Use bullets for parallel subchanges or independently useful facts. Use concise prose for a connected rationale. Follow the user's requested format and applicable repository convention.
+For body-writing guidance, see [commit-type-selection.md](./commit-type-selection.md#body-rules). This example uses bullets; prose and multiple paragraphs are also valid.
 
-```text
 建议的 commit message:
 
+```text
 <type>(<scope>): <subject>
 
 - <body bullet 1>
@@ -36,13 +37,53 @@ Use bullets for parallel subchanges or independently useful facts. Use concise p
 
 ## Draft With Breaking Change
 
-```text
+The examples below illustrate the breaking-change forms defined in the skill's contract.
+
 建议的 commit message:
 
-<type>(<scope>): <subject>
+```text
+feat(api)!: 将订单查询响应改为分页结构
 
-BREAKING CHANGE: <what changed for callers>
+BREAKING CHANGE: GET /orders 从数组改为包含 items 和 total 的对象；调用方需从 items 读取订单列表
 ```
+
+An explicit subject can stand alone; `!` does not require a body or footer:
+
+```text
+build!: 将最低 Node.js 版本提升至 22
+```
+
+The footer alone also marks a breaking change, without `!` in the title:
+
+```text
+feat(config): 支持通过 API_URL 配置完整服务地址
+
+BREAKING CHANGE: 移除 API_HOST 和 API_PORT；请改用 API_URL
+```
+
+## Draft With Footers
+
+Use a blank line before the footer section. The issue number below is illustrative; include real references only when supported by evidence.
+
+```text
+fix(api): 修复并发更新覆盖订单状态的问题
+
+使用版本条件更新订单，冲突时返回可重试错误。
+
+Refs: #123
+```
+
+When multiple footers are warranted, place each on its own line without requiring a blank line between them:
+
+```text
+feat(config)!: 用 API_URL 替代拆分的服务地址配置
+
+BREAKING-CHANGE: 移除 API_HOST 和 API_PORT
+请将这两个配置项合并为包含协议、主机和端口的 API_URL。
+Refs: #123
+```
+
+This last example uses the equivalent `BREAKING-CHANGE` token and a multiline value, which ends when the next footer (`Refs`) begins.
 
 ## Commit Executed
 
@@ -62,9 +103,7 @@ If useful, explain an evidence-backed classification choice briefly. Do not repo
 
 ### Nothing staged
 
-For a message-only request, use a user-provided diff or explicit range even when nothing is staged. If no usable change set is available, explain the missing evidence and ask which changes to describe.
-
-For a commit request with nothing staged, report that commit execution is blocked by the staging prerequisite. Keep any prepared message explicitly labeled as a draft.
+Follow the [workflow's evidence and staging rules](../SKILL.md#workflow). If execution cannot proceed, explain the specific missing evidence or authorization and keep any prepared message labeled as a draft. An initially empty index alone is not a blocker when staging is already authorized for a clear scope.
 
 ### Mixed concerns
 

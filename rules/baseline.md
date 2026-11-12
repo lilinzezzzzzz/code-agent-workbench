@@ -295,5 +295,5 @@ authorized work without treating approval as granted.
 | `backend/api-route-design.md` | HTTP paths, methods, resources, commands, endpoint contracts, OpenAPI, or SDK impact |
 | `database/access.md` | SQL/ORM access, data assembly, repositories, transactions, pagination, locking, batching, or query performance |
 | `database/schema.md` | persisted models, DDL, columns, indexes, relationships, migrations, or backfills |
-| `git/workflow.md` | branches, staging, stashing, commits, history changes, remotes, fetches, pulls, pushes, or PR/MR refs |
+| `git/workflow.md` | branches, staging, stashing, commit-message drafting or review, commits, history changes, remotes, fetches, pulls, pushes, or PR/MR refs |
 | `workflow/markdown-documentation.md` | material technical Markdown creation, update, or review |

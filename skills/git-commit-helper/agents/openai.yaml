@@ -1,4 +1,4 @@
 interface:
   display_name: "Git Commit Helper"
-  short_description: "基于 staged diff 生成或执行规范的 Conventional Commit"
-  default_prompt: "Use $git-commit-helper to inspect the user-designated change set, defaulting to staged changes, recommend one strong commit message, and commit only if the staged scope is coherent and I explicitly asked for it. If I provide a base branch for context, follow the shared remote-base rule."
+  short_description: "遵循提交约定，默认采用 Conventional Commits 生成或提交"
+  default_prompt: "Use $git-commit-helper to inspect the user-designated change set, defaulting to staged changes, follow applicable user and repository conventions, and default to Conventional Commits when no format is specified. Commit only if I explicitly asked for it, honor existing staging authorization within a clear scope, and verify the final staged diff. If I provide a base branch for context, follow the shared remote-base rule."

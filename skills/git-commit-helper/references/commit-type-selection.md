@@ -1,8 +1,10 @@
 # Commit Type Selection
 
-Use this guide to classify the selected change set. Pick the smallest accurate type that explains the user-visible intent of the change.
+Use this guide to classify the selected change set by its primary intent. Follow the [skill's format policy](../SKILL.md#conventional-commits-contract); apply Conventional Commits syntax only when that format is selected.
 
 ## Type Mapping
+
+Use these common classifications when applicable to the selected format and repository conventions.
 
 - `feat`: introduces a new user-facing or developer-facing capability.
 - `fix`: corrects incorrect behavior, regression, data bug, validation gap, or runtime failure.
@@ -16,25 +18,33 @@ Use this guide to classify the selected change set. Pick the smallest accurate t
 - `style`: formatting or non-semantic code style changes only.
 - `revert`: explicitly reverts a prior commit.
 
+Under the specification's SemVer mapping, a non-breaking `fix` corresponds to PATCH, a non-breaking `feat` to MINOR, and a breaking change of any type to MAJOR. Other types have no implicit version effect. This classification does not authorize a release, tag, version edit, or publication; actual release behavior depends on project tooling and policy.
+
 ## Scope Selection
+
+These are writing suggestions, not additional syntax requirements.
 
 - Use a scope only when it adds real signal, such as `auth`, `api`, `db`, `ui`, `config`, `vector`, or a bounded module name.
 - Prefer the narrowest stable module or subsystem name.
-- Omit scope when the change spans many modules or when any chosen scope would be misleading.
+- Omit scope when no meaningful codebase area describes the change. Touching multiple modules alone does not require omitting a shared scope.
 
 ## Subject Rules
+
+The imperative style and punctuation guidance below are skill defaults, not additional specification requirements. Follow applicable user or repository writing conventions.
 
 - Use imperative mood.
 - Keep it short and concrete.
 - Describe what changed, not why the person changed it.
-- Follow the Skill's language policy: prefer Chinese unless the user or applicable repository convention requires otherwise, and keep domain terms such as `JWT`, `OpenAI API`, `Milvus`, or `CI` in English when clearer.
+- Follow the skill's language policy.
 - Do not end the subject with punctuation.
+- Honor actual repository length limits; Conventional Commits does not mandate a 50/72-character limit.
 
 ## Body Rules
 
-Add a body only when one line is not enough. Good reasons include:
+The body is optional and free-form; it may have any number of paragraphs. Include it when requested or when it adds useful context, for example:
 
-- the diff has two or three tightly related subchanges
+- the diff has tightly related subchanges worth explaining
+- the rationale or previous behavior helps readers understand the change
 - rollout or compatibility detail matters
 - the subject alone would hide an important behavior change
 
@@ -47,15 +57,16 @@ Body guidance:
 
 ## Footer Rules
 
-- Use `BREAKING CHANGE: ...` when existing callers, configs, schemas, or workflows must change.
-- Use issue references such as `Closes #123` only when they are known.
-- For reverts, include the reverted commit reference when available.
+- A footer uses a word token followed by `: ` or ` #` and a string value, for example `Refs: #123` or `Closes #123`.
+- Replace whitespace in tokens with hyphens, as in `Reviewed-by`. The uppercase `BREAKING CHANGE` token is the exception. Values may span lines until the next valid footer token/separator pair.
+- Follow the main contract for breaking-change markers; include known migration steps when useful.
+- Include issue references only when known and appropriate. In particular, use a closing keyword such as `Closes` only when the change resolves the referenced issue; use `Refs` for an association.
+- For reverts, include the verified reverted commit reference when available. Conventional Commits does not prescribe revert semantics; use the repository's tooling convention for its body/footer rather than assuming an automatic version effect.
 
 ## Edge Cases
 
 ### Mixed staged changes
 
-- If multiple unrelated concerns are staged, do not force one misleading message.
 - Recommend splitting the commit or restaging before committing.
 
 ### Dependency updates
