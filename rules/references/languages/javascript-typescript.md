@@ -10,6 +10,20 @@ server-only or script work does not load that reference automatically.
   module system, and existing build, lint, type-check, and test commands from
   repository configuration. Preserve the lockfile and use its owning package
   manager; do not create a competing lockfile or mix installation tools.
+- When a project requires Node.js and has no established version management
+  scheme, prefer nvm for local development where the platform and shell support
+  it. When adopting nvm, declare the version in a project-level `.nvmrc`. Do
+  not introduce Node.js, nvm, or `.nvmrc` into projects that do not require
+  Node.js. See the [nvm project version documentation](https://github.com/nvm-sh/nvm#nvmrc).
+- Before dependency installation, builds, or tests that rely on Node.js, verify
+  the version in the effective execution environment and activate the required
+  version if necessary. Preserve existing version managers and CI/container
+  version configuration; do not migrate tooling or upgrade Node.js solely to
+  satisfy the nvm preference. If nvm is unavailable or unsuitable, use a
+  project-compatible mechanism or an already compliant runtime; if the required
+  version cannot be provided, report that prerequisite rather than forcing
+  tool installation or shell changes merely to use nvm. Inspect conflicting
+  version declarations and make the conflict explicit before choosing a version.
 - Follow existing language, formatter, compiler, and lint conventions. Do not
   migrate JavaScript to TypeScript, change ESM/CommonJS boundaries, upgrade
   broad dependency sets, or weaken checks to finish a local task. In a new
