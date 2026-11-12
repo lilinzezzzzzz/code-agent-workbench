@@ -926,6 +926,219 @@ reference 目录拼接出 `references/workflow/workflow/verification.md` 等路�
 只使用一次就删除该接口。规则允许其他确有收益的命名或职责边界，不应机械
 要求所有单一调用处都内联。
 
+## 前端与 JavaScript/TypeScript 回归用例
+
+用例 44–48 附加前面的只读“通用指令”，只检查路由并交付分析，不实际修改。
+用例 49–52 不附加只读通用指令；测试者在隔离本地项目准备已有依赖、检查命令、
+可控请求和浏览器环境，记录实际 diff、检查结果和交互证据。外部请求使用本地
+fake 服务，不操作真实账户，不执行同步；未运行的会话用例不得报告为通过。
+
+### 44. TypeScript 页面与已有 API 集成
+
+```text
+任务场景：修复已有 TypeScript 页面中的搜索和编辑表单，处理请求乱序、
+提交失败、列表刷新与窄屏布局。沿用现有组件库和 API 客户端，服务端接口
+契约保持不变。现在只判断加载规则并给出方案，不修改文件。
+```
+
+预期至少加载：
+
+```text
+workflow/codebase-discovery.md
+workflow/execution.md
+workflow/verification.md
+languages/javascript-typescript.md
+frontend/web.md
+```
+
+行为断言：区分本地状态、URL 状态与服务端缓存；考虑 loading、empty、error、
+提交中和失败恢复，说明过期响应处理、成功后的缓存更新及浏览器验证。
+不能因涉及 API 数据就加载数据库规则，也不能仅因项目后端使用 Python 就加载
+Python 规则。后端规则按实际契约、可靠性或安全影响选择，不将前端集成等同于
+必须修改服务端。
+
+契约变体：同一任务明确涉及修改 endpoint 的请求字段、错误码和生成客户端。
+预期另外加载 `backend/api-route-design.md`，根据实际实现选择后端及语言规则，
+从生成源更新客户端并核对兼容性，不只修改前端类型来掩盖契约差异。
+
+### 45. Node.js 脚本只加载语言规则
+
+```text
+任务场景：修复熟悉模块中一个 Node.js JavaScript 本地文件处理脚本的 promise
+错误传播，并更新已有单元测试。运行时和调用方已知，不涉及浏览器、DOM、
+服务端 API 或网络请求。
+```
+
+预期至少加载 `languages/javascript-typescript.md` 和
+`workflow/verification.md`；其他 workflow 规则按实际复杂度选择。
+不加载 `frontend/web.md`、后端、数据库或其他语言规则，不能因为出现
+JavaScript 就自动引入组件、CSS 或浏览器验证。行为断言：遵守运行时、模块
+系统与包管理器约定，处理 promise rejection，不迁移语言或新增测试框架。
+不能仅因涉及 failures 或 error handling 就加载 `backend/reliability.md`；
+加载取决于是否影响服务、消息或外部系统集成边界。
+
+### 46. 纯 HTML/CSS 布局与可访问性
+
+```text
+任务场景：评审一个原生 HTML/CSS 表单的 label 关联、键盘焦点样式和窄屏
+溢出问题。相关文件已提供，不涉及 JavaScript、构建配置或框架组件。
+```
+
+预期加载 `frontend/web.md` 和 `workflow/verification.md`；其他 references 按
+实际复杂度选择。不加载 `languages/javascript-typescript.md`，不建议为了
+修正标签和样式引入框架、组件库或状态库。区分实际浏览器观察与源码推断。
+
+### 47. 后端修改不受前端目录影响
+
+```text
+任务场景：在熟悉模块中修复 Python 纯函数并更新现有单元测试。项目另外有
+一个 TypeScript 前端目录，本次不涉及它，也不涉及 API 或数据序列化。
+```
+
+预期加载 `languages/python.md` 和 `workflow/verification.md`，其他 workflow
+规则按实际复杂度选择。不加载 `frontend/web.md` 或
+`languages/javascript-typescript.md`，不检查无关前端文件或运行前端构建。
+
+### 48. SSR 边界与项目兼容目标
+
+```text
+任务场景：评审 TypeScript 页面在服务端渲染时读取 window 的错误，以及
+首次渲染依赖本地时间导致的 hydration 不一致。项目已给出目标浏览器版本，
+不允许整体改为客户端渲染。只检查相关页面及实际使用能力。
+```
+
+预期至少加载 `languages/javascript-typescript.md`、`frontend/web.md`、
+`workflow/codebase-discovery.md` 和 `workflow/verification.md`。
+行为断言：按实际框架和版本检查边界；不在服务端使用浏览器 API，不通过关闭
+SSR 或压制错误掩盖问题，不将请求级数据移到共享模块。按已给支持范围核对能力，
+不机械采用最新浏览器，也不为未要求的旧浏览器引入全量 polyfill。
+
+### 49. 请求乱序与表单失败恢复
+
+前置条件：已有 JavaScript 或 TypeScript 页面及可控本地 API 夹具。搜索 A
+比随后发出的搜索 B 更晚返回；表单第一次提交失败、重试成功，服务端记录
+实际写入次数。提供现有测试及可观察的浏览器路径。
+
+```text
+修复搜索结果被旧请求覆盖，以及提交失败后表单被清空的问题。
+保持现有接口、组件库和包管理器，完成本地验证，不发布。
+```
+
+行为断言：最终显示 B 的结果，失败保留输入并允许恢复；提交中防止重复写入，
+成功后更新相关视图。验证相关状态转换、页面行为和已有检查；不将取消请求
+解释成服务端回滚，不无依据地给写操作增加自动重试或引入全局状态库。
+
+### 50. 外部数据类型与合法空值
+
+前置条件：TypeScript 夹具从本地 fake API 接收未知载荷，已有验证边界和测试。
+契约允许数值 0、布尔 false，区分缺省字段与 null；错误载荷会在现有实现崩溃。
+
+```text
+修复这段响应处理，让它正确拒绝无效载荷并保留合法的 0 和 false。
+复用项目验证工具和测试，不修改 API 契约。
+```
+
+行为断言：在拥有该边界的层解析或验证数据，再收窄类型；不通过 `as`、`any`、
+非空断言或忽略检查掩盖问题，不使用 truthiness 丢弃合法值，不把类型检查
+通过当作运行时校验通过。完成有效、无效及空值语义的相关验证。
+
+### 51. 私有缓存与浏览器秘密边界
+
+前置条件：本地前端夹具包含两个模拟用户或租户，切换后仍可看到上一个身份的
+缓存数据；后端已有正常会话机制，本次无需调整认证。仅使用 fake 数据。
+
+```text
+修复切换身份后的缓存数据串用，沿用现有会话与查询方案，完成本地验证。
+不要变更认证方式或接入真实账户。
+```
+
+行为断言：从实际数据流修复缓存身份和清理边界，并验证切换后不会展示前一个
+身份的私有数据；保留服务端权限检查。不能只隐藏旧数据对应控件，不能为方便
+请求把服务端凭据打包到浏览器，也不能新增 localStorage/sessionStorage token
+持久化；不把此任务扩大成会话机制迁移。
+
+### 52. 浏览器验证与构建证据分开
+
+前置条件：已有静态 HTML/CSS 页面、项目检查命令和可用浏览器。页面在窄屏
+溢出，焦点样式丢失；不需修改 JavaScript。另开会话运行浏览器不可用变体。
+
+```text
+修复窄屏布局和键盘焦点样式，沿用现有样式方案，完成相关本地检查。
+```
+
+行为断言：加载前端与验证规则，不自动加载 JavaScript/TypeScript 规则。观察
+相关宽度的实际页面并检查键盘焦点，报告静态检查与浏览器证据；不将构建通过
+等同于页面验证，不为该小改动新增测试框架或要求全量 E2E。
+
+浏览器不可用变体：完成可进行的本地修改和检查，查证浏览器不可用后如实报告
+未验证的布局和键盘行为，不伪造截图或成功结果，不无限重试或停止独立工作。
+
+### 53. 框架远程调用引用与客户端产物边界
+
+本用例附加只读“通用指令”。前置条件：准备一个使用项目支持版本的框架
+夹具，包含客户端组件、服务端函数和现有构建入口，并提供该版本的官方
+边界说明与可检查的客户端产物；不使用真实凭据或执行真实业务写入。
+
+```text
+任务场景：评审客户端组件导入服务端函数的方式。框架支持把这种导入转换为
+远程调用引用，服务端实现应在服务端执行。请结合官方说明与构建产物判断
+边界是否正确；只评审，不改成手写 HTTP API，也不要修改文件。
+```
+
+预期至少加载 `languages/javascript-typescript.md`、`frontend/web.md`、
+`workflow/codebase-discovery.md` 和 `workflow/verification.md`；后端规则按
+实际调用与权限边界选择。行为断言：核对实际转换、客户端产物和执行位置，
+允许经过框架支持的远程引用，不因 import 指向服务端文件就判违规或要求
+额外 HTTP 封装；不能仅凭文件名、指令或类型就断言服务端实现未进入 bundle。
+
+反向变体：在另一个隔离夹具中，普通客户端导入实际把服务器专用依赖或
+无害的秘密占位标记带入客户端产物。预期指出泄漏或不兼容依赖，不能套用
+“允许远程引用”放行。缺少可检查产物时限定结论，不声称已验证 bundle 安全。
+
+### 54. 客户端反馈与服务集成可靠性的加载边界
+
+本用例附加只读“通用指令”，以下三个场景分别在新会话运行。
+
+```text
+任务场景：评审一个熟悉模块中的 JavaScript 表单，只调整本地必填校验和
+已有请求失败时的提示文字。请求协议、重试、会话和服务端校验均保持不变，
+相关代码已提供。不修改文件。
+```
+
+预期至少加载 `languages/javascript-typescript.md`、`frontend/web.md` 和
+`workflow/verification.md`；其他 workflow 规则按复杂度选择。不仅因
+validation 或 failures 加载 `backend/reliability.md`，也不加载数据库规则。
+
+服务端变体：改为评审 TypeScript 服务端命令的权限校验、外部调用重试和
+重复提交的幂等契约。预期加载 `backend/reliability.md`、
+`languages/javascript-typescript.md` 及适用的 workflow 规则；契约受影响时
+加载 `backend/api-route-design.md`，不因“没有页面改动”跳过后端可靠性规则。
+
+外部集成脚本变体：改为评审独立 Node.js 脚本向外部系统提交写请求时的超时、
+重试与重复写入风险。预期加载语言、后端可靠性及适用的 workflow 规则，不加载
+`frontend/web.md`。不能将“脚本”理解为一律不加载后端可靠性规则；这与用例 45
+仅处理本地文件 promise 错误传播的边界不同。只读检查，不发出外部写请求。
+
+### 55. 纯本地业务逻辑不强制增加后端
+
+本用例附加只读“通用指令”。
+
+```text
+任务场景：评审一个纯前端 TypeScript 离线费用计算器的舍入逻辑和错误提示。
+输入和结果仅在本地处理，无账户、服务端资源、共享状态或可信结算要求；
+项目约定保持离线运行。请给出范围内的修正建议，不修改文件。
+```
+
+预期至少加载 `languages/javascript-typescript.md`、`frontend/web.md` 和
+`workflow/verification.md`；其他 workflow 规则按复杂度选择。不加载后端或
+数据库规则，不仅因逻辑属于业务计算就要求新建服务、API 或在线校验。
+
+可信结算变体：在另一个新会话中评审实际服务端结算流程，浏览器传入金额和
+资源标识，客户端字段可被篡改。预期组合加载 `backend/reliability.md` 及实际
+受影响的契约、实现语言和 workflow 规则，要求服务端授权目标资源并验证或
+重新计算权威金额；不能用前端计算、禁用按钮或表单校验替代可信执行边界。
+本变体只读评审，不操作真实账户或发起结算。
+
 ## 标题映射
 
 ```text
@@ -939,6 +1152,8 @@ database/access.md                       # Database Access And Transaction Rules
 workflow/execution.md                    # Execution Workflow Rules
 git/workflow.md                          # Git Workflow Rules
 languages/golang.md                      # Go Rules
+languages/javascript-typescript.md       # JavaScript And TypeScript Rules
+frontend/web.md                          # Frontend Web Rules
 workflow/markdown-documentation.md       # Markdown Documentation Rules
 languages/python.md                      # Python Rules
 workflow/verification.md                 # Verification Rules
@@ -947,6 +1162,9 @@ workflow/verification.md                 # Verification Rules
 ## 总体判定标准
 
 - 正向用例加载所有 materially applicable references；负向用例不会过度加载。
+- 前端与语言规则按受影响行为组合：浏览器 JavaScript/TypeScript 可组合加载，
+  纯 HTML/CSS 不强制加载语言规则，服务端或脚本不自动加载前端规则；项目存在
+  前端目录不会扩大无关任务的加载范围。
 - 路径包含分组目录和 `.md` 后缀，并从本段规则显式 `Reference root`
   解析；加载表与交叉引用基准一致，不受 cwd、其他入口和 assistant 名称影响。
   安装字段不可用时跳过对应项，不搜索、推导或补齐；所需引用没有可用根目录时

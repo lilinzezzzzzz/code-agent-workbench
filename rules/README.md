@@ -55,7 +55,8 @@ assistant 先判断当前任务部分是否属于工程范围，再按受影响�
 | --- | --- |
 | [workflow/](references/workflow/) | 代码库发现、执行流程、验证和技术文档 |
 | [git/](references/git/) | 当前工作目录中的 Git 操作、分支、历史与远端安全 |
-| [languages/](references/languages/) | Python 与 Go |
+| [languages/](references/languages/) | Python、Go 与 JavaScript/TypeScript |
+| [frontend/](references/frontend/) | 浏览器界面、状态、交互、样式、可访问性、安全、兼容性与性能 |
 | [backend/](references/backend/) | 后端可靠性与 API 路由设计 |
 | [database/](references/database/) | 数据库访问、事务与 Schema/迁移 |
 | [ai/](references/ai/) | AI 应用与 RAG 检索 |
@@ -71,6 +72,14 @@ assistant 先判断当前任务部分是否属于工程范围，再按受影响�
 仓库维护时源入口名为 `rules/baseline.md`，对应源文件位于同级 `rules/references/`；
 同步后入口名为 `AGENTS.md`，两者保持相同的目录关系。源模板本身不含安装
 元数据；直接注入源模板时，需要显式提供引用根目录才能加载其 references。
+
+JavaScript/TypeScript 的语言与工具约束由
+[languages/javascript-typescript.md](references/languages/javascript-typescript.md)
+维护，适用于浏览器、服务端和脚本；浏览器界面与行为由
+[frontend/web.md](references/frontend/web.md) 维护。纯 HTML/CSS 修改不因项目中
+存在脚本而加载语言规则，Node.js 脚本和后端任务不因项目存在前端而加载界面
+规则。全栈任务按实际受影响部分组合加载；框架、组件库、渲染方式、包管理器
+和浏览器支持范围以项目约定为准，不由全局规则统一指定。
 
 ## 同步
 

@@ -38,7 +38,8 @@ code-agent-workbench/
 │   └── references/           # 按职责分组，按文件加载
 │       ├── workflow/         # 代码库发现、执行、验证与文档
 │       ├── git/              # Git 操作、分支、历史与远端安全
-│       ├── languages/        # Python 与 Go
+│       ├── languages/        # Python、Go 与 JavaScript/TypeScript
+│       ├── frontend/         # 浏览器界面、状态、交互与兼容性
 │       ├── backend/          # 后端可靠性与 API 路由
 │       ├── database/         # 数据库访问与 Schema/迁移
 │       └── ai/               # AI 应用与 RAG
@@ -62,8 +63,8 @@ code-agent-workbench/
 `references/`，供渐进式披露读取。Codex、WorkBuddy 的默认根目录分别为 `~/.codex` 和
 `~/.workbuddy`；DeepSeek Harness 的默认根目录是 `~/.dsh`，即用户全局
 `AGENTS.md` 所在位置。当前 references 覆盖执行流程、
-代码库发现、Git 工作流、Python、Go、AI 应用、RAG 检索、API 路由设计、后端可靠性、
-数据库访问、Schema/迁移、Markdown 文档、测试验证等高频
+代码库发现、Git 工作流、Python、Go、JavaScript/TypeScript、前端 Web、AI 应用、
+RAG 检索、API 路由设计、后端可靠性、数据库访问、Schema/迁移、Markdown 文档、测试验证等高频
 技术场景。
 
 - **适用范围**: Codex、WorkBuddy、DeepSeek Harness 和其他支持 `AGENTS.md`
@@ -74,8 +75,9 @@ code-agent-workbench/
   和非破坏性验证；外部、破坏性、高成本或扩张范围的动作需要确认
 - **规则质量**: 强规则必须有明确作用域、触发条件和可验证结果
 - **Git 规范**: 保护用户工作区和历史，仓库约定优先
-- **渐进式披露**: 执行流程、代码库发现、Git、Python、Go、AI 应用、RAG 检索、
-  API 路由设计、后端可靠性、数据库访问、Schema/迁移、Markdown 文档和验证细则
+- **渐进式披露**: 执行流程、代码库发现、Git、Python、Go、JavaScript/TypeScript、
+  前端 Web、AI 应用、RAG 检索、API 路由设计、后端可靠性、数据库访问、Schema/迁移、
+  Markdown 文档和验证细则
   下沉到 `rules/references/`，同步时写入 `Instruction file` 和 `Reference root`
   的绝对路径。两项按需使用，不可用时跳过对应项，不搜索、推导或补齐。
   加载表和文件内交叉引用统一使用本段规则的显式根目录，不受 cwd、其他入口

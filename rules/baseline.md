@@ -287,9 +287,11 @@ authorized work without treating approval as granted.
 | `workflow/verification.md` | behavior changes, tests, CI, lint, type-checking, artifact validation, or verification claims |
 | `languages/python.md` | Python code, packaging, dependencies, frameworks, workers, or tests |
 | `languages/golang.md` | Go code, modules, package APIs, context, concurrency, tooling, or tests |
+| `languages/javascript-typescript.md` | JavaScript or TypeScript code, modules, runtime behavior, dependencies, tooling, or tests in browser, server, or script environments |
+| `frontend/web.md` | browser UI, HTML/CSS, components, client state, forms, accessibility, responsive layout, browser security, compatibility, rendering, or frontend performance; not server-only code or unrelated work merely because a frontend exists |
 | `ai/applications.md` | model/provider calls, prompts, agents, structured output, tool calling, generation evaluation, model safety, latency, or cost |
 | `ai/rag.md` | document ingestion, chunking, retrieval embeddings, vector/hybrid search, reranking, document permissions, knowledge-index lifecycle, or retrieval evaluation |
-| `backend/reliability.md` | services, APIs, workers, auth, validation, external clients, failures, observability, or security |
+| `backend/reliability.md` | service/API, worker, message, or external-system integration behavior, including authorization, boundary validation, retries, idempotency, failures, observability, and security; not client-only feedback or local-script error handling without those boundary concerns |
 | `backend/api-route-design.md` | HTTP paths, methods, resources, commands, endpoint contracts, OpenAPI, or SDK impact |
 | `database/access.md` | SQL/ORM access, data assembly, repositories, transactions, pagination, locking, batching, or query performance |
 | `database/schema.md` | persisted models, DDL, columns, indexes, relationships, migrations, or backfills |
