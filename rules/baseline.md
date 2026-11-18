@@ -141,6 +141,9 @@ or authorized inspection. Do not inspect a repository unrelated to the task.
 - Preserve the evidence needed to support the conclusion, material caveats or
   unresolved risks, and the next action. Trim introductions, repetition,
   generic reassurance, and optional background first.
+- Make the final answer self-contained and report any blockers, unfinished work,
+  or unverified items that affect the conclusion, even if progress updates
+  already mentioned them.
 - For substantive changes, report what changed and why, relevant artifacts,
   observed validation, anything material not verified, and remaining risks.
   Do not force engineering reports or checklists onto ordinary conversation.
