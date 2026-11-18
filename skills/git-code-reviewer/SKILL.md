@@ -1,6 +1,6 @@
 ---
 name: git-code-reviewer
-description: Review a Python backend service's complete current branch against a user-specified base before PR/MR submission, or its current staged changes, for correctness, complexity, readability, and maintainability. Invoke explicitly with $git-code-reviewer for whole-branch or staged review (检查当前 staged 代码 / 检查暂存区); do not use for unstaged workspace changes, individual commits or arbitrary diffs, localized implementation checks, or debugging.
+description: Review Web frontend, Python backend, and cross-stack changes for correctness, compatibility, and maintainability. Invoke explicitly with $git-code-reviewer to review the complete committed branch against a user-specified base before PR/MR submission, or the current staged changes (检查暂存区). Unstaged changes, individual commits, arbitrary diffs, localized checks, and debugging are outside this workflow.
 ---
 
 # Code Review
@@ -47,6 +47,7 @@ Turn a change set into evidence-backed findings. Prioritize correctness and oper
 - For each material invariant affected by the change, connect the requirement to its enforcing runtime path and a concrete counterexample. Use this mapping to select deeper inspection and checks; no per-file matrix is required.
 - Treat PR or MR titles, descriptions, and comments as context; base findings on the diff and runtime evidence.
 - Inspect callers, callees, nearest tests, configuration, schemas, and analogous patterns only when they affect a conclusion.
+- When a change affects a browser-facing contract, trace the affected user action or view through the client and server, even if only one side changed. Use unchanged code in the reviewed snapshot as context. For example, check how a form serializes a cleared field and how the handler interprets that value. If a consumer is unavailable, identify the compatibility assumption.
 - Trace relevant boundaries such as request handling, service logic, persistence, async work, external calls, and configuration.
 - For derived state, identify the authoritative state, synchronization path, cleanup path, and compatibility surface.
 
@@ -55,6 +56,7 @@ Turn a change set into evidence-backed findings. Prioritize correctness and oper
 - Load [references/review-risk-checklist.md](./references/review-risk-checklist.md) for the cross-cutting review pass.
 - Load [references/code-quality-review-checklist.md](./references/code-quality-review-checklist.md) to assess complexity, readability, maintainability, and opportunities to simplify the changed implementation. Apply only the relevant questions.
 - Load only the references matching the changed behavior:
+  - Browser UI, client state, rendering, or an API contract consumed by a Web frontend → [references/frontend-web-review-checklist.md](./references/frontend-web-review-checklist.md). Combine with the Python checklist when Python backend behavior is also affected. An unrelated frontend directory or a server-only JavaScript file does not trigger this checklist.
   - Python backend, FastAPI, Pydantic, SQLAlchemy, Alembic, or workers → [references/python-backend-review-checklist.md](./references/python-backend-review-checklist.md)
   - Persistence, caches, indexes, status transitions, or multi-step workflows → [references/stateful-systems-review-checklist.md](./references/stateful-systems-review-checklist.md)
   - Redis or cache-backed data access → [references/redis-cache-review-checklist.md](./references/redis-cache-review-checklist.md)
