@@ -43,6 +43,8 @@ For complete-branch review, also state the user-provided base, exact resolved re
 
 For staged review, state `HEAD` → index, with the inspected `HEAD` SHA (or empty tree for an unborn branch) and index snapshot identifier, or the limitation preventing identification. Make clear that unstaged and untracked changes are excluded. No user-provided base or fetch details are required.
 
+For unstaged review, state index → working tree plus non-ignored untracked additions. Report the reviewed state identifier or the limitation preventing identification. Note any unresolved paths omitted from the review. Staged-only changes are outside this scope.
+
 Disclose material uninspected portions and any snapshot changes that limit the report. Do not imply the current revision was reviewed when conclusions apply only to an earlier snapshot.
 
 ## Verification

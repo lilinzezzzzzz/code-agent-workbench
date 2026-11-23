@@ -97,7 +97,7 @@ RAG 检索、API 路由设计、后端可靠性、数据库访问、Schema/迁�
   DeepSeek Harness 时写入 `AGENTS.md` 和顶层
   `references/`；同步 Codex config 时只覆盖模板管理的键，并保留本机专属配置
 - **api-endpoint-analyzer**: 系统化分析 API endpoint 的请求、响应、业务流程与错误处理
-- **git-code-reviewer**: 显式调用，审查 Web 前端、Python 后端及联动改动，支持当前暂存区或按用户指定 base 审查完整分支的已提交差异
+- **git-code-reviewer**: 显式调用，审查 Web 前端、Python 后端及联动改动，支持当前未暂存改动、暂存区及按指定 base 审查的完整分支
 - **git-commit-helper**: 基于 staged diff 生成或执行规范的 Conventional Commit
 - **git-draft-pr-or-mr**: 基于明确 base ref 和真实 git diff 生成精简的 PR/MR 标题与描述
 - **git-restack-from-base**: 基于显式基础分支重新切出版本化分支，通过 rebase 重建当前分支独有提交并保留原分支
@@ -218,8 +218,8 @@ skills/<skill-name>/
 
 - `api-endpoint-analyzer`：解释接口契约、梳理调用链、核对实现与文档是否一致
 - `git-code-reviewer`：显式调用 `$git-code-reviewer`，适用于 Web 前端、Python 后端及联动改动。
-  检查当前暂存区时无需 base，也可在提交 PR/MR 前基于用户明确指定的 base
-  审查完整分支的已提交差异；未暂存修改、单个 commit/任意 diff 和局部审查使用普通代码检查
+  可直接检查当前未暂存改动（含未被忽略的未跟踪文件）或当前暂存区，也可在提交 PR/MR 前
+  基于用户明确指定的 base 审查完整分支的已提交差异。单个 commit、任意 diff 和局部审查使用普通代码检查。
 - `git-commit-helper`：根据 staged changes 生成 commit message，或在范围清晰时执行提交
 - `git-draft-pr-or-mr`：基于显式 base branch 或 base ref，生成可直接
   粘贴到 GitHub/GitLab 的 PR/MR 文案

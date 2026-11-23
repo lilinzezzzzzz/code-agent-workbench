@@ -1,6 +1,6 @@
 ---
 name: git-code-reviewer
-description: Review Web frontend, Python backend, and cross-stack changes for correctness, compatibility, and maintainability. Invoke explicitly with $git-code-reviewer to review the complete committed branch against a user-specified base before PR/MR submission, or the current staged changes (检查暂存区). Unstaged changes, individual commits, arbitrary diffs, localized checks, and debugging are outside this workflow.
+description: Review Web frontend, Python backend, and cross-stack changes for correctness, compatibility, and maintainability. Invoke explicitly with $git-code-reviewer to review current unstaged changes (检查未暂存改动), current staged changes (检查暂存区), or the complete committed branch against a user-specified base before PR/MR submission. Individual commits, arbitrary diffs, localized checks, and debugging are outside this workflow.
 ---
 
 # Code Review
@@ -16,10 +16,10 @@ Turn a change set into evidence-backed findings. Prioritize correctness and oper
 
 ## Scope Gate
 
-- Choose the review mode from the user's request: complete-branch pre-PR/MR review or current staged/index review. A request such as `检查当前 staged 代码` or `检查暂存区` selects staged mode, even when a base was provided earlier. If the intended scope is unclear, ask whether to review the complete branch or staged changes; do not infer it from a nonempty index or a default prompt example.
-- Unstaged workspace, individual commit, arbitrary diff, debugging, design-conformance, and localized code-review requests use normal code inspection instead of this workflow.
+- Select the mode from the user's request. `检查当前 unstaged 改动` selects unstaged review, and `检查当前 staged 代码` or `检查暂存区` selects staged review, even when a base was provided earlier. Use complete-branch mode for a pre-PR/MR review of the committed branch. If the scope is unclear, ask which of the three modes the user wants. Repository status and default prompt examples do not select a mode.
+- Use normal code inspection for individual commits, arbitrary diffs, debugging, design-conformance, and localized reviews.
 - Once the selected mode's prerequisites are satisfied, complete the authorized review and report without asking whether to proceed.
-- Identify the reviewed snapshot before inspecting content. For branch mode, record the resolved base, merge-base, and HEAD commit SHAs. For staged mode, record HEAD (or its absence) and an index snapshot identifier, such as a tree ID obtained from a temporary copy of the index. Do not stash, stage, or alter the real index merely to identify the snapshot; no worktree is required by default. If identification is unavailable, disclose the reproducibility limitation.
+- Identify the reviewed snapshot before inspecting content. For branch mode, record the resolved base, merge-base, and HEAD commit SHAs. For staged mode, record HEAD (or its absence) and an index snapshot identifier, such as a tree ID obtained from a temporary copy of the index. For unstaged mode, capture the diff and untracked-file state described below. Preserve the real index and working tree during snapshot identification. If identification is unavailable, disclose the reproducibility limitation.
 
 ### Complete Branch
 
@@ -36,6 +36,13 @@ Turn a change set into evidence-backed findings. Prioritize correctness and oper
 - Read staged file content from the index, for example with `git show :path/to/file`, and compare with `HEAD` where relevant. A file can contain both staged and unstaged edits; do not substitute its working-tree content for its staged version. Exclude unstaged and untracked changes from the artifact.
 - Inspect relevant callers, tests, and configuration as context, using the index version when available. Tie findings to the staged delta rather than unrelated existing defects. Keep evidence tied to the inspected index state; if it changes during review, recheck affected conclusions before reporting.
 - State whether checks validated the staged snapshot or the working tree. Working-tree checks may include unstaged edits or untracked inputs and do not by themselves prove the staged snapshot passes. Preserve user changes and the index; if staged-state validation is unavailable, report that limitation.
+
+### Unstaged Changes
+
+- Review the index-to-working-tree delta from the repository root using `git --no-optional-locks diff --no-ext-diff --no-textconv --`. Include non-ignored untracked files as additions using `git ls-files --others --exclude-standard -z` and their working-tree content. Staged-only changes and ignored untracked files are outside this scope. This mode works without `HEAD` on an unborn branch and requires no base, fetch, `git add`, or stash.
+- For a partially staged file, use the index version as the baseline and the working-tree version as the result. Tie findings to the unstaged hunks or untracked additions. Use surrounding code, including staged content, as context where it affects a finding.
+- Detect unresolved index entries with `git ls-files --unmerged`. Report those paths as coverage gaps because they lack a single index baseline. Review the remaining in-scope changes without resolving conflicts. If there are no eligible changes, report that and stop.
+- Identify the reviewed state using a digest of the tracked diff (add `--binary` when computing the digest) and a manifest of untracked paths with file types and content hashes. Attribute checks to the inputs they actually used, since tests run in the working tree can exercise staged changes too.
 
 ## Workflow
 
@@ -71,7 +78,7 @@ Turn a change set into evidence-backed findings. Prioritize correctness and oper
 - Attribute failed tests, lint, and type checks to the change, a pre-existing failure, or the environment where evidence permits. When useful and safe, run the same check on the comparison's before-version. Otherwise report attribution as unknown; a failing check alone does not establish a regression. Mocks, SQLite, or other substitutes only validate the behavior and environment they exercise, not production service or database compatibility.
 - Reconcile the material invariants with inspected evidence or explicit coverage gaps before concluding. Passing tests support only the scenarios exercised, not unchecked paths or operation sequences.
 - Before finishing, check the changed path for dead parameters, unreachable branches, and obsolete wrappers. Inspect relevant callers and dynamic registration or configuration before calling code unused; report evidence gaps when its purpose cannot be established.
-- Before reporting, verify that the reviewed HEAD and, in staged mode, index still match the inspected snapshot. If they changed, recheck affected conclusions or explicitly limit the report to the old snapshot. Confirm every changed file received a risk assessment and disclose material coverage gaps.
+- Before reporting, verify the reviewed HEAD in branch and staged modes, the index snapshot in staged mode, and the captured diff and untracked-file state in unstaged mode. If the reviewed state changed, recheck affected conclusions or limit the report to the inspected state. Confirm every changed file received a risk assessment and disclose material coverage gaps.
 
 ### 4. Report
 
