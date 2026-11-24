@@ -12,7 +12,7 @@ A finding must connect a specific change to a reachable trigger or concrete main
 1. [high] Concise defect title
    - Location: file path and line or specific symbol in the reviewed snapshot
    - Problem and impact: specific structure or behavior and its user, operational, or maintenance consequence
-   - Evidence: reachable execution path, call relationship, or typical modification scenario supported by inspected code, configuration, schema, tests, or command output
+   - Evidence: inspected source in the reviewed snapshot and the causal path or concrete maintenance scenario it supports. When a runtime check supports the finding, give the decisive command, expected and observed results, and the snapshot it actually exercised.
    - Recommendation: smallest viable adjustment or follow-up; add a short local example only when it clarifies the change
    - Trade-offs and verification: expected benefit and cost, behavior to preserve, key scenarios to check, and material evidence gaps; distinguish suggested checks from observed results
 ```
@@ -49,7 +49,7 @@ Disclose material uninspected portions and any snapshot changes that limit the r
 
 ## Verification
 
-State commands or checks that ran, their observed outcomes, and whether they validated committed content, the staged snapshot, or the working tree. If none ran, say the review was limited to static inspection. State skipped or blocked checks only when they leave material risk.
+State commands or checks that ran, their observed outcomes, and whether they validated committed content, the staged snapshot, or the working tree. Cross-reference decisive checks already reported under a finding. Attribute results from a different snapshot only to the inputs actually checked. If none ran, say the review was limited to static inspection. State skipped or blocked checks only when they leave material risk.
 
 ## Open Questions
 
