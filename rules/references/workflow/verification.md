@@ -24,6 +24,10 @@ repository convention justifies it.
 
 - Bug fixes should reproduce the failure and prove the corrected behavior when
   a practical automated test path exists.
+- When evidence shows a repeated mistake with a clear invariant, prefer the
+  smallest in-scope way to enforce it using a project-standard type, schema,
+  static check, or regression test. Verify that a new check catches a known bad
+  case and accepts a valid case.
 - Cover meaningful success, failure, boundary, and state-transition cases;
   avoid duplicating implementation details in assertions. Do not add tests
   that merely mirror the implementation or duplicate adequate existing evidence.

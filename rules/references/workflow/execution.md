@@ -13,16 +13,20 @@ planning is not a separate approval gate for already authorized work.
    discoverable facts before asking the user.
 2. **Plan when needed**: identify the outcome, affected files, dependencies,
    verification, and any compatibility, migration, security, data, external
-   state, or rollback concern. Keep the plan proportional to risk and update it
-   when scope changes.
+   state, or rollback concern. For a migration or other high-risk work with
+   dependent phases, define the observable result each material phase must
+   establish. Keep the plan proportional to risk and update it when scope
+   changes.
 3. **Implement when authorized**: for change requests, make cohesive edits
    that follow repository patterns. Avoid speculative abstractions and broad
    formatting; keep affected contracts and supporting artifacts aligned.
    For review, diagnosis, explanation, or planning requests, inspect evidence
    and deliver the requested analysis without entering implementation.
 4. **Verify**: run the smallest check capable of falsifying the changed
-   behavior, then broaden according to blast radius. Inspect the final diff for
-   accidental scope, secrets, generated noise, and compatibility changes.
+   behavior, then broaden according to blast radius. Verify the observable
+   result of each material phase before proceeding with work that depends on it.
+   Inspect the final diff for accidental scope, secrets, generated noise, and
+   compatibility changes.
    Before finalizing, reconcile the result with the user's requested outcomes
    and accepted follow-up requirements. Complete omissions within scope and
    identify anything remaining. Use an explicit checklist only when complexity
@@ -38,6 +42,10 @@ planning is not a separate approval gate for already authorized work.
   input, changed state, or a plausibly transient failure. If the same blocker
   persists without new evidence, stop that path, report what would unblock it,
   and continue independent work. These rules do not waive approval requirements.
+- When distinct fixes that share an assumption fail the same check, state the
+  shared assumption and test it directly before attempting another fix that
+  relies on it. Choose an observation that would differ if the assumption were
+  false.
 
 ## Unresolved Decisions And Blockers
 
