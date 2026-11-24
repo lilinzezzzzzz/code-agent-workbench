@@ -57,7 +57,7 @@ Use this template only for comprehensive documentation or an explicitly requeste
 
 - 分页、游标、排序、过滤
 - 脱敏字段、条件字段、多态响应
-- 异步受理响应，例如 `202 Accepted`
+- 异步、流式或 webhook 信号。说明每个相关信号表示请求受理、消息交付还是业务完成，调用方在哪里观察到结果，以及证据覆盖到哪一步。
 - 流式返回、文件下载、重定向、响应 cookies
 
 ## 4. 业务流程

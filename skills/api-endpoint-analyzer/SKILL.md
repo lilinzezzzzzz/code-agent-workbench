@@ -37,6 +37,7 @@ Do not edit code, schemas, tests, documentation, or external systems unless the 
 
 4. Trace reachable behavior.
    - Follow route or transport registration through handler/controller, service/use case, domain logic, repository/gateway, external clients, and asynchronous continuations.
+   - For behavior explanations and troubleshooting, walk a representative request or event through its key inputs, deciding branch, relevant handoffs, and caller-visible outcome. Include additional scenarios only when they change the answer.
    - Capture material validation, authorization, branches, state transitions, transactions, locks, retries, fallbacks, compensation, timeout, cancellation, and partial failures.
    - Identify reads, writes, external calls, emitted events, queued jobs, notifications, object storage operations, and cache reads or invalidations.
 
@@ -44,8 +45,10 @@ Do not edit code, schemas, tests, documentation, or external systems unless the 
    - Enumerate evidenced success statuses, response schemas, conditional fields, wrappers, headers, cookies, pagination metadata, redirects, files, and stream events.
    - Enumerate reachable validation, auth, permission, tenant, not-found, conflict, quota, rate-limit, dependency, timeout, cancellation, and framework-default failures.
    - Distinguish documented errors from implementation-reachable errors.
+   - For asynchronous jobs, streams, and webhooks, determine what each relevant signal establishes about acceptance, delivery, or business completion, and where the caller observes the outcome.
 
 6. Resolve uncertainty and complete the requested analysis.
+   - When static evidence leaves materially different explanations open, choose the smallest safe check that can distinguish them at the relevant boundary. Inspect a matching runtime artifact or exercise the active entry point in an authorized environment. For claims spanning boundaries, correlate observations using the same request, job, event, or resource identifier when available.
    - Ask as soon as a material ambiguity cannot be resolved from available artifacts; do not defer necessary clarification until the end. Continue independent analysis while awaiting the answer.
    - Finish when all explicit questions and requested deliverables have been addressed, material claims have evidence, and conflicts and remaining unknowns are labeled.
    - If part of the request is blocked, deliver completed analysis and identify the missing evidence, affected conclusion, and smallest useful next check. Do not present a partial answer as complete.
@@ -57,10 +60,12 @@ Classify evidence before resolving disagreements:
 - **Observed execution**: Actual requests, responses, logs, traces, metrics, and deployed configuration. Record environment, version, timestamp, request identity, and configuration scope when known. An observation proves that execution, not the general contract.
 - **Implementation-reachable behavior**: Active route configuration, middleware, handlers, schemas, services, repositories, integrations, and workers. Prefer artifacts that directly control the path being analyzed.
 - **Declared contract**: OpenAPI, Swagger, protobuf, generated specifications, and maintained API documentation. Treat these as advertised expectations, not proof of implementation behavior.
-- **Tests and fixtures**: Evidence of expected or covered behavior, not proof of deployed behavior.
+- **Tests and fixtures**: Evidence of expected or covered behavior, not proof of deployed behavior. A passing assertion against a mock establishes the interaction exercised by that test. Claims about delivery or downstream effects require evidence from the boundary where they occur.
 - **Context and inference**: Comments, README files, issues, and framework conventions usually provide supporting context. Classify evidence by its role, maintenance status, and explicit adoption, not filename alone. A user-designated requirement or accepted repository decision may define intended behavior, but does not prove implementation or deployed behavior. Label inference explicitly.
 
 When sources disagree, report each representation and its impact instead of silently reconciling them. Use observed evidence for what happened in a specific execution, implementation evidence for reachable behavior under evidenced conditions, and applicable requirements and maintained contracts for intended behavior and compatibility expectations.
+
+When asked about design rationale, or when compatibility depends on a past decision, find the relevant ADR, introducing commit, PR discussion, or issue. Cite the recorded reason and any later decision that changed it. Label inferred motivations and gaps in the record.
 
 Call a conclusion `root cause` only when the evidence supports the causal path. Otherwise label it `可能原因`, `推断`, or `未验证` and give the minimum confirming check.
 
