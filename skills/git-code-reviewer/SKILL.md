@@ -62,7 +62,7 @@ Turn a change set into evidence-backed findings. Prioritize correctness and oper
 ### 2. Load Relevant Review Guidance
 
 - Load [references/review-risk-checklist.md](./references/review-risk-checklist.md) for the cross-cutting review pass.
-- Load [references/code-quality-review-checklist.md](./references/code-quality-review-checklist.md) to assess complexity, readability, maintainability, and opportunities to simplify the changed implementation. Apply only the relevant questions.
+- Load the [shared code quality checklist](../_shared/code-quality-review-checklist.md) to assess complexity, readability, maintainability, and opportunities to simplify the changed implementation. Apply the relevant questions and the evidence and preservation checks in [Validate Conclusions](#3-validate-conclusions).
 - Load only the references matching the changed behavior:
   - Browser UI, client state, rendering, or an API contract consumed by a Web frontend → [references/frontend-web-review-checklist.md](./references/frontend-web-review-checklist.md). Combine with the Python checklist when Python backend behavior is also affected. An unrelated frontend directory or a server-only JavaScript file does not trigger this checklist.
   - Python backend, FastAPI, Pydantic, SQLAlchemy, Alembic, or workers → [references/python-backend-review-checklist.md](./references/python-backend-review-checklist.md)

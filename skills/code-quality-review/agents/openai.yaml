@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Quality Review"
+  short_description: "审查命名、复杂度、可读性和维护成本，按要求做保持行为的最小整理"
+  default_prompt: "使用 $code-quality-review 对本次开发做代码质量收尾，给出最小改动建议。"

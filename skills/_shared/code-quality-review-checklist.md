@@ -1,6 +1,6 @@
 # Code Quality Review Checklist
 
-Use the relevant questions to assess the changed implementation and its direct effects within the selected review snapshot. Expand into an existing problem only when the change worsens or depends on it. This is a thinking aid, not a requirement to find a problem in each category.
+Use the relevant questions to assess the selected implementation and its direct effects. In a change review, expand into an existing problem only when the change worsens or depends on it. This is a thinking aid, not a requirement to find a problem in each category.
 
 ## 1. Control Flow and State
 
@@ -37,4 +37,4 @@ Use the relevant questions to assess the changed implementation and its direct e
 ## Assess a Proposed Improvement
 
 - Compare the concrete maintenance benefit with added indirection, coupling, migration work, and behavior risk. A local adjustment should be the default; a larger refactor needs a clear benefit and conditions under which it is worthwhile.
-- Apply the evidence and preservation checks in [SKILL.md, Validate Conclusions](../SKILL.md#3-validate-conclusions). When usage or equivalence is uncertain, identify the missing evidence and the smallest check needed instead of recommending unconditional removal or merging.
+- When usage or equivalence is uncertain, identify the missing evidence and the smallest check needed to support removal or merging.

@@ -8,6 +8,7 @@
 | Skill | 适用场景 |
 | --- | --- |
 | [api-endpoint-analyzer](api-endpoint-analyzer/SKILL.md) | 分析 API 契约、调用链、业务分支、副作用和错误行为 |
+| [code-quality-review](code-quality-review/SKILL.md) | 定向代码质量检查或开发收尾，可覆盖本次全部改动，按请求给建议或做最小等价整理 |
 | [git-checkout-branch](git-checkout-branch/SKILL.md) | 根据当前修改推荐分支名，并按技能约定确认后从当前 HEAD 切出新分支 |
 | [git-code-reviewer](git-code-reviewer/SKILL.md) | 显式调用，审查 Web 前端、Python 后端及联动改动，支持当前未暂存改动、暂存区及按指定 base 审查的完整分支 |
 | [git-commit-helper](git-commit-helper/SKILL.md) | 根据 staged changes 或明确范围生成 Conventional Commit 信息，用户要求提交时执行提交流程 |
