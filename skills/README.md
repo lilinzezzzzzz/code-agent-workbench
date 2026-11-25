@@ -14,6 +14,7 @@
 | [git-commit-helper](git-commit-helper/SKILL.md) | 根据 staged changes 或明确范围生成 Conventional Commit 信息，用户要求提交时执行提交流程 |
 | [git-draft-pr-or-mr](git-draft-pr-or-mr/SKILL.md) | 根据用户指定 base 和真实 diff 起草 PR/MR 标题与描述 |
 | [git-restack-from-base](git-restack-from-base/SKILL.md) | 基于用户指定 base，在确认后通过 rebase 将分支独有提交重建到新版本分支，保留原分支 |
+| [rename-worktree-chat](rename-worktree-chat/SKILL.md) | 从 Codex worktree 路径提取标识并添加到主聊天标题，支持从侧边聊天发起 |
 | [workspace-context](workspace-context/SKILL.md) | 只读确认工作目录、Git worktree 与分支，汇总已暂存、未暂存、未跟踪和冲突状态 |
 | [worktree-environment-setup](worktree-environment-setup/SKILL.md) | 分析 Codex 托管 worktree 初始化需求，生成或更新 .worktreeinclude，并提供 macOS 环境设置脚本 |
 
