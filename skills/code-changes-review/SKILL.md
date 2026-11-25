@@ -1,9 +1,9 @@
 ---
-name: git-code-reviewer
-description: Review Web frontend, Python backend, and cross-stack changes for correctness, compatibility, and maintainability. Invoke explicitly with $git-code-reviewer to review current unstaged changes (检查未暂存改动), current staged changes (检查暂存区), or the complete committed branch against a user-specified base before PR/MR submission. Individual commits, arbitrary diffs, localized checks, and debugging are outside this workflow.
+name: code-changes-review
+description: Review Web frontend, Python backend, and cross-stack changes for correctness, compatibility, and maintainability. Invoke explicitly with $code-changes-review to review current unstaged changes (检查未暂存改动), current staged changes (检查暂存区), or the complete committed branch against a user-specified base before PR/MR submission. Individual commits, arbitrary diffs, localized checks, and debugging are outside this workflow.
 ---
 
-# Code Review
+# Code Changes Review
 
 Turn a change set into evidence-backed findings. Prioritize correctness and operational risk over style.
 

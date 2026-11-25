@@ -1,9 +1,9 @@
 ---
-name: git-draft-pr-or-mr
+name: create-pr-or-mr
 description: 基于明确指定的基础分支或基础 ref 与实际 git diff 生成 PR/MR 标题和描述。用于用户要求“写 PR 标题”“生成 MR 描述”“基于 dev、main、master、origin/main 或其他 base branch 总结当前分支改动”“整理可直接粘贴到 GitHub/GitLab 的合并说明”等场景。默认将未限定的基础分支名解析为对应的 remote-tracking ref，而不是本地分支。输出默认精简，优先概括主要改动与必要技术细节；基础分支或基础 ref 由用户明确指定后再起草，若未指定，先询问，不要自行猜测。
 ---
 
-# Git Draft PR Or MR
+# Create PR or MR
 
 Use this skill to draft the requested PR or MR title, description, or both from the actual git diff between an explicit base ref and `HEAD`, with a concise change summary and only the technical detail needed for precise review.
 

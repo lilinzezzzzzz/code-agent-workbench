@@ -11,7 +11,7 @@ Reduce the effort needed to understand or change code. Treat correctness, observ
 
 - Start from the code, files, or diff the user identifies. For current development changes, use the scope established in the conversation or inspect the relevant local diff. Read adjacent code, callers, and tests when they affect a conclusion. Preserve unrelated user changes.
 - Review, check, and suggestion requests authorize inspection and a report. Requests to clean up the code or apply improvements authorize local edits within the selected scope.
-- Choose review depth from the requested outcome. A code-quality closeout can cover the entire current change using this workflow and the relevant local diff. The dedicated `git-code-reviewer` workflow is separately invoked for a full Git-snapshot review with its own comparison rules.
+- Choose review depth from the requested outcome. A code-quality closeout can cover the entire current change using this workflow and the relevant local diff. The dedicated `code-changes-review` workflow is separately invoked for a full Git-snapshot review with its own comparison rules.
 
 ## Review and cleanup
 

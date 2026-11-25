@@ -1,0 +1,6 @@
+interface:
+  display_name: "Code Changes Review"
+  short_description: "审查 Web 前端、Python 后端及联动改动，支持未暂存、暂存区和完整分支"
+  default_prompt: "Use $code-changes-review to review my unstaged changes, staged changes, or complete committed branch (with a base ref I specify), and ask which scope I want if unclear."
+policy:
+  allow_implicit_invocation: false

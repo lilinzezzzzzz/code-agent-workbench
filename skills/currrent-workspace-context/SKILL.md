@@ -1,9 +1,9 @@
 ---
-name: workspace-context
+name: currrent-workspace-context
 description: 只读查询当前 agent 对话的工作目录、Git worktree 路径、分支和工作树状态。用于“当前工作区在哪”“现在在哪个目录 / worktree / 分支”“当前 worktree 有未提交改动吗”等上下文查询；不负责切换分支、创建 worktree 或处理改动。
 ---
 
-# Workspace Context
+# Current Workspace Context
 
 根据本次查询的实时证据，用中文简洁报告当前执行位置及其 Git 上下文。
 

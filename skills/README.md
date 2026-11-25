@@ -8,14 +8,13 @@
 | Skill | 适用场景 |
 | --- | --- |
 | [api-endpoint-analyzer](api-endpoint-analyzer/SKILL.md) | 分析 API 契约、调用链、业务分支、副作用和错误行为 |
+| [code-changes-review](code-changes-review/SKILL.md) | 显式调用，审查 Web 前端、Python 后端及联动改动，支持当前未暂存改动、暂存区及按指定 base 审查的完整分支 |
 | [code-quality-review](code-quality-review/SKILL.md) | 定向代码质量检查或开发收尾，可覆盖本次全部改动，按请求给建议或做最小等价整理 |
-| [git-checkout-branch](git-checkout-branch/SKILL.md) | 根据当前修改推荐分支名，并按技能约定确认后从当前 HEAD 切出新分支 |
-| [git-code-reviewer](git-code-reviewer/SKILL.md) | 显式调用，审查 Web 前端、Python 后端及联动改动，支持当前未暂存改动、暂存区及按指定 base 审查的完整分支 |
-| [git-commit-helper](git-commit-helper/SKILL.md) | 根据 staged changes 或明确范围生成 Conventional Commit 信息，用户要求提交时执行提交流程 |
-| [git-draft-pr-or-mr](git-draft-pr-or-mr/SKILL.md) | 根据用户指定 base 和真实 diff 起草 PR/MR 标题与描述 |
-| [git-restack-from-base](git-restack-from-base/SKILL.md) | 基于用户指定 base，在确认后通过 rebase 将分支独有提交重建到新版本分支，保留原分支 |
+| [commit-helper](commit-helper/SKILL.md) | 根据 staged changes 或明确范围生成 Conventional Commit 信息，用户要求提交时执行提交流程 |
+| [create-pr-or-mr](create-pr-or-mr/SKILL.md) | 根据用户指定 base 和真实 diff 起草 PR/MR 标题与描述 |
+| [currrent-workspace-context](currrent-workspace-context/SKILL.md) | 只读确认工作目录、Git worktree 与分支，汇总已暂存、未暂存、未跟踪和冲突状态 |
+| [rebase-as-new-branch](rebase-as-new-branch/SKILL.md) | 基于用户指定 base，在确认后通过 rebase 将分支独有提交重建到新版本分支，保留原分支 |
 | [rename-worktree-chat](rename-worktree-chat/SKILL.md) | 从 Codex worktree 路径提取标识并添加到主聊天标题，支持从侧边聊天发起 |
-| [workspace-context](workspace-context/SKILL.md) | 只读确认工作目录、Git worktree 与分支，汇总已暂存、未暂存、未跟踪和冲突状态 |
 | [worktree-environment-setup](worktree-environment-setup/SKILL.md) | 分析 Codex 托管 worktree 初始化需求，生成或更新 .worktreeinclude，并提供 macOS 环境设置脚本 |
 
 使用时提供任务所需的上下文，例如目标仓库、提交范围或 base ref。需要显式调用
@@ -56,6 +55,32 @@ skills/
 再替换选中技能的整个目录，包括清理这些目录中的目标独有文件和本地修改。
 未选中的技能及其他目标技能目录保留；`all` 也不会删除仓库中已不存在的旧技能。
 本 README 不会作为技能同步。
+
+### 从旧技能名迁移
+
+已有安装执行 `skills` → `all` 后，新旧目录会并存。下表中的名称同时用于
+目标的 `skills/` 子目录和 `$技能名` 显式调用。
+
+| 旧名称 | 新名称 |
+| --- | --- |
+| `git-code-reviewer`、`review-changes` | `code-changes-review` |
+| `git-commit-helper` | `commit-helper` |
+| `git-draft-pr-or-mr`、`draft-pr-or-mr` | `create-pr-or-mr` |
+| `git-restack-from-base` | `rebase-as-new-branch` |
+| `workspace-context` | `currrent-workspace-context` |
+
+对每个装过旧版技能的目标，按以下顺序迁移。
+
+1. 同步所需的新技能，核对目标中新目录的内容与仓库 `skills/<新名称>/` 一致。
+2. 检查对应旧目录中是否有自行添加或修改的文件。将需要保留的内容保存到同步目录之外，或合并回维护该技能的源文件。
+3. 确认所需内容已保留后，逐项删除该目标 `skills/` 下对应的旧目录。
+4. 更新个人提示词、项目指令和自动化中的显式调用，例如将 `$git-code-reviewer` 改为 `$code-changes-review`。
+
+### 清理已退役的分支创建技能
+
+分支创建技能曾使用 `git-checkout-branch` 和 `create-branch-from-changes` 两个名称，现已退役，没有替代技能。
+在每个安装过它的目标中，检查 `skills/git-checkout-branch/` 和 `skills/create-branch-from-changes/`。
+先将需要保留的本地修改移到同步目录之外，再删除实际存在的旧目录，并移除个人提示词、项目指令和自动化中对这两个名称的显式调用。
 
 ## 维护
 

@@ -1,9 +1,9 @@
 ---
-name: git-restack-from-base
+name: rebase-as-new-branch
 description: Recreate the current git branch on top of an explicitly provided base branch by rebasing the branch-only commits onto a new versioned branch. The original source branch stays untouched. Use when retargeting a feature branch onto updated base history, including workflows like `A` 到 `A-v2` or `A-v2` 到 `A-v3`. Treat unqualified base names as remote-tracking branches by default. Require a user-provided base before base-dependent planning or execution. Show the specified base and obtain approval for the concrete restack plan before applying.
 ---
 
-# Git Restack From Base
+# Rebase as New Branch
 
 Rebuild the current branch on top of an explicitly specified base branch while preserving the branch's own commits. A new versioned branch (`A` → `A-v2`, `A-v2` → `A-v3`) is created so the original source branch stays intact and recoverable.
 

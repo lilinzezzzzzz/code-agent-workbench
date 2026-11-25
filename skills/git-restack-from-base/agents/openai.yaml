@@ -1,4 +1,0 @@
-interface:
-  display_name: "Git Restack From Base"
-  short_description: "必须先显示明确指定的基础分支，确认后再重切分支并迁移提交"
-  default_prompt: "Use $git-restack-from-base to restack the current branch onto a user-provided base while preserving the source branch. Follow the Skill's base-input, concrete-plan approval, verification, and optional cleanup rules. Reuse applicable user input and valid approval."

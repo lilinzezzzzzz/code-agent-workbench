@@ -25,7 +25,7 @@
     { "action": "read", "resource": "*id_rsa*", "effect": "deny" }
   ],
 
-  // 只读评审子代理：评审类技能（git-code-reviewer 等）用它时，
+  // 只读评审子代理：评审类技能（code-changes-review 等）用它时，
   // 「不修改文件」由权限保证，而不是只靠提示词。
   "agents": {
     "reviewer": {

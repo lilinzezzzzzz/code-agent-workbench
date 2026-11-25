@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create PR or MR"
+  short_description: "基于明确基础分支和真实 diff 准确概括改动，生成 PR/MR 标题与描述，未限定分支名默认按远程分支处理"
+  default_prompt: "Use $create-pr-or-mr to draft the requested PR/MR title or description against an explicit base, following the shared remote-base rule. Report the base freshness and describe the actual change and its evidenced impact using the user's and repository's conventions."

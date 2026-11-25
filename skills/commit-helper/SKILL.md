@@ -1,9 +1,9 @@
 ---
-name: git-commit-helper
+name: commit-helper
 description: 基于 staged changes、指定 diff 或明确的提交范围，遵循适用的用户和仓库提交约定，默认采用 Conventional Commits 生成 commit message，并在用户明确要求提交代码时执行安全的提交流程。当用户要求写 commit message、总结 staged changes、帮忙提交代码、判断 type 或 scope、拆分提交边界时使用此 skill。
 ---
 
-# Git Commit Helper
+# Commit Helper
 
 Use this skill to derive a commit message from the actual change set. Prefer one atomic commit, one clear subject, and no hidden assumptions.
 
