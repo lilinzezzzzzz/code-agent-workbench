@@ -406,6 +406,30 @@ class SyncAgentRulesTest(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("WORKBUDDY_ROOT cannot be empty.", result.stderr)
 
+    def test_reports_empty_skill_directory_before_sync(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            directory = Path(temporary_directory).resolve()
+            script = directory / "sync-agents.sh"
+            script.write_bytes(SYNC_SCRIPT.read_bytes())
+            for name in ("rules", "configs"):
+                (directory / name).symlink_to(ROOT / name, target_is_directory=True)
+            skills = directory / "skills"
+            (skills / "_shared").mkdir(parents=True)
+            target = directory / "target"
+
+            result = subprocess.run(
+                ["/bin/bash", str(script)],
+                input="skills\n1\n1\n",
+                text=True,
+                capture_output=True,
+                env={**os.environ, "CODEX_ROOT": str(target)},
+                timeout=10,
+            )
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn(f"No skill directories found under: {skills}", result.stderr)
+            self.assertFalse(target.exists())
+
     def test_syncs_only_the_skill_selected_by_menu_number(self) -> None:
         source_skills = ROOT / "skills"
         skills = sorted(

@@ -21,7 +21,7 @@ ALL_SKILLS_SENTINEL="__SYNC_AGENTS_ALL_SKILLS__"
 require_command() {
     local command_name="$1"
 
-    if ! command -v "$command_name" >/dev/null 2>&1; then
+    if ! command_exists "$command_name"; then
         echo "$command_name is required but not installed" >&2
         exit 1
     fi
@@ -273,7 +273,7 @@ choose_config_target() {
     done
 }
 
-choose_target() {
+choose_skill_target() {
     echo "Select target assistant:" >&2
     echo "dsh = DeepSeek Harness" >&2
     local target=""
@@ -328,30 +328,21 @@ resolve_target_roots() {
 
 discover_skills() {
     local skill_dir=""
-    local -a skills=()
 
     while IFS= read -r skill_dir; do
         if [[ -f "$skill_dir/SKILL.md" ]]; then
-            skills+=("$skill_dir")
+            printf '%s\n' "$skill_dir"
         fi
     done < <(find "$SOURCE_SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d | sort)
-
-    printf '%s\n' "${skills[@]}"
 }
 
 choose_skill() {
-    local -a skills=("$@")
     local -a skill_names=()
-    local index=0
+    local skill_dir=""
     local selected_name=""
 
-    if [[ "${#skills[@]}" -eq 0 ]]; then
-        echo "No skill directories found under: $SOURCE_SKILLS_DIR" >&2
-        exit 1
-    fi
-
-    for index in "${!skills[@]}"; do
-        skill_names[index]="$(basename "${skills[index]}")"
+    for skill_dir in "$@"; do
+        skill_names+=("${skill_dir##*/}")
     done
 
     echo "Available skills:" >&2
@@ -369,8 +360,7 @@ choose_skill() {
                 return 0
                 ;;
             *)
-                # 菜单从 1 开始且首项为 all，skill 数组从 0 开始。
-                printf '%s\n' "${skills[REPLY-2]}"
+                printf '%s\n' "$SOURCE_SKILLS_DIR/$selected_name"
                 return 0
                 ;;
         esac
@@ -405,10 +395,10 @@ sync_agents_file() (
     } > "$generated_dir/AGENTS.md"
 
     sync_path "$generated_dir/AGENTS.md" "$target_root/AGENTS.md"
-    sync_references_dir "$target_root"
+    sync_path "$SOURCE_REFERENCES_DIR" "$target_root/references"
 )
 
-sync_global_rules_dir() {
+validated_root() {
     local target_root=""
     local target_variable="$2"
 
@@ -418,6 +408,12 @@ sync_global_rules_dir() {
         exit 1
     fi
 
+    printf '%s\n' "$target_root"
+}
+
+sync_global_rules_dir() {
+    local target_root
+    target_root="$(validated_root "$1" "$2")"
     sync_agents_file "$target_root"
 }
 
@@ -430,23 +426,10 @@ sync_codex_config_file() {
         "$target_root/config.toml"
 }
 
-sync_opencode_config_file() {
-    local target_root="$1"
-
-    sync_path "$SOURCE_OPENCODE_CONFIG_FILE" "$target_root/opencode.jsonc"
-}
-
-sync_references_dir() {
-    local target_dir="$1"
-
-    sync_path "$SOURCE_REFERENCES_DIR" "$target_dir/references"
-}
-
-sync_skill_dir() {
+sync_skills() {
     local -a skills=()
     local -a selected_skills=()
     local -a target_roots=()
-    local shared_skill_dir="$SOURCE_SHARED_SKILLS_DIR"
     local skill=""
     local selected_skill=""
     local selected_target=""
@@ -455,6 +438,11 @@ sync_skill_dir() {
     while IFS= read -r skill; do
         [[ -n "$skill" ]] && skills+=("$skill")
     done < <(discover_skills)
+
+    if [[ ${#skills[@]} -eq 0 ]]; then
+        echo "No skill directories found under: $SOURCE_SKILLS_DIR" >&2
+        return 1
+    fi
 
     selected_skill="$(choose_skill "${skills[@]}")"
     if [[ "$selected_skill" == "$EXIT_SENTINEL" ]]; then
@@ -467,21 +455,19 @@ sync_skill_dir() {
         selected_skills=("$selected_skill")
     fi
 
-    selected_target="$(choose_target)"
+    selected_target="$(choose_skill_target)"
     if [[ "$selected_target" == "$EXIT_SENTINEL" ]]; then
         exit 0
     fi
 
-    target_roots=()
     while IFS= read -r target_root; do
         [[ -n "$target_root" ]] && target_roots+=("$target_root")
     done < <(resolve_target_roots "$selected_target")
 
     for target_root in "${target_roots[@]}"; do
-        sync_path "$shared_skill_dir" "$target_root/skills/$(basename "$shared_skill_dir")"
-
+        sync_path "$SOURCE_SHARED_SKILLS_DIR" "$target_root/skills/_shared"
         for skill in "${selected_skills[@]}"; do
-            sync_path "$skill" "$target_root/skills/$(basename "$skill")"
+            sync_path "$skill" "$target_root/skills/${skill##*/}"
         done
     done
 }
@@ -512,7 +498,7 @@ main() {
     fi
 
     if [[ "$content" == "skills" ]]; then
-        sync_skill_dir
+        sync_skills
         return 0
     fi
 
@@ -526,23 +512,14 @@ main() {
             require_file "$CODEX_CONFIG_MERGE_SCRIPT" "Codex config merge script"
             require_command uv
 
-            CODEX_ROOT="$(trim_spaces "$CODEX_ROOT")"
-            if [[ -z "$CODEX_ROOT" ]]; then
-                echo "CODEX_ROOT cannot be empty." >&2
-                exit 1
-            fi
+            CODEX_ROOT="$(validated_root "$CODEX_ROOT" CODEX_ROOT)"
 
             sync_codex_config_file "$CODEX_ROOT"
             return 0
         fi
 
-        OPENCODE_ROOT="$(trim_spaces "$OPENCODE_ROOT")"
-        if [[ -z "$OPENCODE_ROOT" ]]; then
-            echo "OPENCODE_ROOT cannot be empty." >&2
-            exit 1
-        fi
-
-        sync_opencode_config_file "$OPENCODE_ROOT"
+        OPENCODE_ROOT="$(validated_root "$OPENCODE_ROOT" OPENCODE_ROOT)"
+        sync_path "$SOURCE_OPENCODE_CONFIG_FILE" "$OPENCODE_ROOT/opencode.jsonc"
         return 0
     fi
 
