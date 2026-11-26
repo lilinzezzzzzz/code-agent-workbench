@@ -14,7 +14,7 @@
 | [create-pr-or-mr](create-pr-or-mr/SKILL.md) | 根据用户指定 base 和真实 diff 起草 PR/MR 标题与描述 |
 | [currrent-workspace-context](currrent-workspace-context/SKILL.md) | 只读确认工作目录、Git worktree 与分支，汇总已暂存、未暂存、未跟踪和冲突状态 |
 | [rebase-as-new-branch](rebase-as-new-branch/SKILL.md) | 基于用户指定 base，在确认后通过 rebase 将分支独有提交重建到新版本分支，保留原分支 |
-| [rename-worktree-chat](rename-worktree-chat/SKILL.md) | 从 Codex worktree 路径提取标识并添加到主聊天标题，支持从侧边聊天发起 |
+| [rename-worktree-chat](rename-worktree-chat/SKILL.md) | 为 Codex 主聊天标题添加工作区标识，主工作区用 `[primary]`，worktree 用路径标识，支持从侧边聊天发起 |
 | [worktree-environment-setup](worktree-environment-setup/SKILL.md) | 分析 Codex 托管 worktree 初始化需求，生成或更新 .worktreeinclude，并提供 macOS 环境设置脚本 |
 
 使用时提供任务所需的上下文，例如目标仓库、提交范围或 base ref。需要显式调用

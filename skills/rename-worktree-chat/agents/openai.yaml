@@ -1,4 +1,4 @@
 interface:
   display_name: "Rename Worktree Chat"
-  short_description: "从工作目录提取 worktree 标识并加到 Codex 主聊天标题"
-  default_prompt: "使用 $rename-worktree-chat 给主聊天标题加上 worktree 标识。"
+  short_description: "为 Codex 主聊天标题添加主工作区或 worktree 标识"
+  default_prompt: "使用 $rename-worktree-chat 给主聊天标题加上工作区标识。"
