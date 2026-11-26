@@ -12,6 +12,7 @@
 | [code-quality-review](code-quality-review/SKILL.md) | 定向代码质量检查或开发收尾，可覆盖本次全部改动，按请求给建议或做最小等价整理 |
 | [commit-helper](commit-helper/SKILL.md) | 根据 staged changes 或明确范围生成 Conventional Commit 信息，用户要求提交时执行提交流程 |
 | [create-pr-or-mr](create-pr-or-mr/SKILL.md) | 根据用户指定 base 和真实 diff 起草 PR/MR 标题与描述 |
+| [create-project-worktree](create-project-worktree/SKILL.md) | 基于用户选择的起始 ref 新建并附加 Codex 托管工作树，再按项目环境初始化 |
 | [currrent-workspace-context](currrent-workspace-context/SKILL.md) | 只读确认工作目录、Git worktree 与分支，汇总已暂存、未暂存、未跟踪和冲突状态 |
 | [rebase-as-new-branch](rebase-as-new-branch/SKILL.md) | 基于用户指定 base，在确认后通过 rebase 将分支独有提交重建到新版本分支，保留原分支 |
 | [rename-worktree-chat](rename-worktree-chat/SKILL.md) | 为 Codex 主聊天标题添加工作区标识，主工作区用 `[primary]`，worktree 用路径标识，支持从侧边聊天发起 |
