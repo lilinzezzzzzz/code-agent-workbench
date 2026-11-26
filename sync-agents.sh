@@ -10,6 +10,8 @@ CODEX_CONFIG_MERGE_SCRIPT="$SCRIPT_DIR/scripts/merge_codex_config.py"
 SOURCE_OPENCODE_CONFIG_FILE="$SCRIPT_DIR/configs/opencode/opencode.jsonc"
 SOURCE_SKILLS_DIR="$SCRIPT_DIR/skills"
 SOURCE_SHARED_SKILLS_DIR="$SOURCE_SKILLS_DIR/_shared"
+SOURCE_SKILL_TARGETS_FILE="$SOURCE_SKILLS_DIR/targets.conf"
+SKILL_TARGETS=(codex workbuddy opencode zcode qoder-cn dsh)
 CODEX_ROOT="${CODEX_ROOT:-$HOME/.codex}"
 WORKBUDDY_ROOT="${WORKBUDDY_ROOT:-$HOME/.workbuddy}"
 OPENCODE_ROOT="${OPENCODE_ROOT:-$HOME/.config/opencode}"
@@ -276,20 +278,22 @@ choose_config_target() {
 choose_skill_target() {
     echo "Select target assistant:" >&2
     echo "dsh = DeepSeek Harness" >&2
+    # Keep Bash's select menu in a single column.
+    local COLUMNS=1
     local target=""
 
-    select target in "codex" "workbuddy" "opencode" "zcode" "qoder-cn" "dsh" "exit"; do
+    select target in "${SKILL_TARGETS[@]}" "exit"; do
         case "$target" in
-            codex|workbuddy|opencode|zcode|qoder-cn|dsh)
-                printf '%s\n' "$target"
-                return 0
+            "")
+                echo "Invalid selection, try again." >&2
                 ;;
             "exit")
                 printf '%s\n' "$EXIT_SENTINEL"
                 return 0
                 ;;
             *)
-                echo "Invalid selection, try again." >&2
+                printf '%s\n' "$target"
+                return 0
                 ;;
         esac
     done
@@ -297,7 +301,7 @@ choose_skill_target() {
     abort_closed_input
 }
 
-resolve_target_roots() {
+resolve_skill_target_root() {
     local target="$1"
 
     case "$target" in
@@ -326,14 +330,54 @@ resolve_target_roots() {
     esac
 }
 
-discover_skills() {
+discover_compatible_skills() {
+    local selected_target="$1"
+    local skill_name=""
+    local target_list=""
+    local allowed_target=""
+    local restricted_skills=" "
+    local allowed_skills=" "
+    local -a allowed_targets=()
+    local skill_directories=""
     local skill_dir=""
 
+    require_file "$SOURCE_SKILL_TARGETS_FILE" "Skill target restrictions file"
+    while read -r skill_name target_list || [[ -n "$skill_name" ]]; do
+        if [[ -z "$skill_name" || "$skill_name" == \#* ]]; then
+            continue
+        fi
+        if [[ ! "$skill_name" =~ ^[a-z0-9][a-z0-9-]*$ ||
+            ! -f "$SOURCE_SKILLS_DIR/$skill_name/SKILL.md" ||
+            -L "$SOURCE_SKILLS_DIR/$skill_name" ]]; then
+            echo "Unknown skill in $SOURCE_SKILL_TARGETS_FILE: $skill_name" >&2
+            return 1
+        fi
+        if [[ -z "$target_list" || "$restricted_skills" == *" $skill_name "* ]]; then
+            echo "Expected one nonempty target list for $skill_name in $SOURCE_SKILL_TARGETS_FILE" >&2
+            return 1
+        fi
+
+        restricted_skills+="$skill_name "
+        read -r -a allowed_targets <<< "$target_list"
+        for allowed_target in "${allowed_targets[@]}"; do
+            if [[ " ${SKILL_TARGETS[*]} " != *" $allowed_target "* ]]; then
+                echo "Unknown target for $skill_name in $SOURCE_SKILL_TARGETS_FILE: $allowed_target" >&2
+                return 1
+            fi
+            if [[ "$allowed_target" == "$selected_target" ]]; then
+                allowed_skills+="$skill_name "
+            fi
+        done
+    done < "$SOURCE_SKILL_TARGETS_FILE" || return 1
+
+    skill_directories="$(find "$SOURCE_SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d | sort)" || return 1
     while IFS= read -r skill_dir; do
-        if [[ -f "$skill_dir/SKILL.md" ]]; then
+        skill_name="${skill_dir##*/}"
+        if [[ -f "$skill_dir/SKILL.md" && ( "$restricted_skills" != *" $skill_name "* ||
+            "$allowed_skills" == *" $skill_name "* ) ]]; then
             printf '%s\n' "$skill_dir"
         fi
-    done < <(find "$SOURCE_SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d | sort)
+    done <<< "$skill_directories"
 }
 
 choose_skill() {
@@ -429,20 +473,25 @@ sync_codex_config_file() {
 sync_skills() {
     local -a skills=()
     local -a selected_skills=()
-    local -a target_roots=()
     local skill=""
+    local skill_paths=""
     local selected_skill=""
     local selected_target=""
     local target_root=""
 
-    while IFS= read -r skill; do
-        [[ -n "$skill" ]] && skills+=("$skill")
-    done < <(discover_skills)
+    selected_target="$(choose_skill_target)"
+    if [[ "$selected_target" == "$EXIT_SENTINEL" ]]; then
+        exit 0
+    fi
 
-    if [[ ${#skills[@]} -eq 0 ]]; then
-        echo "No skill directories found under: $SOURCE_SKILLS_DIR" >&2
+    skill_paths="$(discover_compatible_skills "$selected_target")"
+    if [[ -z "$skill_paths" ]]; then
+        echo "No compatible skills found for $selected_target under: $SOURCE_SKILLS_DIR" >&2
         return 1
     fi
+    while IFS= read -r skill; do
+        skills+=("$skill")
+    done <<< "$skill_paths"
 
     selected_skill="$(choose_skill "${skills[@]}")"
     if [[ "$selected_skill" == "$EXIT_SENTINEL" ]]; then
@@ -455,20 +504,10 @@ sync_skills() {
         selected_skills=("$selected_skill")
     fi
 
-    selected_target="$(choose_skill_target)"
-    if [[ "$selected_target" == "$EXIT_SENTINEL" ]]; then
-        exit 0
-    fi
-
-    while IFS= read -r target_root; do
-        [[ -n "$target_root" ]] && target_roots+=("$target_root")
-    done < <(resolve_target_roots "$selected_target")
-
-    for target_root in "${target_roots[@]}"; do
-        sync_path "$SOURCE_SHARED_SKILLS_DIR" "$target_root/skills/_shared"
-        for skill in "${selected_skills[@]}"; do
-            sync_path "$skill" "$target_root/skills/${skill##*/}"
-        done
+    target_root="$(resolve_skill_target_root "$selected_target")"
+    sync_path "$SOURCE_SHARED_SKILLS_DIR" "$target_root/skills/_shared"
+    for skill in "${selected_skills[@]}"; do
+        sync_path "$skill" "$target_root/skills/${skill##*/}"
     done
 }
 

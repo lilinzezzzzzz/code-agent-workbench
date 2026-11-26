@@ -415,6 +415,7 @@ class SyncAgentRulesTest(unittest.TestCase):
                 (directory / name).symlink_to(ROOT / name, target_is_directory=True)
             skills = directory / "skills"
             (skills / "_shared").mkdir(parents=True)
+            (skills / "targets.conf").touch()
             target = directory / "target"
 
             result = subprocess.run(
@@ -427,7 +428,9 @@ class SyncAgentRulesTest(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 1)
-            self.assertIn(f"No skill directories found under: {skills}", result.stderr)
+            self.assertIn(
+                f"No compatible skills found for codex under: {skills}", result.stderr
+            )
             self.assertFalse(target.exists())
 
     def test_syncs_only_the_skill_selected_by_menu_number(self) -> None:
@@ -445,7 +448,7 @@ class SyncAgentRulesTest(unittest.TestCase):
 
                 result = subprocess.run(
                     ["bash", str(SYNC_SCRIPT)],
-                    input=f"2\n{menu_number}\n1\n",
+                    input=f"2\n1\n{menu_number}\n",
                     text=True,
                     capture_output=True,
                     check=False,
@@ -466,46 +469,137 @@ class SyncAgentRulesTest(unittest.TestCase):
                     source_skills / "_shared", target_skills / "_shared"
                 )
 
-    def test_syncs_all_skills_to_qoder_cn_root(self) -> None:
+    def test_syncs_all_compatible_skills_to_each_target(self) -> None:
+        targets = {
+            "codex": "CODEX_ROOT",
+            "workbuddy": "WORKBUDDY_ROOT",
+            "opencode": "OPENCODE_ROOT",
+            "zcode": "ZCODE_ROOT",
+            "qoder-cn": "QODER_CN_ROOT",
+            "dsh": None,
+        }
+        expected_menu = "\n".join(
+            f"{number}) {option}"
+            for number, option in enumerate([*targets, "exit"], start=1)
+        )
+        source_skills = ROOT / "skills"
+        skill_directories = [
+            path for path in source_skills.iterdir()
+            if path.is_dir() and (path / "SKILL.md").is_file()
+        ]
+        codex_only = {
+            "create-project-worktree",
+            "rename-worktree-chat",
+            "worktree-environment-setup",
+        }
+
+        for menu_number, target in enumerate(targets, start=1):
+            with (
+                self.subTest(target=target),
+                tempfile.TemporaryDirectory() as temporary_directory,
+            ):
+                directory = Path(temporary_directory)
+                environment = {
+                    **os.environ,
+                    "HOME": str(directory),
+                    "COLUMNS": "200",
+                }
+                target_roots = {"dsh": directory / ".dsh"}
+                for name, variable in targets.items():
+                    if variable:
+                        target_roots[name] = directory / "configured" / name
+                        environment[variable] = str(target_roots[name])
+
+                result = subprocess.run(
+                    ["bash", str(SYNC_SCRIPT)],
+                    input=f"2\n{menu_number}\n1\n",
+                    text=True,
+                    capture_output=True,
+                    env=environment,
+                    timeout=10,
+                )
+
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn(expected_menu + "\n", result.stderr)
+                self.assertEqual(
+                    {name for name, root in target_roots.items() if root.exists()},
+                    {target},
+                )
+                target_skills = target_roots[target] / "skills"
+                compatible = [
+                    path for path in skill_directories
+                    if target == "codex" or path.name not in codex_only
+                ]
+                expected = [source_skills / "_shared", *compatible]
+                self.assertEqual(
+                    {path.name for path in target_skills.iterdir()},
+                    {path.name for path in expected},
+                )
+                for skill in codex_only:
+                    if target == "codex":
+                        self.assertIn(skill, result.stderr)
+                    else:
+                        self.assertNotIn(skill, result.stderr)
+                for path in expected:
+                    self.assert_directory_equal(path, target_skills / path.name)
+
+    def test_skill_target_allowlist_accepts_multiple_targets(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             directory = Path(temporary_directory)
-            qoder_cn_root = directory / ".qoder-cn"
-            codex_root = directory / ".codex"
-            environment = os.environ.copy()
-            environment["QODER_CN_ROOT"] = str(qoder_cn_root)
-            environment["CODEX_ROOT"] = str(codex_root)
+            script = directory / "sync-agents.sh"
+            script.write_bytes(SYNC_SCRIPT.read_bytes())
+            for name in ("rules", "configs"):
+                (directory / name).symlink_to(ROOT / name, target_is_directory=True)
+            skills = directory / "skills"
+            (skills / "_shared").mkdir(parents=True)
+            (skills / "example-skill").mkdir()
+            (skills / "example-skill" / "SKILL.md").touch()
+            policy = skills / "targets.conf"
+            policy.write_text("example-skill codex opencode\n", encoding="utf-8")
+            cases = (
+                (1, "CODEX_ROOT", True),
+                (2, "WORKBUDDY_ROOT", False),
+                (3, "OPENCODE_ROOT", True),
+            )
+            for menu_number, variable, allowed in cases:
+                with self.subTest(variable=variable):
+                    target = directory / variable
+                    result = subprocess.run(
+                        ["/bin/bash", str(script)],
+                        input=f"skills\n{menu_number}\n1\n",
+                        text=True,
+                        capture_output=True,
+                        env={**os.environ, variable: str(target)},
+                        timeout=10,
+                    )
+                    self.assertEqual(
+                        result.returncode, 0 if allowed else 1, result.stderr
+                    )
+                    if allowed:
+                        installed_skill = target / "skills" / "example-skill" / "SKILL.md"
+                        self.assertTrue(installed_skill.is_file())
+                    else:
+                        self.assertIn(
+                            "No compatible skills found for workbuddy", result.stderr
+                        )
+                        self.assertFalse(target.exists())
+
+            policy.write_text("example-skill codex typo\n", encoding="utf-8")
+            target = directory / "invalid-target"
 
             result = subprocess.run(
-                ["bash", str(SYNC_SCRIPT)],
-                input="2\n1\n5\n",
+                ["/bin/bash", str(script)],
+                input="skills\n1\n1\n",
                 text=True,
                 capture_output=True,
-                check=False,
-                cwd=ROOT,
-                env=environment,
+                env={**os.environ, "CODEX_ROOT": str(target)},
+                timeout=10,
             )
-
-            self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertIn("5) qoder-cn", result.stderr)
-            source_skills = ROOT / "skills"
-            target_skills = qoder_cn_root / "skills"
-            expected_directories = [source_skills / "_shared"]
-            expected_directories.extend(
-                sorted(
-                    path
-                    for path in source_skills.iterdir()
-                    if path.is_dir() and (path / "SKILL.md").is_file()
-                )
+            self.assertEqual(result.returncode, 1, result.stderr)
+            self.assertIn(
+                f"Unknown target for example-skill in {policy}: typo", result.stderr
             )
-            self.assertEqual(
-                sorted(path.name for path in target_skills.iterdir()),
-                sorted(path.name for path in expected_directories),
-            )
-            for source_directory in expected_directories:
-                self.assert_directory_equal(
-                    source_directory, target_skills / source_directory.name
-                )
-            self.assertFalse(codex_root.exists())
+            self.assertFalse(target.exists())
 
     def test_syncs_rules_to_opencode_root(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -570,7 +664,8 @@ class SyncAgentRulesTest(unittest.TestCase):
             "content": "",
             "rules target": "1\n",
             "config target": "3\n",
-            "skills": "2\n",
+            "skill target": "2\n",
+            "skill selection": "2\n1\n",
         }
 
         for label, input_text in cases.items():
@@ -619,130 +714,6 @@ class SyncAgentRulesTest(unittest.TestCase):
 
         self.assertEqual(result.returncode, 1)
         self.assertIn("OPENCODE_ROOT cannot be empty.", result.stderr)
-
-    def test_syncs_skills_to_opencode_root(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            directory = Path(temporary_directory)
-            opencode_root = directory / ".config" / "opencode"
-            codex_root = directory / ".codex"
-            workbuddy_root = directory / ".workbuddy"
-            environment = os.environ.copy()
-            environment["OPENCODE_ROOT"] = str(opencode_root)
-            environment["CODEX_ROOT"] = str(codex_root)
-            environment["WORKBUDDY_ROOT"] = str(workbuddy_root)
-
-            result = subprocess.run(
-                ["bash", str(SYNC_SCRIPT)],
-                input="2\n1\n3\n",
-                text=True,
-                capture_output=True,
-                check=False,
-                cwd=ROOT,
-                env=environment,
-            )
-
-            self.assertEqual(result.returncode, 0, result.stderr)
-            source_skills = ROOT / "skills"
-            target_skills = opencode_root / "skills"
-            expected_directories = [source_skills / "_shared"]
-            expected_directories.extend(
-                sorted(
-                    path
-                    for path in source_skills.iterdir()
-                    if path.is_dir() and (path / "SKILL.md").is_file()
-                )
-            )
-            self.assertEqual(
-                sorted(path.name for path in target_skills.iterdir()),
-                sorted(path.name for path in expected_directories),
-            )
-            for source_directory in expected_directories:
-                self.assert_directory_equal(
-                    source_directory, target_skills / source_directory.name
-                )
-            self.assertFalse(codex_root.exists())
-            self.assertFalse(workbuddy_root.exists())
-
-    def test_syncs_all_skills_to_workbuddy_root(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            directory = Path(temporary_directory)
-            codex_root = directory / ".codex"
-            workbuddy_root = directory / ".workbuddy"
-            environment = os.environ.copy()
-            environment["CODEX_ROOT"] = str(codex_root)
-            environment["WORKBUDDY_ROOT"] = str(workbuddy_root)
-
-            result = subprocess.run(
-                ["bash", str(SYNC_SCRIPT)],
-                input="2\n1\n2\n",
-                text=True,
-                capture_output=True,
-                check=False,
-                cwd=ROOT,
-                env=environment,
-            )
-
-            self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertIn("2) workbuddy", result.stderr)
-            source_skills = ROOT / "skills"
-            target_skills = workbuddy_root / "skills"
-            expected_directories = [source_skills / "_shared"]
-            expected_directories.extend(
-                sorted(
-                    path
-                    for path in source_skills.iterdir()
-                    if path.is_dir() and (path / "SKILL.md").is_file()
-                )
-            )
-            self.assertEqual(
-                sorted(path.name for path in target_skills.iterdir()),
-                sorted(path.name for path in expected_directories),
-            )
-            for source_directory in expected_directories:
-                self.assert_directory_equal(
-                    source_directory, target_skills / source_directory.name
-                )
-            self.assertFalse(codex_root.exists())
-
-    def test_syncs_skills_to_dsh_root(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            directory = Path(temporary_directory)
-            dsh_root = directory / ".dsh"
-            environment = os.environ.copy()
-            environment["HOME"] = str(directory)
-            environment["CODEX_ROOT"] = str(directory / ".codex")
-
-            result = subprocess.run(
-                ["bash", str(SYNC_SCRIPT)],
-                input="2\n1\n6\n",
-                text=True,
-                capture_output=True,
-                check=False,
-                cwd=ROOT,
-                env=environment,
-            )
-
-            self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertIn("6) dsh", result.stderr)
-            source_skills = ROOT / "skills"
-            target_skills = dsh_root / "skills"
-            expected_directories = [source_skills / "_shared"]
-            expected_directories.extend(
-                sorted(
-                    path
-                    for path in source_skills.iterdir()
-                    if path.is_dir() and (path / "SKILL.md").is_file()
-                )
-            )
-            self.assertEqual(
-                sorted(path.name for path in target_skills.iterdir()),
-                sorted(path.name for path in expected_directories),
-            )
-            for source_directory in expected_directories:
-                self.assert_directory_equal(
-                    source_directory, target_skills / source_directory.name
-                )
-            self.assertFalse((directory / ".codex").exists())
 
 
 if __name__ == "__main__":

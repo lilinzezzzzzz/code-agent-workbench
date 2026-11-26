@@ -143,7 +143,7 @@ skills/<skill-name>/
 
 执行统一同步脚本后，按提示选择要同步的内容类型。选择 `config` 时，
 脚本会继续要求选择目标 assistant（`codex` 或 `opencode`）；选择 `skills` 时，
-会先选择技能再选择目标 assistant：
+会先选择目标 assistant，再选择兼容的技能：
 
 ```bash
 ./sync-agents.sh
@@ -167,7 +167,8 @@ skills/<skill-name>/
   的默认根目录可分别通过 `CODEX_ROOT`、`WORKBUDDY_ROOT`、`OPENCODE_ROOT`、
   `ZCODE_ROOT` 和 `QODER_CN_ROOT` 覆盖；Qoder CN 默认使用
   `~/.qoder-cn`，DeepSeek Harness 固定同步到 `~/.dsh`，对应默认安装路径
-- **skills 流程**: 先选择具体 skill 或全部 skills，再选择目标 assistant
+- **skills 流程**: 先选择目标 assistant，再选择一个兼容的 skill 或 `all`。
+  `all` 同步该目标支持的全部技能。目标限制见 [Skills README](skills/README.md#同步)
 - **目标选择**: rules 和 skills 支持 `codex`、`workbuddy`、`opencode`、
   `zcode`、`qoder-cn` 或 `dsh`
 - **DeepSeek Harness 默认安装的加载方式**: harness 只会自动注入用户全局
@@ -203,16 +204,16 @@ skills/<skill-name>/
   Codex 根目录的 `config.toml`，同时备份原文件并保留本机专属配置
 - 选择 `config` -> `opencode`：把 `configs/opencode/opencode.jsonc` 同步到
   `OPENCODE_ROOT/opencode.jsonc`
-- 选择 `skills`：选择一个 skill 或全部 skills，并同步到目标 assistant 的 `skills/`
-- 选择 `skills` -> `qoder-cn`（数字菜单 `2` -> `1` -> `5`）：把 `skills/_shared`
-  和全部 skill 同步到 `~/.qoder-cn/skills/`
+- 选择 `skills`：先选择目标，再把选中的兼容技能同步到目标的 `skills/`
+- 选择 `skills` -> `qoder-cn` -> `all`（数字菜单 `2` -> `5` -> `1`），将
+  `skills/_shared` 和 Qoder CN 支持的全部技能同步到 `~/.qoder-cn/skills/`
 - 选择 `rules` -> `dsh`（数字菜单 `1` -> `6`）：把 `rules/baseline.md` 同步为
   `~/.dsh/AGENTS.md`，并将 `rules/references/`
   镜像同步到 `~/.dsh/references/`；该文件会在每个项目的首次请求中作为
   用户全局指令注入
-- 选择 `skills` -> `dsh`（数字菜单 `2` -> `1` -> `6`）：把 `skills/_shared`
-  和全部 skill 同步到 `~/.dsh/skills/`，harness 会按 skill 目录扫描并
-  在匹配任务中按需加载
+- 选择 `skills` -> `dsh` -> `all`（数字菜单 `2` -> `6` -> `1`），将
+  `skills/_shared` 和 DeepSeek Harness 支持的全部技能同步到 `~/.dsh/skills/`。
+  Harness 会按 skill 目录扫描并在匹配任务中按需加载
 
 当前已维护的 skill 更适合以下场景：
 
