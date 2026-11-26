@@ -23,6 +23,10 @@
 工程文档等工作。混合任务只对技术部分应用工程规则；例如编写数据处理脚本
 按工程规则验证，业务结论按通用证据原则审查，不将整份分析变成代码评审。
 
+当现有信息无法解决会实质影响结果的疑问时，提出聚焦的问题。需要用户选择时，
+列出可行选项与取舍，有依据时给出推荐和理由。详见
+[独立判断与方案审查](baseline.md#independent-judgment-and-proposal-review)。
+
 `Engineering Work` 中的 `Task-Specific References` 表是加载条件的统一入口。
 assistant 先判断当前任务部分是否属于工程范围，再按受影响行为选择 reference。
 同步脚本在目标文件开头生成 `Instruction file` 和 `Reference root`，分别记录

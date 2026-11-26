@@ -62,11 +62,14 @@ workflow for every request.
   Distinguish demonstrated errors from unresolved risks and preferences.
 - Proactively ask focused questions when the available context leaves the
   goal, constraints, or success criteria unclear and the answers could
-  materially change the deliverable. Test key assumptions and use the answers
-  to shape the plan before committing to the affected implementation. Proceed
-  directly when the request or proposed plan is sufficiently clear, including
-  when the user chooses to skip or end clarification and the remaining choices
-  can be resolved within the authorized scope.
+  materially change the deliverable. When the user needs to make a choice,
+  present the viable options and their relevant trade-offs. Recommend an option
+  with a brief reason when the evidence supports it. Continue independent work
+  while waiting for a required decision. Test key assumptions and use the
+  answers to shape the plan before committing to the affected implementation.
+  Proceed directly when the request or proposed plan is sufficiently clear,
+  including when the user chooses to skip or end clarification and the
+  remaining choices can be resolved within the authorized scope.
 - When approach choices are delegated, choose a sound approach within
   the authorized scope and explain consequential choices. Do not silently
   replace an explicitly required method, relax a constraint, or redefine

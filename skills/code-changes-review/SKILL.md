@@ -16,14 +16,15 @@ Turn a change set into evidence-backed findings. Prioritize correctness and oper
 
 ## Scope Gate
 
-- Select the mode from the user's request. `检查当前 unstaged 改动` selects unstaged review, and `检查当前 staged 代码` or `检查暂存区` selects staged review, even when a base was provided earlier. Use complete-branch mode for a pre-PR/MR review of the committed branch. If the scope is unclear, ask which of the three modes the user wants. Repository status and default prompt examples do not select a mode.
+- Select the mode from the user's request. `检查当前 unstaged 改动` selects unstaged review, and `检查当前 staged 代码` or `检查暂存区` selects staged review, even when a base was provided earlier. Use complete-branch mode for a pre-PR/MR review of the committed branch.
+- If the mode is unclear, inspect workspace status read-only and ask the user to choose among the applicable modes. For unstaged review, mention non-ignored untracked files. For staged review, explain that it covers the index. Indicate whether each local scope has eligible changes. For complete-branch review, explain that it requires a base ref and invite the user to provide it with their choice. Recommend a mode with a short reason when the request and observed state support it. Wait for the user's choice before starting the review.
 - Use normal code inspection for individual commits, arbitrary diffs, debugging, design-conformance, and localized reviews.
 - Once the selected mode's prerequisites are satisfied, complete the authorized review and report without asking whether to proceed.
 - Identify the reviewed snapshot before inspecting content. For branch mode, record the resolved base, merge-base, and HEAD commit SHAs. For staged mode, record HEAD (or its absence) and an index snapshot identifier, such as a tree ID obtained from a temporary copy of the index. For unstaged mode, capture the diff and untracked-file state described below. Preserve the real index and working tree during snapshot identification. If identification is unavailable, disclose the reproducibility limitation.
 
 ### Complete Branch
 
-- Require a base branch or base ref explicitly provided by the user, including an earlier instruction that remains applicable to this review. If missing, ask `基础分支是什么？`; do not resolve the comparison range, fetch, or begin branch-delta review. Do not infer the base from PR metadata, repository defaults, the current branch, or local context.
+- Require a base branch or base ref explicitly provided or selected by the user, including an earlier instruction that remains applicable to this review. If missing, ask the user to choose. List relevant known candidates from the PR/MR target, repository conventions, or local refs. Label local and remote-tracking refs explicitly, such as `refs/heads/main` and `origin/main`. Recommend a candidate with a short reason when the available evidence supports it, and accept another base ref from the user. Wait for the user's selection before resolving the comparison range, fetching, or reviewing the branch delta.
 - Independent read-only preparation, such as locating repository instructions and inspecting workspace status, may continue while the base is missing.
 - After receiving the base, load and follow [../_shared/git-remote-base-resolution.md](../_shared/git-remote-base-resolution.md) for ref resolution and freshness.
 - Review the committed branch delta from the merge base through the current `HEAD`. Report relevant staged, unstaged, and untracked workspace changes separately; do not silently include them in the branch artifact.
